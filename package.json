@@ -1,0 +1,21 @@
+{
+  "name": "tms-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "format": "biome format . --write",
+    "lint": "biome lint .",
+    "check": "biome check . --write",
+    "check-types": "turbo run check-types"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.7",
+    "turbo": "^2.10.9",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
+  }
+}
