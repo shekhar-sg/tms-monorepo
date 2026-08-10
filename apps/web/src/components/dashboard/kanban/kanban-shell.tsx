@@ -3,7 +3,7 @@ import KanbanToolbar from "@/components/dashboard/kanban/kanban-header/kanban-to
 
 const KanbanShell = () => {
   return (
-    <div className={"flex flex-col gap-4 p-6"}>
+    <div className={"flex flex-col gap-1 p-4"}>
       <KanbanToolbar />
       <KanbanBoard />
     </div>

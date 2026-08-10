@@ -42,7 +42,7 @@ const SearchBox = ({ value, onChange }: TaskSearchProps) => {
 
   return (
     <InputGroup className={"rounded-[4px] flex items-center justify-center"}>
-      <InputGroupAddon className={"flex items-center justify-center"}>
+      <InputGroupAddon className={"flex items-center justify-center p-0"}>
         <div
           className={"size-8 cursor-pointer flex items-center justify-center"}
           onClick={() => {

@@ -12,8 +12,8 @@ const KanbanToolbar = () => {
   const [search, setSearch] = useState("");
 
   return (
-    <div className={"flex justify-between items-center"}>
-      <h2>Tasks</h2>
+    <div className={"flex justify-between items-center p-2"}>
+      <h2 className={"font-semibold"}>Tasks</h2>
       <div className={"flex gap-2"}>
         <SearchBox value={search} onChange={setSearch} />
         <Fields />
