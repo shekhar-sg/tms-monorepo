@@ -1,19 +1,41 @@
+import { useSortable } from "@dnd-kit/react/sortable";
+import { LuCalendar, LuTag } from "react-icons/lu";
+import { RiMoreLine } from "react-icons/ri";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { RiMoreLine } from "react-icons/ri";
-import { Badge } from "@/components/ui/badge";
-import { LuCalendar, LuTag } from "react-icons/lu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
-const KanbanCard = () => {
+type KanbanCardProps = {
+  id: string;
+  index: number;
+  column: string;
+  title: string;
+};
+
+const KanbanCard = (props: KanbanCardProps) => {
+  const { id, column, title, index } = props;
+  const { ref, isDragging } = useSortable({
+    id,
+    index,
+    group: column,
+    type: "task",
+    accept: "task",
+  });
   return (
-    <Card data-size={"xs"} className={"min-w-68.25 rounded-md"} size={"sm"}>
+    <Card
+      ref={ref}
+      data-size={"xs"}
+      className={cn("min-w-68.25 rounded-md hover:cursor-grab", { "opacity-50": isDragging })}
+      size={"sm"}
+    >
       <CardHeader className={"flex justify-between items-center"}>
-        <CardTitle className={"text-sm"}>Write Api Documentation</CardTitle>
+        <CardTitle className={"text-sm"}>{title}</CardTitle>
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
