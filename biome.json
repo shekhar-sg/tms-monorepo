@@ -19,7 +19,7 @@
     "formatter": {
       "quoteStyle": "double",
       "trailingCommas": "es5",
-      "semicolons": "asNeeded"
+      "semicolons": "always"
     }
   },
   "css": {
@@ -46,7 +46,11 @@
         "useTemplate": "error",
         "noNonNullAssertion": "off"
       },
-      "a11y": { "noSvgWithoutTitle": "off" }
+      "a11y": {
+        "noSvgWithoutTitle": "off",
+        "useSemanticElements": "info",
+        "useKeyWithClickEvents": "off"
+      }
     }
   },
   "assist": {
