@@ -5,7 +5,7 @@ import { LuFilter } from "react-icons/lu";
 import {
   type ActiveFilters,
   FILTER_FIELDS,
-} from "@/components/dashboard/kanban/kanban-header/filter-config";
+} from "@/components/dashboard/kanban/toolbar/filter-config";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

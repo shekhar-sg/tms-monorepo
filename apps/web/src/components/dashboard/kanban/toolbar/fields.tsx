@@ -22,22 +22,30 @@ const fields = [
   "Reporter",
 ];
 
-const Fields = () => {
+interface FieldsProps {
+  currentView: "board" | "list";
+  onViewChange: (currentView: "board" | "list") => void;
+}
+
+const Fields = (props: FieldsProps) => {
+  const { currentView, onViewChange } = props;
   return (
     <Popover>
       <PopoverTrigger
-        render={
-          <Button
-            variant={"outline"}
-            className={"rounded-[4px] "}
-          />
-        }
+        render={<Button variant={"outline"} className={"rounded-[4px] "} />}
       >
         <LuColumns3 /> Fields
       </PopoverTrigger>
       <PopoverContent className={"p-4 gap-6"} align={"center"}>
         <PopoverHeader>
-          <ToggleGroup variant={"outline"} className={"w-full gap-0"}>
+          <ToggleGroup
+            value={[currentView]}
+            variant={"outline"}
+            className={"w-full gap-0"}
+            onValueChange={(value) =>
+              onViewChange(value[0] as "board" | "list")
+            }
+          >
             <ToggleGroupItem className={"flex-1 rounded-r-none"} value={"list"}>
               <PiListBold /> List
             </ToggleGroupItem>

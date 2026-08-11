@@ -1,20 +1,9 @@
 import { useSortable } from "@dnd-kit/react/sortable";
 import { LuCalendar, LuTag } from "react-icons/lu";
-import { RiMoreLine } from "react-icons/ri";
-import { columns } from "@/components/dashboard/kanban/Board-static-data";
+import TaskActions from "@/components/dashboard/kanban/shared/task-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 type KanbanCardProps = {
@@ -52,9 +41,13 @@ const KanbanCard = (props: KanbanCardProps) => {
     >
       <CardHeader className={"flex justify-between items-center"}>
         <CardTitle className={"text-sm"}>{title}</CardTitle>
-        <Actions
-          handleShowDetails={handleShowDetails}
-          handleMove={handleMove}
+        <TaskActions
+          column={{
+            id: column,
+            title,
+          }}
+          onShowDetails={handleShowDetails}
+          onMove={handleMove}
         />
       </CardHeader>
       <CardContent className={"space-y-3"}>
@@ -85,47 +78,3 @@ const KanbanCard = (props: KanbanCardProps) => {
 };
 
 export default KanbanCard;
-
-interface ActionsProps {
-  handleShowDetails: () => void;
-  handleMove: (targetColumnId: string) => void;
-}
-
-const Actions = (props: ActionsProps) => {
-  const { handleMove, handleShowDetails } = props;
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button variant={"ghost"} size={"icon-sm"}>
-            <RiMoreLine />
-          </Button>
-        }
-      />
-      <DropdownMenuContent align={"end"} className={"rounded-sm"}>
-        <DropdownMenuItem onClick={handleShowDetails}>
-          Show details
-        </DropdownMenuItem>
-
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Move to</DropdownMenuSubTrigger>
-
-          <DropdownMenuSubContent
-            side={"right"}
-            sideOffset={8}
-            className={"rounded-sm"}
-          >
-            {columns.map((column) => (
-              <DropdownMenuItem
-                key={column.id}
-                onClick={() => handleMove(column.id)}
-              >
-                {column.title}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};

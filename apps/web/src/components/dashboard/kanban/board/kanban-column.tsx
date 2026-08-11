@@ -1,11 +1,13 @@
 "use client";
 
+import { CollisionPriority } from "@dnd-kit/abstract";
 import { useDroppable } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
 import type { ReactNode } from "react";
 import { LuPlus } from "react-icons/lu";
 import { MdDragIndicator } from "react-icons/md";
 import { RiMoreLine } from "react-icons/ri";
+import EmptyState from "@/components/dashboard/kanban/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,6 +44,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
   const { ref: droppableRef, isDropTarget } = useDroppable({
     id,
     type: "column",
+    collisionPriority: CollisionPriority.Low,
   });
 
   const setRefs = (node: HTMLElement | null) => {
@@ -89,17 +92,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
         className={"space-y-2 min-h-0 flex-1 overflow-y-auto no-scrollbar"}
       >
         <div className={"flex min-h-full flex-col gap-2 my-1"}>
-          {children}{" "}
-          {isEmpty && (
-            <div className="flex flex-1 flex-col items-center justify-center py-8 text-center">
-              <p className="text-sm font-medium text-muted-foreground">
-                No tasks yet
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground/70">
-                Add a task or drag one here
-              </p>
-            </div>
-          )}
+          {children} {isEmpty && <EmptyState />}
         </div>
       </CardContent>
       <CardAction className={"px-2.5"}>

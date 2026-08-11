@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import type {
   FilterFieldConfig,
   FilterOption,
-} from "@/components/dashboard/kanban/kanban-header/filter-config";
+} from "@/components/dashboard/kanban/toolbar/filter-config";
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuGroup,

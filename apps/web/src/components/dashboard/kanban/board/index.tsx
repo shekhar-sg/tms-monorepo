@@ -2,19 +2,24 @@
 
 import { move } from "@dnd-kit/helpers";
 import { DragDropProvider } from "@dnd-kit/react";
-import { useRef, useState } from "react";
-import {
-  type BoardItems,
-  columns as initialColumns,
-  initialItems,
+import { type Dispatch, type SetStateAction, useRef } from "react";
+import type {
+  BoardItems,
+  Column,
 } from "@/components/dashboard/kanban/Board-static-data";
-import KanbanCard from "@/components/dashboard/kanban/kanban-card";
-import KanbanColumn from "@/components/dashboard/kanban/kanban-column";
+import KanbanCard from "@/components/dashboard/kanban/board/kanban-card";
+import KanbanColumn from "@/components/dashboard/kanban/board/kanban-column";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const KanbanBoard = () => {
-  const [columns, setColumns] = useState(initialColumns);
-  const [items, setItems] = useState<BoardItems>(initialItems);
+interface KanbanBoardProps {
+  columns: Column[];
+  items: BoardItems;
+  setColumns: Dispatch<SetStateAction<Column[]>>;
+  setItems: Dispatch<SetStateAction<BoardItems>>;
+}
+
+const Index = (props: KanbanBoardProps) => {
+  const { columns, setColumns, items, setItems } = props;
 
   const previousItems = useRef(items);
   const previousColumns = useRef(columns);
@@ -48,7 +53,7 @@ const KanbanBoard = () => {
         className={"flex-1 border-none rounded-md border whitespace-nowrap"}
       >
         <div className={"flex flex-1 gap-4 m-2"}>
-          {columns.map((column,index) => (
+          {columns.map((column, index) => (
             <KanbanColumn
               key={column.id}
               id={column.id}
@@ -73,4 +78,4 @@ const KanbanBoard = () => {
   );
 };
 
-export default KanbanBoard;
+export default Index;
