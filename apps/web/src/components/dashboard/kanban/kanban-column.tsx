@@ -1,6 +1,7 @@
 "use client";
 
 import { useDroppable } from "@dnd-kit/react";
+import { useSortable } from "@dnd-kit/react/sortable";
 import type { ReactNode } from "react";
 import { LuPlus } from "react-icons/lu";
 import { MdDragIndicator } from "react-icons/md";
@@ -18,35 +19,62 @@ import { cn } from "@/lib/utils";
 type KanbanColumnProps = {
   id: string;
   title: string;
+  index: number;
   children: ReactNode;
   isEmpty: boolean;
 };
 
 const KanbanColumn = (props: KanbanColumnProps) => {
-  const { id, children, title, isEmpty } = props;
-  const { ref, isDropTarget } = useDroppable({
+  const { id, index, children, title, isEmpty } = props;
+
+  const {
+    ref: sortableRef,
+    handleRef,
+    isDragging,
+  } = useSortable({
+    id,
+    index,
+    group: "columns",
+    type: "column",
+    accept: "column",
+  });
+
+  const { ref: droppableRef, isDropTarget } = useDroppable({
     id,
     type: "column",
   });
+
+  const setRefs = (node: HTMLElement | null) => {
+    sortableRef(node);
+    droppableRef(node);
+  };
+
   return (
     <Card
-      ref={ref}
+      ref={setRefs}
       data-size={"xs"}
       className={cn(
         "bg-accent rounded-md h-full min-w-fit min-h-48 max-h-[calc(100vh-180px)]",
         {
+          "opacity-50": isDragging,
           "ring-2 ring-primary": isDropTarget,
-          "w-72.25": isEmpty,
+          "min-w-72.25": isEmpty,
         }
       )}
     >
       <CardHeader className={"flex justify-between items-center"}>
         <CardTitle
-          className={
-            "flex items-center justify-start gap-1.5 text-xs font-semibold"
-          }
+          className={"flex items-center justify-start text-xs font-semibold"}
         >
-          <MdDragIndicator size={16} /> {title}
+          <Button
+            ref={handleRef}
+            className={"cursor-grab touch-none"}
+            variant={"ghost"}
+            size={"icon-sm"}
+          >
+            <MdDragIndicator size={16} />
+          </Button>
+          {title}
         </CardTitle>
         <CardAction>
           <Button variant={"ghost"} size={"icon-sm"}>

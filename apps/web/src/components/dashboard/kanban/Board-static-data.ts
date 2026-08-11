@@ -17,7 +17,12 @@ export type Task = {
 
 export type BoardItems = Record<string, Task[]>;
 
-export const columns = [
+export type Column = {
+  id: string;
+  title: string;
+};
+
+export const columns: Column[] = [
   {
     id: "todo",
     title: "To Do",
