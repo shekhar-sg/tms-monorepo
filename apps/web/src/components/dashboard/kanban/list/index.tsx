@@ -1,3 +1,5 @@
+"use client"
+
 import { move } from "@dnd-kit/helpers";
 import { DragDropProvider } from "@dnd-kit/react";
 import { type Dispatch, type SetStateAction, useRef } from "react";
@@ -6,7 +8,6 @@ import type {
   Column,
 } from "@/components/dashboard/kanban/Board-static-data";
 import TaskListGroup from "@/components/dashboard/kanban/list/task-list-group";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ListViewProps {
   columns: Column[];
@@ -28,10 +29,7 @@ const ListView = (props: ListViewProps) => {
       }}
       onDragOver={(event) => {
         const { source } = event.operation;
-
-        if (!source) {
-          return;
-        }
+        if (!source) return;
 
         if (source.type === "task") {
           setItems((current) => move(current, event));
@@ -48,10 +46,8 @@ const ListView = (props: ListViewProps) => {
         }
       }}
     >
-      <ScrollArea
-        className={"flex-1 border-none rounded-md border whitespace-nowrap"}
-      >
-        <div className={"flex flex-col flex-1 gap-4 m-2"}>
+      <div className={"h-[calc(100svh-150px)] rounded-md overflow-y-scroll no-scrollbar"}>
+        <div className={"flex flex-col gap-4 m-2"}>
           {columns.map((column, index) => {
             const tasks = items[column.id] ?? [];
             return (
@@ -65,7 +61,7 @@ const ListView = (props: ListViewProps) => {
             );
           })}
         </div>
-      </ScrollArea>
+      </div>
     </DragDropProvider>
   );
 };

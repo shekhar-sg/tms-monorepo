@@ -18,7 +18,7 @@ interface KanbanBoardProps {
   setItems: Dispatch<SetStateAction<BoardItems>>;
 }
 
-const Index = (props: KanbanBoardProps) => {
+const Board = (props: KanbanBoardProps) => {
   const { columns, setColumns, items, setItems } = props;
 
   const previousItems = useRef(items);
@@ -78,4 +78,4 @@ const Index = (props: KanbanBoardProps) => {
   );
 };
 
-export default Index;
+export default Board;

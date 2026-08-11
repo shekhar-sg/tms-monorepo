@@ -8,18 +8,19 @@ import SearchBox from "@/components/dashboard/kanban/toolbar/search-box";
 import { Button } from "@/components/ui/button";
 
 interface KanbanToolbarProps {
+  page: "projects" | "tasks";
   view: "board" | "list";
   onViewChange: (view: "board" | "list") => void;
 }
 
 const Toolbar = (props: KanbanToolbarProps) => {
-  const { view, onViewChange } = props;
+  const { view, onViewChange, page } = props;
   const [filters, setFilters] = useState<ActiveFilters>({});
   const [search, setSearch] = useState("");
 
   return (
     <div className={"flex justify-between items-center p-2"}>
-      <h2 className={"font-semibold"}>Tasks</h2>
+      <h2 className={"font-semibold capitalize"}>{page}</h2>
       <div className={"flex gap-2"}>
         <SearchBox value={search} onChange={setSearch} />
         <Fields currentView={view} onViewChange={onViewChange} />

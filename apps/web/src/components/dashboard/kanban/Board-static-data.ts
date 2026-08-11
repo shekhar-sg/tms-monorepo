@@ -1,11 +1,11 @@
-export type TaskPriority = "none" | "urgent" | "high" | "medium" | "low";
+export type Priority = "none" | "urgent" | "high" | "medium" | "low";
 
 export type Task = {
   id: string;
   title: string;
   description?: string;
   column: string;
-  priority: TaskPriority;
+  priority: Priority;
   assignee?: {
     id: string;
     name: string;
@@ -313,3 +313,122 @@ export const initialItems: BoardItems = {
     },
   ],
 };
+
+
+export interface Project {
+  id: string;
+  title: string;
+  priority: Priority;
+  lead?: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  dueDate?: string;
+}
+
+export const projects: Project[] = [
+  {
+    id: "project-1",
+    title: "Website Redesign",
+    priority: "high",
+    lead: {
+      id: "user-1",
+      name: "Alex Johnson",
+      avatar: "/avatars/alex.jpg",
+    },
+    dueDate: "Aug 18, 2026",
+  },
+  {
+    id: "project-2",
+    title: "Mobile App Development",
+    priority: "urgent",
+    lead: {
+      id: "user-2",
+      name: "Sarah Williams",
+      avatar: "/avatars/sarah.jpg",
+    },
+    dueDate: "Aug 25, 2026",
+  },
+  {
+    id: "project-3",
+    title: "Marketing Campaign",
+    priority: "medium",
+    lead: {
+      id: "user-3",
+      name: "Michael Chen",
+    },
+    dueDate: "Sep 02, 2026",
+  },
+  {
+    id: "project-4",
+    title: "Customer Portal",
+    priority: "high",
+    lead: {
+      id: "user-4",
+      name: "Emily Davis",
+    },
+    dueDate: "Sep 10, 2026",
+  },
+  {
+    id: "project-5",
+    title: "Internal Admin Dashboard",
+    priority: "low",
+    lead: {
+      id: "user-5",
+      name: "Daniel Wilson",
+      avatar: "/avatars/daniel.jpg",
+    },
+    dueDate: "Sep 15, 2026",
+  },
+  {
+    id: "project-6",
+    title: "API Migration",
+    priority: "urgent",
+    lead: {
+      id: "user-1",
+      name: "Alex Johnson",
+      avatar: "/avatars/alex.jpg",
+    },
+    dueDate: "Aug 30, 2026",
+  },
+  {
+    id: "project-7",
+    title: "Analytics & Reporting",
+    priority: "medium",
+    lead: {
+      id: "user-6",
+      name: "Olivia Martin",
+    },
+    dueDate: "Sep 22, 2026",
+  },
+  {
+    id: "project-8",
+    title: "Design System",
+    priority: "high",
+    lead: {
+      id: "user-7",
+      name: "James Taylor",
+    },
+    dueDate: "Oct 01, 2026",
+  },
+  {
+    id: "project-9",
+    title: "Performance Optimization",
+    priority: "low",
+    lead: {
+      id: "user-3",
+      name: "Michael Chen",
+    },
+  },
+  {
+    id: "project-10",
+    title: "Authentication Upgrade",
+    priority: "none",
+    lead: {
+      id: "user-4",
+      name: "Emily Davis",
+    },
+    dueDate: "Oct 12, 2026",
+  },
+];

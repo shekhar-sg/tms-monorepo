@@ -1,15 +1,18 @@
 "use client";
 
 import { useSortable } from "@dnd-kit/react/sortable";
-import { FlexRender, type Row } from "@tanstack/react-table";
+import {
+  FlexRender,
+  type Row,
+  type TableFeatures,
+} from "@tanstack/react-table";
 import { LuGripVertical } from "react-icons/lu";
 import type { Task } from "@/components/dashboard/kanban/Board-static-data";
 import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { taskTableFeatures } from "./task-list-column";
 
-type TaskRow = Row<typeof taskTableFeatures, Task>;
+type TaskRow = Row<TableFeatures, Task>;
 
 type TaskListRowProps = {
   row: TaskRow;

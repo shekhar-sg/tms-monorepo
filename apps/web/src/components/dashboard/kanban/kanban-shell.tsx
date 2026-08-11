@@ -7,7 +7,7 @@ import {
   columns as initialColumns,
   initialItems,
 } from "@/components/dashboard/kanban/Board-static-data";
-import Index from "@/components/dashboard/kanban/board";
+import Board from "@/components/dashboard/kanban/board";
 import ListView from "@/components/dashboard/kanban/list";
 import Toolbar from "@/components/dashboard/kanban/toolbar";
 
@@ -19,9 +19,9 @@ const KanbanShell = () => {
   console.log({ view });
   return (
     <div className={"flex flex-col gap-1 p-4"}>
-      <Toolbar view={view} onViewChange={setView} />
+      <Toolbar view={view} onViewChange={setView} page={"tasks"} />
       {view === "board" ? (
-        <Index
+        <Board
           columns={columns}
           items={items}
           setColumns={setColumns}

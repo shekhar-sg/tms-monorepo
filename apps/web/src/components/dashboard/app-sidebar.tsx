@@ -25,12 +25,12 @@ const navMain = [
     items: [
       {
         title: "Tasks",
-        url: "/",
+        url: "/dashboard",
         icon: LayoutDashboard,
       },
       {
         title: "Projects",
-        url: "/",
+        url: "/projects",
         icon: GalleryVerticalEnd,
       },
     ],
