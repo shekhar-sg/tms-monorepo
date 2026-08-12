@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { LuPlus } from "react-icons/lu";
 import Fields from "@/components/dashboard/kanban/toolbar/fields";
 import type { ActiveFilters } from "@/components/dashboard/kanban/toolbar/filter-config";
 import { FilterMenu } from "@/components/dashboard/kanban/toolbar/filter-menu";
@@ -25,7 +27,12 @@ const Toolbar = (props: KanbanToolbarProps) => {
         <SearchBox value={search} onChange={setSearch} />
         <Fields currentView={view} onViewChange={onViewChange} />
         <FilterMenu value={filters} onChange={setFilters} />{" "}
-        <Button>Add Task</Button>
+        <Button
+          className={"text-xs text-primary-foreground!"}
+          render={<Link href={"/dashboard/tasks/new"} />}
+        >
+          <LuPlus /> Add Task
+        </Button>
       </div>
     </div>
   );

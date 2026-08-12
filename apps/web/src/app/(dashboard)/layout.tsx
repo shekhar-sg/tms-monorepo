@@ -1,5 +1,5 @@
-import type { ReactNode } from "react"
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
+import type { ReactNode } from "react";
+import AppSidebar from "@/components/dashboard/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,13 +7,13 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -45,7 +45,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
         <main>{children}</main>
       </SidebarInset>
     </SidebarProvider>
-  )
-}
+  );
+};
 
-export default DashboardLayout
+export default DashboardLayout;

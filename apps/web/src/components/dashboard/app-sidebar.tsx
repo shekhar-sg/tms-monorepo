@@ -25,19 +25,19 @@ const navMain = [
     items: [
       {
         title: "Tasks",
-        url: "/dashboard",
+        url: "/dashboard/tasks",
         icon: LayoutDashboard,
       },
       {
         title: "Projects",
-        url: "/projects",
+        url: "/dashboard/projects",
         icon: GalleryVerticalEnd,
       },
     ],
   },
 ]
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -96,3 +96,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
+
+export default AppSidebar

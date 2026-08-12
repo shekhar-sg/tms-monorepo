@@ -174,4 +174,19 @@ a {
       display: none; /* Chrome, Safari and Opera */
     }
   }
+
+  .sidebar-transparent {
+    border-style: none;
+
+    /* Targets the inner Shadcn sidebar structure using modern nesting */
+    & [data-slot="sidebar-inner"] {
+      background-color: transparent;
+      box-shadow: none;
+      --tw-ring-blur: 0;
+      --tw-ring-color: transparent;
+      --ring-width: 0px; /* Reset Tailwind v4 ring bindings */
+    }
+  }
+
+
 }

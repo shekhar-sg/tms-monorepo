@@ -7,9 +7,16 @@ import {
   type TableFeatures,
   tableFeatures,
 } from "@tanstack/react-table";
-import type { Project } from "@/components/dashboard/kanban/Board-static-data";
+import {
+  columns,
+  type Project,
+} from "@/components/dashboard/kanban/Board-static-data";
+import TaskActions from "@/components/dashboard/kanban/shared/task-actions";
+import { initialSubtasks } from "@/components/dashboard/tasks/task-subtask-data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { RiMoreLine } from "react-icons/ri";
 
 export const projectTableFeatures = tableFeatures({
   columnVisibilityFeature,
@@ -84,5 +91,17 @@ export const projectColumns: ColumnDef<TableFeatures, Project>[] =
           <span className="text-muted-foreground">{getValue() ?? "—"}</span>
         );
       },
+    }),
+
+    columnHelper.display({
+      id: "actions",
+      header: "Actions",
+      enableHiding: false,
+
+      cell: ({ row }) => (
+        <Button variant={"ghost"} size={"icon-sm"}>
+          <RiMoreLine />
+        </Button>
+      ),
     }),
   ]) as ColumnDef<TableFeatures, Project>[];
