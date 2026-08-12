@@ -1,12 +1,12 @@
-import { ReactNode, useState } from "react";
+import { ChevronDownIcon } from "lucide-react";
+import { type ReactNode, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDownIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface CollapsibleCardProps {
   title: string;
