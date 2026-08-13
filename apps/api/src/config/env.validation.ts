@@ -2,8 +2,8 @@ import Joi from "joi";
 
 export const envValidationSchema = Joi.object({
   NODE_ENV: Joi.string()
-    .valid("development", "production", "test")
-    .default("development"),
+      .valid("development", "production", "test")
+      .default("development"),
 
   PORT: Joi.number().port().default(4000),
 
@@ -11,9 +11,9 @@ export const envValidationSchema = Joi.object({
 
   JWT_SECRET: Joi.string().min(32).required(),
 
-  GOOGLE_CLIENT_ID: Joi.string().required(),
+  GOOGLE_CLIENT_ID: Joi.string().allow("").optional(),
 
-  GOOGLE_CLIENT_SECRET: Joi.string().required(),
+  GOOGLE_CLIENT_SECRET: Joi.string().allow("").optional(),
 
-  GOOGLE_CALLBACK_URL: Joi.string().uri().required(),
+  GOOGLE_CALLBACK_URL: Joi.string().uri().allow("").optional(),
 });

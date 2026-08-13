@@ -3,6 +3,7 @@ import type { Request } from "express";
 import { AuthService } from "./auth.service";
 import { GoogleAuthGuard } from "./guards/google-auth.guard";
 import { JwtAuthGuard } from "./guards/jwt-auth-guard";
+import type { GoogleAuthRequest } from "./types/google-auth-request";
 
 @Controller("auth")
 export class AuthController {
@@ -19,15 +20,8 @@ export class AuthController {
 
   @Get("google/callback")
   @UseGuards(GoogleAuthGuard)
-  googleCallback(@Req() request: Request) {
-    return this.authService.googleLogin(
-      request.user as {
-        providerAccountId: string;
-        email?: string;
-        name?: string;
-        avatar?: string;
-      }
-    );
+  googleCallback(@Req() request: GoogleAuthRequest) {
+    return this.authService.googleLogin(request.user);
   }
 
   @Get("me")
