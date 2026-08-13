@@ -2,6 +2,7 @@ import { Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import type { Request } from "express";
 import { AuthService } from "./auth.service";
 import { GoogleAuthGuard } from "./guards/google-auth.guard";
+import { JwtAuthGuard } from "./guards/jwt-auth-guard";
 
 @Controller("auth")
 export class AuthController {
@@ -27,5 +28,11 @@ export class AuthController {
         avatar?: string;
       }
     );
+  }
+
+  @Get("me")
+  @UseGuards(JwtAuthGuard)
+  getCurrentUser(@Req() request: Request) {
+    return request.user;
   }
 }
