@@ -20,7 +20,8 @@
       "quoteStyle": "double",
       "trailingCommas": "es5",
       "semicolons": "always"
-    }
+    },
+    "parser": { "unsafeParameterDecoratorsEnabled": true }
   },
   "css": {
     "parser": {
