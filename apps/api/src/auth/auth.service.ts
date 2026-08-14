@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { UsersService } from "../users/users.service";
 import { AuthResponse } from "@repo/types";
+import { UsersService } from "../users/users.service";
 import { GoogleProfile } from "./types/google-profile";
 
 @Injectable()

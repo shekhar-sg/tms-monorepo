@@ -9,8 +9,23 @@
 * 🟢 You can import this file directly.
 */
 
-export const AuthProvider = {
-  GOOGLE: 'GOOGLE'
+export const Priority = {
+  NONE: 'NONE',
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
 } as const
 
-export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
+export type Priority = (typeof Priority)[keyof typeof Priority]
+
+
+export const TaskStatus = {
+  BACKLOG: 'BACKLOG',
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  REVIEW: 'REVIEW',
+  DONE: 'DONE'
+} as const
+
+export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus]
