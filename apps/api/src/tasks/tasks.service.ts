@@ -3,7 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import type { CreateTaskInput, UpdateTaskInput } from "@repo/types";
+import type {
+  CreateTaskInput,
+  MoveTaskInput,
+  UpdateTaskInput,
+} from "@repo/types";
 
 import { PrismaService } from "../prisma/prisma.service";
 
@@ -118,6 +122,110 @@ export class TasksService {
               ? new Date(data.dueDate)
               : undefined,
         position: data.position,
+      },
+      include: {
+        assignee: true,
+        subtasks: true,
+      },
+    });
+  }
+
+  async move(id: string, data: MoveTaskInput) {
+    const task = await this.prisma.task.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        projectId: true,
+      },
+    });
+
+    if (!task) {
+      throw new NotFoundException("Task not found");
+    }
+
+    if (data.beforeTaskId === id || data.afterTaskId === id) {
+      throw new BadRequestException(
+        "A task cannot be positioned relative to itself"
+      );
+    }
+
+    const neighborIds = [data.beforeTaskId, data.afterTaskId].filter(
+      (id): id is string => Boolean(id)
+    );
+
+    const neighbors = await this.prisma.task.findMany({
+      where: {
+        id: {
+          in: neighborIds,
+        },
+      },
+      select: {
+        id: true,
+        projectId: true,
+        status: true,
+        position: true,
+      },
+    });
+
+    if (neighbors.length !== neighborIds.length) {
+      throw new NotFoundException("One or more adjacent tasks not found");
+    }
+
+    for (const neighbor of neighbors) {
+      if (neighbor.projectId !== task.projectId) {
+        throw new BadRequestException(
+          "Adjacent tasks must belong to the same project"
+        );
+      }
+
+      if (neighbor.status !== data.status) {
+        throw new BadRequestException(
+          "Adjacent tasks must belong to the destination status"
+        );
+      }
+    }
+
+    const beforeTask = neighbors.find(
+      (neighbor) => neighbor.id === data.beforeTaskId
+    );
+
+    const afterTask = neighbors.find(
+      (neighbor) => neighbor.id === data.afterTaskId
+    );
+
+    let position: number;
+
+    if (beforeTask && afterTask) {
+      position = (beforeTask.position + afterTask.position) / 2;
+    } else if (beforeTask) {
+      position = beforeTask.position + 100;
+    } else if (afterTask) {
+      position = afterTask.position / 2;
+    } else {
+      const lastTask = await this.prisma.task.findFirst({
+        where: {
+          projectId: task.projectId,
+          status: data.status,
+          id: {
+            not: task.id,
+          },
+        },
+        orderBy: {
+          position: "desc",
+        },
+        select: {
+          position: true,
+        },
+      });
+
+      position = (lastTask?.position ?? 0) + 100;
+    }
+
+    return this.prisma.task.update({
+      where: { id },
+      data: {
+        status: data.status,
+        position,
       },
       include: {
         assignee: true,

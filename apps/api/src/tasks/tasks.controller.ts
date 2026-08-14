@@ -11,6 +11,8 @@ import {
 import {
   type CreateTaskInput,
   createTaskSchema,
+  type MoveTaskInput,
+  moveTaskSchema,
   type UpdateTaskInput,
   updateTaskSchema,
 } from "@repo/types";
@@ -47,6 +49,15 @@ export class TasksController {
     body: UpdateTaskInput
   ) {
     return this.tasksService.update(id, body);
+  }
+
+  @Patch(":id/move")
+  move(
+    @Param("id") id: string,
+    @Body(new ZodValidationPipe(moveTaskSchema))
+    body: MoveTaskInput
+  ) {
+    return this.tasksService.move(id, body);
   }
 
   @Delete(":id")

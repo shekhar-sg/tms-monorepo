@@ -22,7 +22,14 @@ export const createTaskSchema = z.object({
   position: z.number().optional(),
 });
 
+export const moveTaskSchema = z.object({
+  status: taskStatusSchema,
+  beforeTaskId: z.uuid().nullable().optional(),
+  afterTaskId: z.uuid().nullable().optional(),
+});
+
 export const updateTaskSchema = createTaskSchema.partial();
+export type MoveTaskInput = z.infer<typeof moveTaskSchema>;
 
 export type TaskStatus = z.infer<typeof taskStatusSchema>;
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
