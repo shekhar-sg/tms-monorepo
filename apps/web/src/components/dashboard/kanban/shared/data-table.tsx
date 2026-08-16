@@ -10,6 +10,8 @@ import {
   useTable,
 } from "@tanstack/react-table";
 import type { ReactNode } from "react";
+import { LuPlus } from "react-icons/lu";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -19,8 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { LuPlus } from "react-icons/lu";
 
 interface DataTableProps<TData extends RowData, TValue> {
   features: TableFeatures;

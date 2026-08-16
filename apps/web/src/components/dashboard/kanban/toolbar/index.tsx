@@ -28,6 +28,7 @@ const Toolbar = (props: KanbanToolbarProps) => {
         <Fields currentView={view} onViewChange={onViewChange} />
         <FilterMenu value={filters} onChange={setFilters} />{" "}
         <Button
+          nativeButton={false}
           className={"text-xs text-primary-foreground!"}
           render={<Link href={"/dashboard/tasks/new"} />}
         >

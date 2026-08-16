@@ -13,8 +13,8 @@ type AuthResult = {
 @Injectable()
 export class AuthService {
   constructor(
-      private readonly usersService: UsersService,
-      private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService
   ) {}
 
   async guestLogin(): Promise<AuthResult> {
@@ -27,7 +27,11 @@ export class AuthService {
 
     return {
       accessToken,
-      user,
+      user: {
+        ...user,
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
+      },
     };
   }
 
@@ -50,7 +54,11 @@ export class AuthService {
 
     return {
       accessToken,
-      user,
+      user: {
+        ...user,
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
+      },
     };
   }
 }

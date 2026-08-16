@@ -1,12 +1,5 @@
 import { z } from "zod";
-
-export const prioritySchema = z.enum([
-  "NONE",
-  "LOW",
-  "MEDIUM",
-  "HIGH",
-  "URGENT",
-]);
+import { prioritySchema } from "./enums";
 
 export const createProjectSchema = z.object({
   title: z.string().trim().min(1).max(200),
@@ -19,4 +12,3 @@ export const updateProjectSchema = createProjectSchema.partial();
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
-export type Priority = z.infer<typeof prioritySchema>;

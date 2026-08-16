@@ -1,16 +1,30 @@
-import Link from "next/link"
-import { TbBrandPrisma } from "react-icons/tb"
-import { Button } from "@/components/ui/button"
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { RiGoogleFill } from "react-icons/ri";
+import { TbBrandPrisma } from "react-icons/tb";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { RiGoogleFill } from "react-icons/ri"
+} from "@/components/ui/card";
+import { useGuestLogin } from "@/hooks/auth/use-auth";
 
 const LoginPage = () => {
+  const router = useRouter();
+
+  const { mutate: loginAsGuest, isPending } = useGuestLogin();
+  const handleGuestLogin = () => {
+    loginAsGuest(undefined, {
+      onSuccess: () => {
+        router.push("/dashboard/tasks");
+      },
+    });
+  };
   return (
     <div
       className={"flex flex-col min-h-screen items-center justify-center gap-6"}
@@ -42,8 +56,18 @@ const LoginPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className={"flex flex-col gap-3"}>
-          <Button className={"cursor-pointer rounded-full"}>Continue as Guest</Button>
-          <Button variant={"outline"} className={"cursor-pointer rounded-full"}>
+          <Button
+            className={"cursor-pointer rounded-full"}
+            onClick={handleGuestLogin}
+            disabled={isPending}
+          >
+            {isPending ? "Signing in..." : "Continue as Guest"}
+          </Button>
+          <Button
+            variant={"outline"}
+            className={"cursor-pointer rounded-full"}
+            disabled
+          >
             <RiGoogleFill />
             Login with Google
           </Button>
@@ -64,7 +88,7 @@ const LoginPage = () => {
         </Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;
