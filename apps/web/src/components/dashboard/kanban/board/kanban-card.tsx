@@ -1,20 +1,24 @@
 import { useSortable } from "@dnd-kit/react/sortable";
+import type { Status } from "@repo/types";
 import { LuCalendar, LuTag } from "react-icons/lu";
 import TaskActions from "@/components/dashboard/kanban/shared/task-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMoveTask } from "@/hooks/tasks/use-tasks";
 import { cn } from "@/lib/utils";
 
 type KanbanCardProps = {
   id: string;
   index: number;
-  column: string;
+  column: Status;
   title: string;
 };
 
 const KanbanCard = (props: KanbanCardProps) => {
   const { id, column, title, index } = props;
+  const { mutate: moveTaskMutation } = useMoveTask();
+
   const { ref, isDragging } = useSortable({
     id,
     index,
@@ -27,7 +31,12 @@ const KanbanCard = (props: KanbanCardProps) => {
     console.log(`Show details for card ${id}`);
   };
   const handleMove = (targetColumnId: string) => {
-    console.log(`Move card ${id} to column ${targetColumnId}`);
+    moveTaskMutation({
+      taskId: id,
+      data: {
+        status: targetColumnId as Status,
+      },
+    });
   };
 
   return (

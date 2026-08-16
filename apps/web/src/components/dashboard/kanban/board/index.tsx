@@ -1,7 +1,7 @@
 "use client";
 
 import { move } from "@dnd-kit/helpers";
-import { DragDropProvider } from "@dnd-kit/react";
+import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import { type Dispatch, type SetStateAction, useRef } from "react";
 import type {
   BoardItems,
@@ -10,6 +10,7 @@ import type {
 import KanbanCard from "@/components/dashboard/kanban/board/kanban-card";
 import KanbanColumn from "@/components/dashboard/kanban/board/kanban-column";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useMoveTask } from "@/hooks/tasks/use-tasks";
 
 interface KanbanBoardProps {
   columns: Column[];
@@ -20,9 +21,39 @@ interface KanbanBoardProps {
 
 const Board = (props: KanbanBoardProps) => {
   const { columns, setColumns, items, setItems } = props;
+  const { mutate: moveTaskMutation } = useMoveTask();
 
   const previousItems = useRef(items);
   const previousColumns = useRef(columns);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    if (event.canceled) {
+      setItems(previousItems.current);
+      setColumns(previousColumns.current);
+      return;
+    }
+
+    const { source } = event.operation;
+
+    if (!source || source.type !== "task") {
+      return;
+    }
+
+    const taskId = String(source.id);
+
+    const position = getTaskPosition(items, columns, taskId);
+
+    if (!position) {
+      return;
+    }
+
+    moveTaskMutation({
+      taskId,
+      data: position,
+    },{      onError: () => {
+        setItems(previousItems.current);
+      },});
+  };
 
   return (
     <DragDropProvider
@@ -32,6 +63,7 @@ const Board = (props: KanbanBoardProps) => {
       }}
       onDragOver={(event) => {
         const { source } = event.operation;
+
         if (!source) return;
 
         if (source.type === "task") {
@@ -42,26 +74,19 @@ const Board = (props: KanbanBoardProps) => {
           setColumns((current) => move(current, event));
         }
       }}
-      onDragEnd={(event) => {
-        if (event.canceled) {
-          setItems(previousItems.current);
-          setColumns(previousColumns.current);
-        }
-      }}
+      onDragEnd={handleDragEnd}
     >
-      <ScrollArea
-        className={"flex-1 border-none rounded-md border whitespace-nowrap"}
-      >
-        <div className={"flex flex-1 gap-4 m-2"}>
+      <ScrollArea className="flex-1 border-none rounded-md border whitespace-nowrap">
+        <div className="flex flex-1 gap-4 m-2">
           {columns.map((column, index) => (
             <KanbanColumn
               key={column.id}
               id={column.id}
               title={column.title}
               index={index}
-              isEmpty={items[column.id]!.length === 0}
+              isEmpty={items[column.id].length === 0}
             >
-              {items[column.id]!.map((task, index) => (
+              {items[column.id].map((task, index) => (
                 <KanbanCard
                   key={task.id}
                   id={task.id}
@@ -79,3 +104,30 @@ const Board = (props: KanbanBoardProps) => {
 };
 
 export default Board;
+
+const getTaskPosition = (
+  items: BoardItems,
+  columns: Column[],
+  taskId: string
+) => {
+  for (const column of columns) {
+    const tasks = items[column.id];
+
+    const index = tasks.findIndex((task) => task.id === taskId);
+
+    if (index === -1) {
+      continue;
+    }
+
+    const beforeTask = tasks[index - 1];
+    const afterTask = tasks[index + 1];
+
+    return {
+      status: column.id,
+      beforeTaskId: beforeTask?.id ?? null,
+      afterTaskId: afterTask?.id ?? null,
+    };
+  }
+
+  return null;
+};
