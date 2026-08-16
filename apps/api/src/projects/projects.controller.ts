@@ -6,6 +6,9 @@ import {
   Param,
   Patch,
   Post,
+  Req,
+  UnauthorizedException,
+  UseGuards,
 } from "@nestjs/common";
 import {
   type CreateProjectInput,
@@ -13,40 +16,63 @@ import {
   type UpdateProjectInput,
   updateProjectSchema,
 } from "@repo/types";
+import type { Request } from "express";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ZodValidationPipe } from "../common/pipes/zod-validation.pipe";
 import { ProjectsService } from "./projects.service";
 
+@UseGuards(JwtAuthGuard)
 @Controller("projects")
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  findAll(@Req() request: Request) {
+    if (!request.user) {
+      throw new UnauthorizedException();
+    }
+    return this.projectsService.findAll(request.user.userId);
   }
 
   @Get(":id")
-  findById(@Param("id") id: string) {
-    return this.projectsService.findById(id);
+  findById(@Param("id") id: string, @Req() request: Request) {
+    if (!request.user) {
+      throw new UnauthorizedException();
+    }
+    return this.projectsService.findById(id, request.user.userId);
   }
 
   @Post()
   create(
-    @Body(new ZodValidationPipe(createProjectSchema)) body: CreateProjectInput
+    @Req() request: Request,
+    @Body(new ZodValidationPipe(createProjectSchema))
+    body: CreateProjectInput
   ) {
-    return this.projectsService.create(body);
+    if (!request.user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.projectsService.create(body, request.user.userId);
   }
 
   @Patch(":id")
   update(
     @Param("id") id: string,
-    @Body(new ZodValidationPipe(updateProjectSchema)) body: UpdateProjectInput
+    @Req() request: Request,
+    @Body(new ZodValidationPipe(updateProjectSchema))
+    body: UpdateProjectInput
   ) {
-    return this.projectsService.update(id, body);
+    if (!request.user) {
+      throw new UnauthorizedException();
+    }
+    return this.projectsService.update(id, body, request.user.userId);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.projectsService.remove(id);
+  remove(@Param("id") id: string, @Req() request: Request) {
+    if (!request.user) {
+      throw new UnauthorizedException();
+    }
+    return this.projectsService.remove(id, request.user.userId);
   }
 }

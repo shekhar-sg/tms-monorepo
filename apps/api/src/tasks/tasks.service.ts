@@ -15,9 +15,22 @@ import { PrismaService } from "../prisma/prisma.service";
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(projectId?: string) {
+  async findAll(userId: string, projectId?: string) {
     return this.prisma.task.findMany({
-      where: projectId ? { projectId } : undefined,
+      where: {
+        ...(projectId
+          ? {
+              projectId,
+              project: {
+                leadId: userId,
+              },
+            }
+          : {
+              project: {
+                leadId: userId,
+              },
+            }),
+      },
       include: {
         assignee: true,
         subtasks: true,
@@ -26,7 +39,9 @@ export class TasksService {
     });
   }
 
-  async findById(id: string) {
+  async findById(id: string, userId: string) {
+    await this.findAccessibleTask(id, userId);
+
     const task = await this.prisma.task.findUnique({
       where: { id },
       include: {
@@ -43,8 +58,9 @@ export class TasksService {
     return task;
   }
 
-  async create(data: CreateTaskInput) {
-    await this.validateParentTask(data.parentId);
+  async create(data: CreateTaskInput, userId: string) {
+    await this.validateProjectAccess(data.projectId, userId);
+    await this.validateParentTask(data.parentId, data.projectId, userId);
 
     const status = data.status ?? "TODO";
 
@@ -83,23 +99,20 @@ export class TasksService {
     });
   }
 
-  async update(id: string, data: UpdateTaskInput) {
-    const existingTask = await this.prisma.task.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        parentId: true,
-      },
-    });
+  async update(id: string, data: UpdateTaskInput, userId: string) {
+    const existingTask = await this.findAccessibleTask(id, userId);
 
-    if (!existingTask) {
-      throw new NotFoundException("Task not found");
+    if (data.projectId) {
+      await this.validateProjectAccess(data.projectId, userId);
     }
 
     if (data.parentId !== undefined) {
-      await this.validateParentTask(data.parentId);
+      await this.validateParentTask(
+        data.parentId,
+        data.projectId ?? existingTask.projectId,
+        userId
+      );
 
-      // Prevent a task from becoming its own parent.
       if (data.parentId === id) {
         throw new BadRequestException("A task cannot be its own parent");
       }
@@ -130,18 +143,16 @@ export class TasksService {
     });
   }
 
-  async move(id: string, data: MoveTaskInput) {
-    const task = await this.prisma.task.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        projectId: true,
-      },
-    });
+  async remove(id: string, userId: string) {
+    await this.findAccessibleTask(id, userId);
 
-    if (!task) {
-      throw new NotFoundException("Task not found");
-    }
+    return this.prisma.task.delete({
+      where: { id },
+    });
+  }
+
+  async move(id: string, data: MoveTaskInput, userId: string) {
+    const task = await this.findAccessibleTask(id, userId);
 
     if (data.beforeTaskId === id || data.afterTaskId === id) {
       throw new BadRequestException(
@@ -150,13 +161,16 @@ export class TasksService {
     }
 
     const neighborIds = [data.beforeTaskId, data.afterTaskId].filter(
-      (id): id is string => Boolean(id)
+      (taskId): taskId is string => Boolean(taskId)
     );
 
     const neighbors = await this.prisma.task.findMany({
       where: {
         id: {
           in: neighborIds,
+        },
+        project: {
+          leadId: userId,
         },
       },
       select: {
@@ -234,28 +248,61 @@ export class TasksService {
     });
   }
 
-  async remove(id: string) {
-    const task = await this.prisma.task.findUnique({
-      where: { id },
-      select: { id: true },
+  private async findAccessibleTask(id: string, userId: string) {
+    const task = await this.prisma.task.findFirst({
+      where: {
+        id,
+        project: {
+          leadId: userId,
+        },
+      },
+      select: {
+        id: true,
+        projectId: true,
+        parentId: true,
+      },
     });
 
     if (!task) {
       throw new NotFoundException("Task not found");
     }
 
-    return this.prisma.task.delete({
-      where: { id },
-    });
+    return task;
   }
 
-  private async validateParentTask(parentId?: string) {
+  private async validateProjectAccess(projectId: string, userId: string) {
+    const project = await this.prisma.project.findFirst({
+      where: {
+        id: projectId,
+        leadId: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException("Project not found");
+    }
+  }
+
+  private async validateParentTask(
+    parentId: string | undefined,
+    projectId: string,
+    userId: string
+  ) {
     if (!parentId) {
       return;
     }
 
-    const parentTask = await this.prisma.task.findUnique({
-      where: { id: parentId },
+    const parentTask = await this.prisma.task.findFirst({
+      where: {
+        id: parentId,
+        projectId,
+        project: {
+          leadId: userId,
+        },
+      },
       select: {
         id: true,
         parentId: true,

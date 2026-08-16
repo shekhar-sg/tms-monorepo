@@ -2,7 +2,7 @@ import { Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import type { Request } from "express";
 import { AuthService } from "./auth.service";
 import { GoogleAuthGuard } from "./guards/google-auth.guard";
-import { JwtAuthGuard } from "./guards/jwt-auth-guard";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import type { GoogleAuthRequest } from "./types/google-auth-request";
 
 @Controller("auth")

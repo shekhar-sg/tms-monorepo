@@ -1,13 +1,29 @@
-import { Injectable } from "@nestjs/common";
-import type { Priority } from "../../generated/prisma/enums";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import type { CreateProjectInput, UpdateProjectInput } from "@repo/types";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
+  private async findOwnedProject(id: string, userId: string) {
+    const project = await this.prisma.project.findFirst({
+      where: {
+        id,
+        leadId: userId,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException("Project not found");
+    }
+
+    return project;
+  }
+
+  async findAll(userId: string) {
     return this.prisma.project.findMany({
+      where: { leadId: userId },
       include: {
         lead: true,
       },
@@ -17,26 +33,22 @@ export class ProjectsService {
     });
   }
 
-  async findById(id: string) {
+  async findById(id: string, userId: string) {
+    const project = await this.findOwnedProject(id, userId);
     return this.prisma.project.findUnique({
-      where: { id },
+      where: { id: project.id },
       include: {
         lead: true,
       },
     });
   }
 
-  async create(data: {
-    title: string;
-    priority?: Priority;
-    leadId?: string;
-    dueDate?: string;
-  }) {
+  async create(data: CreateProjectInput, userId: string) {
     return this.prisma.project.create({
       data: {
         title: data.title,
         priority: data.priority,
-        leadId: data.leadId,
+        leadId: userId,
         dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
       },
       include: {
@@ -45,15 +57,9 @@ export class ProjectsService {
     });
   }
 
-  async update(
-    id: string,
-    data: {
-      title?: string;
-      priority?: Priority;
-      leadId?: string | null;
-      dueDate?: string | null;
-    }
-  ) {
+  async update(id: string, data: UpdateProjectInput, userId: string) {
+    await this.findOwnedProject(id, userId);
+
     return this.prisma.project.update({
       where: { id },
       data: {
@@ -73,7 +79,9 @@ export class ProjectsService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId: string) {
+    await this.findOwnedProject(id, userId);
+
     return this.prisma.project.delete({
       where: { id },
     });
