@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
-import type { Request } from "express";
+import { Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
+import type { Request, Response } from "express";
+
 import { AuthService } from "./auth.service";
 import { GoogleAuthGuard } from "./guards/google-auth.guard";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
@@ -10,8 +11,19 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("guest")
-  guestLogin() {
-    return this.authService.guestLogin();
+  async guestLogin(@Res({ passthrough: true }) response: Response) {
+    const { accessToken, user } = await this.authService.guestLogin();
+
+    response.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
+
+    return {
+      user,
+    };
   }
 
   @Get("google")
@@ -20,8 +32,24 @@ export class AuthController {
 
   @Get("google/callback")
   @UseGuards(GoogleAuthGuard)
-  googleCallback(@Req() request: GoogleAuthRequest) {
-    return this.authService.googleLogin(request.user);
+  async googleCallback(
+    @Req() request: GoogleAuthRequest,
+    @Res({ passthrough: true }) response: Response
+  ) {
+    const { accessToken, user } = await this.authService.googleLogin(
+      request.user
+    );
+
+    response.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
+
+    return {
+      user,
+    };
   }
 
   @Get("me")

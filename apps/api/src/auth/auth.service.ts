@@ -1,17 +1,23 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { AuthResponse } from "@repo/types";
+import type { AuthResponse } from "@repo/types";
+
 import { UsersService } from "../users/users.service";
 import { GoogleProfile } from "./types/google-profile";
+
+type AuthResult = {
+  accessToken: string;
+  user: AuthResponse["user"];
+};
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
-    private readonly jwtService: JwtService
+      private readonly usersService: UsersService,
+      private readonly jwtService: JwtService,
   ) {}
 
-  async guestLogin(): Promise<AuthResponse> {
+  async guestLogin(): Promise<AuthResult> {
     const user = await this.usersService.createGuest();
 
     const accessToken = await this.jwtService.signAsync({
@@ -25,7 +31,7 @@ export class AuthService {
     };
   }
 
-  async googleLogin(profile: GoogleProfile): Promise<AuthResponse> {
+  async googleLogin(profile: GoogleProfile): Promise<AuthResult> {
     if (!profile.email) {
       throw new UnauthorizedException("Google account has no email");
     }

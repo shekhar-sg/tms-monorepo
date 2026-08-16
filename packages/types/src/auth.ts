@@ -6,7 +6,6 @@ export const authUserSchema = z.object({
 });
 
 export const authResponseSchema = z.object({
-  accessToken: z.string(),
   user: z.object({
     id: z.string(),
     name: z.string().nullable(),
