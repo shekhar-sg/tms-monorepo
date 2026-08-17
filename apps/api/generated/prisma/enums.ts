@@ -29,3 +29,21 @@ export const TaskStatus = {
 } as const
 
 export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus]
+
+
+export const TaskActivityType = {
+  CREATED: 'CREATED',
+  UPDATED: 'UPDATED',
+  STATUS_CHANGED: 'STATUS_CHANGED',
+  PRIORITY_CHANGED: 'PRIORITY_CHANGED',
+  PROJECT_CHANGED: 'PROJECT_CHANGED',
+  REPORTER_CHANGED: 'REPORTER_CHANGED',
+  MEMBER_ADDED: 'MEMBER_ADDED',
+  MEMBER_REMOVED: 'MEMBER_REMOVED',
+  LABEL_ADDED: 'LABEL_ADDED',
+  LABEL_REMOVED: 'LABEL_REMOVED',
+  RESOURCE_CHANGED: 'RESOURCE_CHANGED',
+  COMMENT_ADDED: 'COMMENT_ADDED'
+} as const
+
+export type TaskActivityType = (typeof TaskActivityType)[keyof typeof TaskActivityType]

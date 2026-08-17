@@ -76,22 +76,38 @@ export class CommentsService {
       }
     }
 
-    return this.prisma.comment.create({
-      data: {
-        content: data.content,
-        taskId,
-        authorId: userId,
-        parentId: data.parentId ?? null,
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            avatar: true,
+    return this.prisma.$transaction(async (tx) => {
+      const comment = await tx.comment.create({
+        data: {
+          content: data.content,
+          taskId,
+          authorId: userId,
+          parentId: data.parentId ?? null,
+        },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+            },
           },
         },
-      },
+      });
+
+      await tx.taskActivity.create({
+        data: {
+          taskId,
+          userId,
+          type: "COMMENT_ADDED",
+          metadata: {
+            commentId: comment.id,
+            parentId: data.parentId ?? null,
+          },
+        },
+      });
+
+      return comment;
     });
   }
 }

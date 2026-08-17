@@ -13,6 +13,7 @@ import CollapsibleCard from "@/components/dashboard/tasks/new/collapsible-card";
 import DatePicker from "@/components/dashboard/tasks/new/date-picker";
 import LabelsCombobox from "@/components/dashboard/tasks/new/labels-combobox";
 import MembersSelect from "@/components/dashboard/tasks/new/members-select";
+import ProjectSelect from "@/components/dashboard/tasks/new/project-select";
 import ReporterSelect from "@/components/dashboard/tasks/new/reporter-select";
 import SelectOptions from "@/components/dashboard/tasks/new/select-options";
 import { TaskFormValues } from "@/components/dashboard/tasks/new/task-page";
@@ -27,14 +28,15 @@ import {
 import { Field, FieldError } from "@/components/ui/field";
 import { Item, ItemActions, ItemTitle } from "@/components/ui/item";
 import { cn } from "@/lib/utils";
-import ProjectSelect from "@/components/dashboard/tasks/new/project-select";
 
 interface TaskSidebarProps {
   isOpen: boolean;
   control: Control<TaskFormValues>;
+  taskId: string;
 }
 
-const TaskDetailsSidebar = ({ isOpen, control }: TaskSidebarProps) => {
+const TaskDetailsSidebar = (props: TaskSidebarProps) => {
+  const { isOpen, control, taskId } = props;
   return (
     <aside
       className={cn("max-w-xs space-y-5", {
@@ -193,7 +195,7 @@ const TaskDetailsSidebar = ({ isOpen, control }: TaskSidebarProps) => {
         </DetailItem>
       </CollapsibleCard>
 
-      <TaskUpdates />
+      <TaskUpdates taskId={taskId} />
     </aside>
   );
 };

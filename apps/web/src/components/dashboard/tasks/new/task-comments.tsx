@@ -33,7 +33,7 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
   const { mutate: createComment, isPending } = useCreateTaskComment();
 
   const [content, setContent] = useState("");
-  const [replyContent, setReplyContent] = useState("");
+  const [replyContent, setReplyContent] = useState<Record<string, string>>({});
 
   const topLevelComments = comments.filter(
     (comment) => comment.parentId === null
@@ -66,7 +66,7 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
   };
 
   const handleCreateReply = (commentId: string) => {
-    const trimmedContent = replyContent.trim();
+    const trimmedContent = (replyContent[commentId] ?? "").trim();
     if (!trimmedContent || isPending) {
       return;
     }
@@ -80,7 +80,11 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
       },
       {
         onSuccess: () => {
-          setReplyContent("");
+          setReplyContent((prev) => {
+            const next = { ...prev };
+            delete next[commentId];
+            return next;
+          });
         },
       }
     );
@@ -89,111 +93,110 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
   return (
     <div className={"flex border-border gap-5"}>
       <div className={"flex flex-col flex-1 gap-5 pt-2"}>
+        <div>Comments</div>
         {topLevelComments.map((comment) => {
           const replies = getReplies(comment.id);
 
           return (
-            <div key={comment.id} className={"space-y-4"}>
-              <div>Comments</div>
-              <Card className={"rounded-md gap-3"}>
-                <CardHeader className={"space-y-2"}>
-                  <CardTitle className={"text-xs flex gap-2 items-center"}>
+            <Card key={comment.id} className={"rounded-md gap-3"}>
+              <CardHeader className={"space-y-2"}>
+                <CardTitle className={"text-xs flex gap-2 items-center"}>
+                  <Avatar size={"sm"}>
+                    <AvatarImage src={comment.author.avatar ?? undefined} />
+                    <AvatarFallback>
+                      {comment.author.name?.charAt(0).toUpperCase() ?? "U"}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  {comment.author.name ?? "User"}
+
+                  <span className={"text-muted-foreground"}>
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </span>
+                </CardTitle>
+
+                <CardDescription>{comment.content}</CardDescription>
+
+                <CardAction>
+                  <Button variant={"ghost"}>
+                    <LuSmilePlus />
+                  </Button>
+
+                  <Button variant={"ghost"}>
+                    <RiMoreLine />
+                  </Button>
+                </CardAction>
+              </CardHeader>
+              {replies.map((reply) => (
+                <div key={reply.id} className={"ml-6 border-l pl-4"}>
+                  <div className={"flex gap-2 items-start"}>
                     <Avatar size={"sm"}>
-                      <AvatarImage src={comment.author.avatar ?? undefined} />
+                      <AvatarImage src={reply.author.avatar ?? undefined} />
                       <AvatarFallback>
-                        {comment.author.name?.charAt(0).toUpperCase() ?? "U"}
+                        {reply.author.name?.charAt(0).toUpperCase() ?? "U"}
                       </AvatarFallback>
                     </Avatar>
 
-                    {comment.author.name ?? "User"}
+                    <div>
+                      <div className={"text-xs font-medium"}>
+                        {reply.author.name ?? "User"}
+                      </div>
 
-                    <span className={"text-muted-foreground"}>
-                      {new Date(comment.createdAt).toLocaleString()}
-                    </span>
-                  </CardTitle>
-
-                  <CardDescription>{comment.content}</CardDescription>
-
-                  <CardAction>
-                    <Button variant={"ghost"}>
-                      <LuSmilePlus />
-                    </Button>
-
-                    <Button variant={"ghost"}>
-                      <RiMoreLine />
-                    </Button>
-                  </CardAction>
-                </CardHeader>
-                {replies.map((reply) => (
-                  <div key={reply.id} className={"ml-6 border-l pl-4"}>
-                    <div className={"flex gap-2 items-start"}>
-                      <Avatar size={"sm"}>
-                        <AvatarImage src={reply.author.avatar ?? undefined} />
-                        <AvatarFallback>
-                          {reply.author.name?.charAt(0).toUpperCase() ?? "U"}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div>
-                        <div className={"text-xs font-medium"}>
-                          {reply.author.name ?? "User"}
-                        </div>
-
-                        <div className={"text-sm text-muted-foreground"}>
-                          {reply.content}
-                        </div>
+                      <div className={"text-sm text-muted-foreground"}>
+                        {reply.content}
                       </div>
                     </div>
                   </div>
-                ))}
-                <CardFooter className={"p-0 rounded-none bg-transparent"}>
-                  <InputGroup
-                    className={
-                      "w-full h-full px-4 py-1.5 rounded-none border-0"
-                    }
+                </div>
+              ))}
+              <CardFooter className={"p-0 rounded-none bg-transparent"}>
+                <InputGroup
+                  className={"w-full h-full px-4 py-1.5 rounded-none border-0"}
+                >
+                  <InputGroupAddon className={"p-0 mr-2"}>
+                    <Avatar size={"sm"}>
+                      <AvatarFallback>{"U"}</AvatarFallback>
+                    </Avatar>
+                  </InputGroupAddon>
+
+                  <InputGroupInput
+                    value={replyContent[comment.id] ?? ""}
+                    onChange={(event) => {
+                      setReplyContent((prev) => ({
+                        ...prev,
+                        [comment.id]: event.target.value,
+                      }));
+                    }}
+                    placeholder={"Leave a reply…"}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        handleCreateReply(comment.id);
+                      }
+                    }}
+                  />
+
+                  <InputGroupAddon
+                    align={"inline-end"}
+                    className={"pr-0 text-primary"}
                   >
-                    <InputGroupAddon className={"p-0 mr-2"}>
-                      <Avatar size={"sm"}>
-                        <AvatarFallback>{"U"}</AvatarFallback>
-                      </Avatar>
-                    </InputGroupAddon>
+                    <Button type={"button"} variant={"ghost"}>
+                      <RiAttachmentLine />
+                    </Button>
 
-                    <InputGroupInput
-                      value={replyContent}
-                      onChange={(event) => {
-                        setReplyContent(event.target.value);
+                    <Button
+                      type={"button"}
+                      variant={"ghost"}
+                      disabled={isPending}
+                      onClick={() => {
+                        handleCreateReply(comment.id);
                       }}
-                      placeholder={"Leave a reply…"}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          handleCreateReply(comment.id);
-                        }
-                      }}
-                    />
-
-                    <InputGroupAddon
-                      align={"inline-end"}
-                      className={"pr-0 text-primary"}
                     >
-                      <Button type={"button"} variant={"ghost"}>
-                        <RiAttachmentLine />
-                      </Button>
-
-                      <Button
-                        type={"button"}
-                        variant={"ghost"}
-                        disabled={isPending}
-                        onClick={() => {
-                          handleCreateReply(comment.id);
-                        }}
-                      >
-                        <LuSendHorizontal />
-                      </Button>
-                    </InputGroupAddon>
-                  </InputGroup>
-                </CardFooter>{" "}
-              </Card>
-            </div>
+                      <LuSendHorizontal />
+                    </Button>
+                  </InputGroupAddon>
+                </InputGroup>
+              </CardFooter>
+            </Card>
           );
         })}
 

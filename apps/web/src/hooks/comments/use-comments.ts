@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { taskActivityKeys } from "@/hooks/tasks/use-task-activities";
 import { createTaskComment, getTaskComments } from "@/lib/api/comments-api";
 
 const commentKeys = {
@@ -23,6 +24,9 @@ export function useCreateTaskComment() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: commentKeys.task(variables.taskId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: taskActivityKeys.task(variables.taskId),
       });
     },
   });

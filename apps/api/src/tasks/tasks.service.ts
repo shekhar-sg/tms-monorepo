@@ -8,7 +8,7 @@ import type {
   MoveTaskInput,
   UpdateTaskInput,
 } from "@repo/types";
-
+import { Prisma } from "../../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 
 const taskInclude = {
@@ -25,6 +25,11 @@ const taskInclude = {
   },
   subtasks: true,
 } as const;
+
+type TaskActivityInput = {
+  type: Prisma.TaskActivityCreateManyInput["type"];
+  metadata: Prisma.InputJsonValue;
+};
 
 @Injectable()
 export class TasksService {
@@ -65,6 +70,14 @@ export class TasksService {
     await this.validateProjectAccess(data.projectId, userId);
     await this.validateParentTask(data.parentId, data.projectId, userId);
 
+    if (data.members?.length) {
+      await this.validateIds("user", data.members);
+    }
+
+    if (data.labels?.length) {
+      await this.validateIds("label", data.labels);
+    }
+
     const status = data.status ?? "TODO";
 
     const lastTask = await this.prisma.task.findFirst({
@@ -83,48 +96,50 @@ export class TasksService {
 
     const position = (lastTask?.position ?? 0) + 100;
 
-    return this.prisma.task.create({
-      data: {
-        title: data.title,
-        description: data.description,
-        resource: data.resource,
-        priority: data.priority,
-        status,
-        projectId: data.projectId,
-        reporterId: data.reporterId,
-        parentId: data.parentId,
-        startDate: data.startDate ? new Date(data.startDate) : null,
-        endDate: data.endDate ? new Date(data.endDate) : null,
-        position,
-        members: data.members?.length
-          ? {
-              create: data.members.map((userId) => ({
-                userId,
-              })),
-            }
-          : undefined,
-        labels: data.labels?.length
-          ? {
-              create: data.labels.map((labelId) => ({
-                labelId,
-              })),
-            }
-          : undefined,
-      },
-      include: {
-        reporter: true,
-        members: {
-          include: {
-            user: true,
-          },
+    return this.prisma.$transaction(async (tx) => {
+      const task = await tx.task.create({
+        data: {
+          title: data.title,
+          description: data.description,
+          resource: data.resource,
+          priority: data.priority,
+          status,
+          projectId: data.projectId,
+          reporterId: data.reporterId,
+          parentId: data.parentId,
+          startDate: data.startDate ? new Date(data.startDate) : null,
+          endDate: data.endDate ? new Date(data.endDate) : null,
+          position,
+
+          members: data.members?.length
+            ? {
+                create: data.members.map((userId) => ({
+                  userId,
+                })),
+              }
+            : undefined,
+
+          labels: data.labels?.length
+            ? {
+                create: data.labels.map((labelId) => ({
+                  labelId,
+                })),
+              }
+            : undefined,
         },
-        labels: {
-          include: {
-            label: true,
-          },
+        include: taskInclude,
+      });
+
+      await tx.taskActivity.create({
+        data: {
+          taskId: task.id,
+          userId,
+          type: "CREATED",
+          metadata: {},
         },
-        subtasks: true,
-      },
+      });
+
+      return task;
     });
   }
 
@@ -147,64 +162,76 @@ export class TasksService {
       }
     }
 
-    return this.prisma.task.update({
-      where: {
-        id,
-      },
-      data: {
-        title: data.title,
-        description: data.description,
-        resource: data.resource,
-        priority: data.priority,
-        status: data.status,
-        projectId: data.projectId,
-        reporterId: data.reporterId,
-        parentId: data.parentId,
-        startDate:
-          data.startDate === null
-            ? null
-            : data.startDate
-              ? new Date(data.startDate)
-              : undefined,
-        endDate:
-          data.endDate === null
-            ? null
-            : data.endDate
-              ? new Date(data.endDate)
-              : undefined,
-        position: data.position,
-        ...(data.members !== undefined && {
-          members: {
-            deleteMany: {},
-            create: data.members.map((userId) => ({
-              userId,
-            })),
-          },
-        }),
-        ...(data.labels !== undefined && {
-          labels: {
-            deleteMany: {},
-            create: data.labels.map((labelId) => ({
-              labelId,
-            })),
-          },
-        }),
-      },
-      include: {
-        reporter: true,
-        members: {
-          include: {
-            user: true,
-          },
+    const activities = this.buildTaskActivities(existingTask, data);
+
+    const task = await this.prisma.$transaction(async (tx) => {
+      const updatedTask = await tx.task.update({
+        where: {
+          id,
         },
-        labels: {
-          include: {
-            label: true,
-          },
+        data: {
+          title: data.title,
+          description: data.description,
+          resource: data.resource,
+          priority: data.priority,
+          status: data.status,
+          projectId: data.projectId,
+          reporterId: data.reporterId,
+          parentId: data.parentId,
+
+          startDate:
+            data.startDate === null
+              ? null
+              : data.startDate
+                ? new Date(data.startDate)
+                : undefined,
+
+          endDate:
+            data.endDate === null
+              ? null
+              : data.endDate
+                ? new Date(data.endDate)
+                : undefined,
+
+          position: data.position,
+
+          ...(data.members !== undefined && {
+            members: {
+              deleteMany: {},
+              create: data.members.map((userId) => ({
+                userId,
+              })),
+            },
+          }),
+
+          ...(data.labels !== undefined && {
+            labels: {
+              deleteMany: {},
+              create: data.labels.map((labelId) => ({
+                labelId,
+              })),
+            },
+          }),
         },
-        subtasks: true,
-      },
+
+        include: taskInclude,
+      });
+
+      if (activities.length > 0) {
+        await tx.taskActivity.createMany({
+          data: activities.map((activity) => ({
+            taskId: id,
+            userId,
+            type: activity.type,
+            metadata: activity.metadata,
+          })),
+        });
+      }
+
+      return updatedTask;
     });
+
+    return task;
   }
 
   async remove(id: string, userId: string) {
@@ -309,6 +336,137 @@ export class TasksService {
     });
   }
 
+  private buildTaskActivities(
+    existingTask: Awaited<ReturnType<TasksService["findAccessibleTask"]>>,
+    data: UpdateTaskInput
+  ): TaskActivityInput[] {
+    const activities: TaskActivityInput[] = [];
+
+    if (data.status !== undefined && data.status !== existingTask.status) {
+      activities.push({
+        type: "STATUS_CHANGED",
+        metadata: {
+          from: existingTask.status,
+          to: data.status,
+        },
+      });
+    }
+
+    if (
+      data.priority !== undefined &&
+      data.priority !== existingTask.priority
+    ) {
+      activities.push({
+        type: "PRIORITY_CHANGED",
+        metadata: {
+          from: existingTask.priority,
+          to: data.priority,
+        },
+      });
+    }
+
+    if (
+      data.projectId !== undefined &&
+      data.projectId !== existingTask.projectId
+    ) {
+      activities.push({
+        type: "PROJECT_CHANGED",
+        metadata: {
+          from: existingTask.projectId,
+          to: data.projectId,
+        },
+      });
+    }
+
+    if (
+      data.reporterId !== undefined &&
+      data.reporterId !== existingTask.reporterId
+    ) {
+      activities.push({
+        type: "REPORTER_CHANGED",
+        metadata: {
+          from: existingTask.reporterId,
+          to: data.reporterId,
+        },
+      });
+    }
+
+    if (
+      data.resource !== undefined &&
+      data.resource !== existingTask.resource
+    ) {
+      activities.push({
+        type: "RESOURCE_CHANGED",
+        metadata: {
+          from: existingTask.resource,
+          to: data.resource,
+        },
+      });
+    }
+
+    if (data.members !== undefined) {
+      const existingMemberIds = new Set(
+        existingTask.members.map((member) => member.userId)
+      );
+
+      const nextMemberIds = new Set(data.members);
+
+      for (const memberId of nextMemberIds) {
+        if (!existingMemberIds.has(memberId)) {
+          activities.push({
+            type: "MEMBER_ADDED",
+            metadata: {
+              memberId,
+            },
+          });
+        }
+      }
+
+      for (const memberId of existingMemberIds) {
+        if (!nextMemberIds.has(memberId)) {
+          activities.push({
+            type: "MEMBER_REMOVED",
+            metadata: {
+              memberId,
+            },
+          });
+        }
+      }
+    }
+
+    if (data.labels !== undefined) {
+      const existingLabelIds = new Set(
+        existingTask.labels.map((label) => label.labelId)
+      );
+
+      const nextLabelIds = new Set(data.labels);
+
+      for (const labelId of nextLabelIds) {
+        if (!existingLabelIds.has(labelId)) {
+          activities.push({
+            type: "LABEL_ADDED",
+            metadata: {
+              labelId,
+            },
+          });
+        }
+      }
+
+      for (const labelId of existingLabelIds) {
+        if (!nextLabelIds.has(labelId)) {
+          activities.push({
+            type: "LABEL_REMOVED",
+            metadata: {
+              labelId,
+            },
+          });
+        }
+      }
+    }
+
+    return activities;
+  }
+
   private async findAccessibleTask(id: string, userId: string) {
     const task = await this.prisma.task.findFirst({
       where: {
@@ -321,6 +479,22 @@ export class TasksService {
         id: true,
         projectId: true,
         parentId: true,
+        status: true,
+        priority: true,
+        resource: true,
+        reporterId: true,
+
+        members: {
+          select: {
+            userId: true,
+          },
+        },
+
+        labels: {
+          select: {
+            labelId: true,
+          },
+        },
       },
     });
 

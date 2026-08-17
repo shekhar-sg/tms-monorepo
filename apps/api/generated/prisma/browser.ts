@@ -57,3 +57,8 @@ export type TaskLabel = Prisma.TaskLabelModel
  * 
  */
 export type Comment = Prisma.CommentModel
+/**
+ * Model TaskActivity
+ * 
+ */
+export type TaskActivity = Prisma.TaskActivityModel

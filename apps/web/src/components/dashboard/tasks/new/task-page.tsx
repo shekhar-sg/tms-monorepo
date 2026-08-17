@@ -225,11 +225,21 @@ const TaskPage = ({ taskId }: { taskId: string }) => {
       <div className={"flex gap-5"}>
         <div className={"space-y-5 flex-1"}>
           <TaskMetadataProperties control={control} />
-          {isMobile && <TaskDetailsSidebar isOpen={true} control={control} />}
+          {isMobile && (
+            <TaskDetailsSidebar
+              isOpen={true}
+              control={control}
+              taskId={taskId}
+            />
+          )}
           {!isCreate && <TaskComments taskId={taskId} />}
         </div>
         {!isMobile && (
-          <TaskDetailsSidebar isOpen={isDetailsOpen} control={control} />
+          <TaskDetailsSidebar
+            isOpen={isDetailsOpen}
+            control={control}
+            taskId={taskId}
+          />
         )}
       </div>
       {isCreate && <Button type={"submit"}>Create Task</Button>}

@@ -25,18 +25,19 @@ enum TaskStatus {
 }
 
 model User {
-  id            String       @id @default(uuid())
-  email         String?      @unique
-  name          String?
-  avatar        String?
-  isGuest       Boolean      @default(false)
-  accounts      Account[]
-  ledProjects   Project[]    @relation("ProjectLeader")
-  reportedTasks Task[]       @relation("TaskReporter")
-  taskMembers   TaskMember[]
-  comments      Comment[]
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id             String         @id @default(uuid())
+  email          String?        @unique
+  name           String?
+  avatar         String?
+  isGuest        Boolean        @default(false)
+  accounts       Account[]
+  ledProjects    Project[]      @relation("ProjectLeader")
+  reportedTasks  Task[]         @relation("TaskReporter")
+  taskMembers    TaskMember[]
+  comments       Comment[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  taskActivities TaskActivity[]
 }
 
 model Account {
@@ -64,27 +65,28 @@ model Project {
 }
 
 model Task {
-  id          String       @id @default(uuid())
-  title       String
-  description String?
-  resource    String?
-  priority    Priority     @default(NONE)
-  status      TaskStatus   @default(TODO)
-  position    Float        @default(0)
-  projectId   String
-  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  reporterId  String?
-  reporter    User?        @relation("TaskReporter", fields: [reporterId], references: [id], onDelete: SetNull)
-  members     TaskMember[]
-  parentId    String?
-  parent      Task?        @relation("TaskSubtasks", fields: [parentId], references: [id], onDelete: Cascade)
-  subtasks    Task[]       @relation("TaskSubtasks")
-  startDate   DateTime?
-  endDate     DateTime?
-  labels      TaskLabel[]
-  comments    Comment[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id             String         @id @default(uuid())
+  title          String
+  description    String?
+  resource       String?
+  priority       Priority       @default(NONE)
+  status         TaskStatus     @default(TODO)
+  position       Float          @default(0)
+  projectId      String
+  project        Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reporterId     String?
+  reporter       User?          @relation("TaskReporter", fields: [reporterId], references: [id], onDelete: SetNull)
+  members        TaskMember[]
+  parentId       String?
+  parent         Task?          @relation("TaskSubtasks", fields: [parentId], references: [id], onDelete: Cascade)
+  subtasks       Task[]         @relation("TaskSubtasks")
+  startDate      DateTime?
+  endDate        DateTime?
+  labels         TaskLabel[]
+  comments       Comment[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  taskActivities TaskActivity[]
 }
 
 model TaskMember {
@@ -135,4 +137,35 @@ model Comment {
   @@index([taskId])
   @@index([authorId])
   @@index([parentId])
+}
+
+model TaskActivity {
+  id        String           @id @default(uuid())
+  taskId    String
+  userId    String
+  type      TaskActivityType
+  metadata  Json?
+  createdAt DateTime         @default(now())
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum TaskActivityType {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  PROJECT_CHANGED
+  REPORTER_CHANGED
+  MEMBER_ADDED
+  MEMBER_REMOVED
+  LABEL_ADDED
+  LABEL_REMOVED
+  RESOURCE_CHANGED
+  COMMENT_ADDED
 }

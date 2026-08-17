@@ -404,7 +404,8 @@ export const ModelName = {
   TaskMember: 'TaskMember',
   Label: 'Label',
   TaskLabel: 'TaskLabel',
-  Comment: 'Comment'
+  Comment: 'Comment',
+  TaskActivity: 'TaskActivity'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -420,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "project" | "task" | "taskMember" | "label" | "taskLabel" | "comment"
+    modelProps: "user" | "account" | "project" | "task" | "taskMember" | "label" | "taskLabel" | "comment" | "taskActivity"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1016,6 +1017,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TaskActivity: {
+      payload: Prisma.$TaskActivityPayload<ExtArgs>
+      fields: Prisma.TaskActivityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TaskActivityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TaskActivityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload>
+        }
+        findFirst: {
+          args: Prisma.TaskActivityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TaskActivityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload>
+        }
+        findMany: {
+          args: Prisma.TaskActivityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload>[]
+        }
+        create: {
+          args: Prisma.TaskActivityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload>
+        }
+        createMany: {
+          args: Prisma.TaskActivityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TaskActivityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload>[]
+        }
+        delete: {
+          args: Prisma.TaskActivityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload>
+        }
+        update: {
+          args: Prisma.TaskActivityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload>
+        }
+        deleteMany: {
+          args: Prisma.TaskActivityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TaskActivityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaskActivityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload>[]
+        }
+        upsert: {
+          args: Prisma.TaskActivityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskActivityPayload>
+        }
+        aggregate: {
+          args: Prisma.TaskActivityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTaskActivity>
+        }
+        groupBy: {
+          args: Prisma.TaskActivityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaskActivityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TaskActivityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaskActivityCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1154,12 +1229,32 @@ export const CommentScalarFieldEnum = {
 export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
+export const TaskActivityScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  userId: 'userId',
+  type: 'type',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type TaskActivityScalarFieldEnum = (typeof TaskActivityScalarFieldEnum)[keyof typeof TaskActivityScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1176,6 +1271,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1258,6 +1362,34 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TaskActivityType'
+ */
+export type EnumTaskActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskActivityType'>
+    
+
+
+/**
+ * Reference to a field of type 'TaskActivityType[]'
+ */
+export type ListEnumTaskActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskActivityType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1433,6 +1565,7 @@ export type GlobalOmitConfig = {
   label?: Prisma.LabelOmit
   taskLabel?: Prisma.TaskLabelOmit
   comment?: Prisma.CommentOmit
+  taskActivity?: Prisma.TaskActivityOmit
 }
 
 /* Types for Logging */

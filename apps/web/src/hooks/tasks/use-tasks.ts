@@ -10,6 +10,7 @@ import {
 } from "@/lib/api/tasks-api";
 
 import { taskKeys } from "./task-keys";
+import {taskActivityKeys} from "@/hooks/tasks/use-task-activities";
 
 export function useTasks(projectId?: string) {
   return useQuery({
@@ -51,6 +52,10 @@ export function useUpdateTask() {
 
       queryClient.invalidateQueries({
         queryKey: taskKeys.lists(),
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: taskActivityKeys.task(task.id),
       });
     },
   });

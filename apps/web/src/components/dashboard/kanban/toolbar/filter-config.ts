@@ -1,3 +1,4 @@
+import type { Priority, Status } from "@repo/types";
 import type { IconType } from "react-icons";
 import {
   LuCalendar,
@@ -13,12 +14,12 @@ import {
   LuUser,
   LuUsers,
 } from "react-icons/lu";
-import { PiCircleBold } from "react-icons/pi";
+import { PiCircleBold, PiCircleFill, PiCircleNotchFill } from "react-icons/pi";
 
 export type FilterFieldType = "single-select" | "multi-select" | "date-range";
 
-export interface FilterOption {
-  value: string;
+export interface FilterOption<T extends string = string> {
+  value: T;
   label: string;
   icon?: IconType;
   color?: string;
@@ -41,55 +42,61 @@ async function getMemberOptions() {
   ];
 }
 
-export const STATUS_OPTIONS: FilterOption[] = [
+export const STATUS_OPTIONS: FilterOption<Status>[] = [
   {
-    value: "backlog",
+    value: "BACKLOG",
     label: "Backlog",
-    icon: LuCircle,
+    icon: PiCircleFill,
     color: "text-muted-foreground",
   },
-  { value: "todo", label: "Todo", icon: LuCircle, color: "text-foreground" },
+  { value: "TODO", label: "Todo", icon: LuCircle, color: "text-foreground" },
   {
-    value: "in-progress",
+    value: "IN_PROGRESS",
     label: "In Progress",
     icon: LuCircleDot,
     color: "text-yellow-500",
   },
   {
-    value: "done",
+    value: "REVIEW",
+    label: "Review",
+    icon: PiCircleNotchFill,
+    color: "text-blue-500",
+  },
+  {
+    value: "DONE",
     label: "Done",
     icon: LuCircleCheck,
     color: "text-green-500",
   },
 ];
 
-export const PRIORITY_OPTIONS: FilterOption[] = [
+export const PRIORITY_OPTIONS: FilterOption<Priority>[] = [
   {
-    value: "no-priority",
+    value: "NONE",
     label: "No Priority",
     icon: LuSignalZero,
     color: "text-primary",
   },
   {
-    value: "urgent",
+    value: "URGENT",
     label: "Urgent",
     icon: LuSignalHigh,
     color: "text-red-500",
   },
   {
-    value: "high",
+    value: "HIGH",
     label: "High",
     icon: LuSignalHigh,
     color: "text-orange-500",
   },
   {
-    value: "medium",
+    value: "MEDIUM",
     label: "Medium",
     icon: LuSignalMedium,
     color: "text-yellow-500",
   },
   {
-    value: "low",
+    value: "LOW",
     label: "Low",
     icon: LuSignalLow,
     color: "text-gray-400",
