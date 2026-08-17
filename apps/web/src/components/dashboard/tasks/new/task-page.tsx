@@ -7,6 +7,7 @@ import {
   type UpdateTaskInput,
   updateTaskSchema,
 } from "@repo/types";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { Controller, type Resolver, useForm } from "react-hook-form";
@@ -28,7 +29,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateTask, useTask, useUpdateTask } from "@/hooks/tasks/use-tasks";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useRouter } from "next/navigation";
 
 export type TaskFormValues = CreateTaskInput & {
   dateRange?: DateRange;
@@ -226,7 +226,7 @@ const TaskPage = ({ taskId }: { taskId: string }) => {
         <div className={"space-y-5 flex-1"}>
           <TaskMetadataProperties control={control} />
           {isMobile && <TaskDetailsSidebar isOpen={true} control={control} />}
-          <TaskComments />
+          {!isCreate && <TaskComments taskId={taskId} />}
         </div>
         {!isMobile && (
           <TaskDetailsSidebar isOpen={isDetailsOpen} control={control} />
