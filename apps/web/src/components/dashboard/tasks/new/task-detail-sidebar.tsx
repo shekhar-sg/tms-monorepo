@@ -1,198 +1,219 @@
+"use client";
+
 import { format } from "date-fns";
-import { CalendarIcon, CircleDot, Flag, User, Users } from "lucide-react";
-import { useState } from "react";
+import { CalendarIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { type Control, Controller } from "react-hook-form";
+import { PiArrowRight } from "react-icons/pi";
+import {
+  PRIORITY_OPTIONS,
+  STATUS_OPTIONS,
+} from "@/components/dashboard/kanban/toolbar/filter-config";
 import CollapsibleCard from "@/components/dashboard/tasks/new/collapsible-card";
+import DatePicker from "@/components/dashboard/tasks/new/date-picker";
+import LabelsCombobox from "@/components/dashboard/tasks/new/labels-combobox";
+import MembersSelect from "@/components/dashboard/tasks/new/members-select";
+import ReporterSelect from "@/components/dashboard/tasks/new/reporter-select";
+import SelectOptions from "@/components/dashboard/tasks/new/select-options";
+import { CreateTaskInputWithMore } from "@/components/dashboard/tasks/new/task-page";
 import TaskUpdates from "@/components/dashboard/tasks/new/task-updates";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Field, FieldError } from "@/components/ui/field";
+import { Item, ItemActions, ItemTitle } from "@/components/ui/item";
 import { cn } from "@/lib/utils";
 
 interface TaskSidebarProps {
   isOpen: boolean;
+  control: Control<CreateTaskInputWithMore>;
 }
 
-const TaskDetailsSidebar = ({ isOpen }: TaskSidebarProps) => {
-  const [status, setStatus] = useState("Backlog");
-  const [priority, setPriority] = useState("High");
-  const [date, setDate] = useState<Date | undefined>(new Date(2026, 0, 10)); // Jan 10, 2026
-
-  const getPriorityStyle = (p: string) => {
-    switch (p) {
-      case "Urgent":
-        return "text-rose-600 hover:text-rose-700";
-      case "High":
-        return "text-amber-500 hover:text-amber-600";
-      case "Medium":
-        return "text-blue-500 hover:text-blue-600";
-      default:
-        return "text-muted-foreground";
-    }
-  };
-
+const TaskDetailsSidebar = ({ isOpen, control }: TaskSidebarProps) => {
   return (
     <aside
-      className={cn("space-y-5 ", {
+      className={cn("max-w-xs space-y-5", {
         hidden: !isOpen,
       })}
     >
       <CollapsibleCard title={"details"}>
-        <div
-          className={
-            "grid grid-cols-[100px_1fr] gap-y-3.5 items-center text-sm font-normal"
-          }
-        >
-          <span className={"text-muted-foreground"}>Status</span>
-          <div>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    variant={"ghost"}
-                    size={"sm"}
-                    className={
-                      "h-8 justify-start px-2 font-medium text-amber-600 gap-2 rounded-md"
-                    }
-                  >
-                    <CircleDot className="h-3.5 w-3.5 fill-current" />
-                    {status}
-                  </Button>
+        <DetailItem title={"Status"}>
+          <Controller
+            name={"status"}
+            control={control}
+            render={({ field, fieldState }) => {
+              const selected = STATUS_OPTIONS.find(
+                (option) => option.value === field.value
+              );
+
+              const SelectedIcon = selected?.icon;
+
+              return (
+                <Field>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 justify-start gap-2 px-2"
+                        >
+                          {SelectedIcon && (
+                            <SelectedIcon className={selected.color} />
+                          )}
+
+                          {selected?.label ?? "Status"}
+                        </Button>
+                      }
+                    />
+
+                    <DropdownMenuContent className="w-48 p-1.5">
+                      <SelectOptions
+                        options={STATUS_OPTIONS}
+                        type="single-select"
+                        selected={field.value ? [field.value] : []}
+                        onChange={(values: string[]) => {
+                          field.onChange(values[0] ?? "");
+                        }}
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              );
+            }}
+          />
+        </DetailItem>
+
+        <DetailItem title="Priority">
+          <Controller
+            name="priority"
+            control={control}
+            render={({ field, fieldState }) => {
+              const selected = PRIORITY_OPTIONS.find(
+                (option) => option.value === field.value
+              );
+
+              const SelectedIcon = selected?.icon;
+
+              return (
+                <Field>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 justify-start gap-2 px-2"
+                        >
+                          {SelectedIcon && (
+                            <SelectedIcon className={selected.color} />
+                          )}
+
+                          {selected?.label ?? "Priority"}
+                        </Button>
+                      }
+                    />
+
+                    <DropdownMenuContent className={"w-48 p-1.5"}>
+                      <SelectOptions
+                        options={PRIORITY_OPTIONS}
+                        type="single-select"
+                        selected={field.value ? [field.value] : []}
+                        onChange={(values: string[]) => {
+                          field.onChange(values[0] ?? "");
+                        }}
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              );
+            }}
+          />
+        </DetailItem>
+        <DetailItem title={"Members"}>
+          <Controller
+            name={"members"}
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <MembersSelect
+                  value={field.value ?? []}
+                  onChange={field.onChange}
+                />
+
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+        </DetailItem>
+        <DetailItem title={"Dates"}>
+          <DatePicker
+            control={control}
+            Trigger={({ range }) => (
+              <Button
+                variant={"ghost"}
+                className={
+                  "flex cursor-pointer items-center justify-start gap-2.5 text-muted-foreground"
                 }
-              />
-              <DropdownMenuContent
-                align={"start"}
-                className={"w-40 border-border"}
               >
-                <DropdownMenuItem onClick={() => setStatus("Backlog")}>
-                  Backlog
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatus("Todo")}>
-                  Todo
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatus("In Progress")}>
-                  In Progress
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatus("Done")}>
-                  Done
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                <Badge variant="outline">
+                  <CalendarIcon />
+                  {range?.from ? format(range.from, "d MMM") : "Start"}
+                </Badge>
 
-          <span className="text-muted-foreground">Priority</span>
-          <div>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={`h-8 justify-start px-2 font-medium hover:bg-muted/40 gap-2 rounded-md ${getPriorityStyle(priority)}`}
-                  >
-                    <Flag className="h-3.5 w-3.5 fill-current" />
-                    {priority}
-                  </Button>
-                }
-              />
-              <DropdownMenuContent align="start" className="w-44 border-border">
-                <DropdownMenuItem
-                  className="text-rose-600 font-medium"
-                  onClick={() => setPriority("Urgent")}
-                >
-                  Urgent
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-amber-500 font-medium"
-                  onClick={() => setPriority("High")}
-                >
-                  High
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-blue-500 font-medium"
-                  onClick={() => setPriority("Medium")}
-                >
-                  Medium
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-muted-foreground"
-                  onClick={() => setPriority("Low")}
-                >
-                  Low
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                <PiArrowRight />
 
-          <span className="text-muted-foreground">Members</span>
-          <div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 justify-start px-2 text-muted-foreground/80 hover:text-foreground hover:bg-muted/40 gap-2 rounded-md"
-            >
-              <Users className="h-3.5 w-3.5" />
-              Add members
-            </Button>
-          </div>
-
-          <span className="text-muted-foreground">Dates</span>
-          <div>
-            <Popover>
-              <PopoverTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 justify-start px-2 font-normal text-foreground hover:bg-muted/40 gap-2 border border-border bg-background shadow-xs rounded-md"
-                  >
-                    <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span>{date ? format(date, "MMM d") : "Start"}</span>
-                    <span className="text-muted-foreground/60">→</span>
-                    <span className="text-muted-foreground/70">End</span>
-                  </Button>
-                }
-              />
-              <PopoverContent
-                className="w-auto p-0 border-border"
-                align="start"
-              >
-                <Calendar mode="single" selected={date} onSelect={setDate} />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <span className="text-muted-foreground">Labels</span>
-          <div className="text-muted-foreground/40 px-2">—</div>
-
-          <span className="text-muted-foreground">Teams</span>
-          <div className="text-muted-foreground/40 px-2">—</div>
-
-          <span className="text-muted-foreground">Reporter</span>
-          <div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 justify-start px-2 font-normal text-foreground hover:bg-muted/40 gap-2 rounded-md"
-            >
-              <User className="h-3.5 w-3.5 text-muted-foreground" />
-              You
-            </Button>
-          </div>
-        </div>
+                <Badge variant="outline">
+                  <CalendarIcon />
+                  {range?.to ? format(range.to, "d MMM") : "End"}
+                </Badge>
+              </Button>
+            )}
+          />
+        </DetailItem>
+        <DetailItem title={"Labels"}>
+          <LabelsCombobox control={control} />
+        </DetailItem>
+        <DetailItem title={"Reporter"}>
+          <ReporterSelect control={control} />
+        </DetailItem>
       </CollapsibleCard>
+
       <TaskUpdates />
     </aside>
   );
 };
 
 export default TaskDetailsSidebar;
+
+const DetailItem = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) => {
+  return (
+    <Item className={"flex-nowrap p-0"}>
+      <ItemTitle className={"w-full max-w-16 text-muted-foreground"}>
+        {title}
+      </ItemTitle>
+
+      <ItemActions>{children}</ItemActions>
+    </Item>
+  );
+};

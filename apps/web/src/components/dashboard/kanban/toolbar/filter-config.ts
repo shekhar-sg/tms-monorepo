@@ -14,7 +14,6 @@ import {
   LuUsers,
 } from "react-icons/lu";
 import { PiCircleBold } from "react-icons/pi";
-import { RiTeamLine } from "react-icons/ri";
 
 export type FilterFieldType = "single-select" | "multi-select" | "date-range";
 
@@ -125,13 +124,6 @@ export const FILTER_FIELDS: FilterFieldConfig[] = [
     icon: LuCalendar,
     type: "date-range",
     getOptions: () => [],
-  },
-  {
-    key: "teams",
-    label: "Teams",
-    icon: RiTeamLine,
-    type: "multi-select",
-    getOptions: getMemberOptions,
   },
   {
     key: "labels",

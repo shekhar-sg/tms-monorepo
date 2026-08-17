@@ -6,13 +6,13 @@ import {
   type ActiveFilters,
   FILTER_FIELDS,
 } from "@/components/dashboard/kanban/toolbar/filter-config";
+import FilterSubmenu from "@/components/dashboard/kanban/toolbar/filter-submenu";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FilterSubmenu } from "./filter-submenu";
 
 interface FilterMenuProps {
   value: ActiveFilters;
