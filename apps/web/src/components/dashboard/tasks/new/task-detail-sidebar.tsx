@@ -15,7 +15,7 @@ import LabelsCombobox from "@/components/dashboard/tasks/new/labels-combobox";
 import MembersSelect from "@/components/dashboard/tasks/new/members-select";
 import ReporterSelect from "@/components/dashboard/tasks/new/reporter-select";
 import SelectOptions from "@/components/dashboard/tasks/new/select-options";
-import { CreateTaskInputWithMore } from "@/components/dashboard/tasks/new/task-page";
+import { TaskFormValues } from "@/components/dashboard/tasks/new/task-page";
 import TaskUpdates from "@/components/dashboard/tasks/new/task-updates";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,10 +27,11 @@ import {
 import { Field, FieldError } from "@/components/ui/field";
 import { Item, ItemActions, ItemTitle } from "@/components/ui/item";
 import { cn } from "@/lib/utils";
+import ProjectSelect from "@/components/dashboard/tasks/new/project-select";
 
 interface TaskSidebarProps {
   isOpen: boolean;
-  control: Control<CreateTaskInputWithMore>;
+  control: Control<TaskFormValues>;
 }
 
 const TaskDetailsSidebar = ({ isOpen, control }: TaskSidebarProps) => {
@@ -41,6 +42,9 @@ const TaskDetailsSidebar = ({ isOpen, control }: TaskSidebarProps) => {
       })}
     >
       <CollapsibleCard title={"details"}>
+        <DetailItem title={"Project"}>
+          <ProjectSelect control={control} />
+        </DetailItem>
         <DetailItem title={"Status"}>
           <Controller
             name={"status"}
@@ -91,7 +95,6 @@ const TaskDetailsSidebar = ({ isOpen, control }: TaskSidebarProps) => {
             }}
           />
         </DetailItem>
-
         <DetailItem title="Priority">
           <Controller
             name="priority"
@@ -148,10 +151,7 @@ const TaskDetailsSidebar = ({ isOpen, control }: TaskSidebarProps) => {
             control={control}
             render={({ field, fieldState }) => (
               <Field>
-                <MembersSelect
-                  value={field.value ?? []}
-                  onChange={field.onChange}
-                />
+                <MembersSelect control={control} />
 
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

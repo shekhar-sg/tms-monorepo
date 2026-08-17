@@ -25,16 +25,18 @@ enum TaskStatus {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String?   @unique
-  name      String?
-  avatar    String?
-  isGuest   Boolean   @default(false)
-  accounts  Account[]
-  projects  Project[]
-  tasks     Task[]    @relation("TaskAssignee")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id            String       @id @default(uuid())
+  email         String?      @unique
+  name          String?
+  avatar        String?
+  isGuest       Boolean      @default(false)
+  accounts      Account[]
+  ledProjects   Project[]    @relation("ProjectLeader")
+  reportedTasks Task[]       @relation("TaskReporter")
+  taskMembers   TaskMember[]
+  comments      Comment[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model Account {
@@ -54,7 +56,7 @@ model Project {
   title     String
   priority  Priority  @default(NONE)
   leadId    String?
-  lead      User?     @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  lead      User?     @relation("ProjectLeader", fields: [leadId], references: [id], onDelete: SetNull)
   dueDate   DateTime?
   tasks     Task[]
   createdAt DateTime  @default(now())
@@ -62,20 +64,71 @@ model Project {
 }
 
 model Task {
-  id          String     @id @default(uuid())
+  id          String       @id @default(uuid())
   title       String
   description String?
-  priority    Priority   @default(NONE)
-  status      TaskStatus @default(TODO)
-  position    Float      @default(0)
+  resource    String?
+  priority    Priority     @default(NONE)
+  status      TaskStatus   @default(TODO)
+  position    Float        @default(0)
   projectId   String
-  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assigneeId  String?
-  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reporterId  String?
+  reporter    User?        @relation("TaskReporter", fields: [reporterId], references: [id], onDelete: SetNull)
+  members     TaskMember[]
   parentId    String?
-  parent      Task?      @relation("TaskSubtasks", fields: [parentId], references: [id], onDelete: Cascade)
-  subtasks    Task[]     @relation("TaskSubtasks")
-  dueDate     DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  parent      Task?        @relation("TaskSubtasks", fields: [parentId], references: [id], onDelete: Cascade)
+  subtasks    Task[]       @relation("TaskSubtasks")
+  startDate   DateTime?
+  endDate     DateTime?
+  labels      TaskLabel[]
+  comments    Comment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model TaskMember {
+  taskId    String
+  userId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([taskId, userId])
+  @@index([userId])
+}
+
+model Label {
+  id        String      @id @default(uuid())
+  name      String
+  color     String?
+  tasks     TaskLabel[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([name])
+}
+
+model TaskLabel {
+  taskId  String
+  labelId String
+  task    Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  label   Label  @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, labelId])
+  @@index([labelId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  taskId    String
+  authorId  String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId])
+  @@index([authorId])
 }

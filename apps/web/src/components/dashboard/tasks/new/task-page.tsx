@@ -4,9 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   type CreateTaskInput,
   createTaskSchema,
+  type UpdateTaskInput,
   updateTaskSchema,
 } from "@repo/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { Controller, type Resolver, useForm } from "react-hook-form";
 import {
@@ -17,6 +18,7 @@ import {
   LuShare2,
 } from "react-icons/lu";
 import { TbDots } from "react-icons/tb";
+import TaskAutoSave from "@/components/dashboard/tasks/new/task-auto-save";
 import TaskComments from "@/components/dashboard/tasks/new/task-comments";
 import TaskDetailsSidebar from "@/components/dashboard/tasks/new/task-detail-sidebar";
 import TaskMetadataProperties from "@/components/dashboard/tasks/new/task-metadata";
@@ -24,43 +26,111 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateTask, useTask, useUpdateTask } from "@/hooks/tasks/use-tasks";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRouter } from "next/navigation";
 
-export const AVAILABLE_LABELS = [
-  "Research",
-  "Design",
-  "Development",
-  "Testing",
-  "Deployment",
-  "Frontend",
-  "Backend",
-];
-
-export type CreateTaskInputWithMore = CreateTaskInput & {
-  labels?: typeof AVAILABLE_LABELS;
-  resource?: string;
+export type TaskFormValues = CreateTaskInput & {
   dateRange?: DateRange;
-  members?: string[];
 };
 
-const TaskPage = () => {
-  const [title, setTitle] = useState("Write API Documentation");
-  const [isDetailsOpen, setIsDetailsOpen] = useState(true);
-  const [description, setDescription] = useState(
-    "Create clear and detailed API documentation to guide developers in using the inventory and sales metrics features effectively."
-  );
-  const [isUpdate, setIsUpdate] = useState(true);
-  const isMobile = useIsMobile();
-  const resolver = (
-    isUpdate ? zodResolver(createTaskSchema) : zodResolver(updateTaskSchema)
-  ) as Resolver<CreateTaskInputWithMore>;
+const defaultValues: TaskFormValues = {
+  title: "",
+  description: null,
+  resource: null,
+  priority: "NONE",
+  status: "TODO",
+  projectId: "",
+  reporterId: null,
+  members: [],
+  parentId: null,
+  startDate: null,
+  endDate: null,
+  labels: [],
+  position: 0,
+  dateRange: undefined,
+};
 
-  const { control } = useForm<CreateTaskInputWithMore>({
+const TaskPage = ({ taskId }: { taskId: string }) => {
+  const isCreate = taskId === "new";
+  const { data } = useTask(isCreate ? "" : taskId);
+  const router = useRouter();
+
+  const { mutate: createTask } = useCreateTask();
+  const { mutate: updateTask } = useUpdateTask();
+
+  const [isDetailsOpen, setIsDetailsOpen] = useState(true);
+  const [isUpdate, setIsUpdate] = useState(true);
+
+  const isMobile = useIsMobile();
+
+  const resolver = (
+    isCreate ? zodResolver(createTaskSchema) : zodResolver(updateTaskSchema)
+  ) as Resolver<TaskFormValues>;
+
+  const { handleSubmit, control, reset } = useForm<TaskFormValues>({
     resolver,
+    defaultValues,
   });
 
+  useEffect(() => {
+    if (isCreate || !data) {
+      return;
+    }
+    reset({
+      ...data,
+      members: data.members.map((member) => member.userId),
+      labels: data.labels.map((label) => label.labelId),
+      dateRange: {
+        from: data.startDate ? new Date(data.startDate) : undefined,
+        to: data.endDate ? new Date(data.endDate) : undefined,
+      },
+    });
+  }, [data, isCreate, reset]);
+
+  const onSubmit = (values: TaskFormValues) => {
+    const { dateRange, ...taskValues } = values;
+
+    if (isCreate) {
+      const payload: CreateTaskInput = {
+        ...taskValues,
+        startDate: dateRange?.from?.toISOString() ?? null,
+        endDate: dateRange?.to?.toISOString() ?? null,
+      };
+
+      createTask(payload, {
+        onSuccess: ({ id }) => {
+          router.push(`/dashboard/tasks/${id}`);
+        },
+      });
+
+      return;
+    }
+
+    const payload: UpdateTaskInput = {
+      ...taskValues,
+      startDate: dateRange?.from?.toISOString() ?? null,
+      endDate: dateRange?.to?.toISOString() ?? null,
+    };
+
+    updateTask({
+      taskId,
+      data: payload,
+    });
+  };
+
   return (
-    <div className={"space-y-5 p-6 items-center justify-center"}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={"space-y-5 p-6 items-center justify-center"}
+    >
+      {!isCreate && (
+        <TaskAutoSave
+          control={control}
+          taskId={taskId}
+          enabled={Boolean(data)}
+        />
+      )}
       <div
         className={"flex flex-col-reverse gap-4 sm:flex-row justify-between"}
       >
@@ -73,14 +143,15 @@ const TaskPage = () => {
                 <Input
                   {...field}
                   type={"text"}
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={field.value}
+                  aria-invalid={fieldState.invalid}
                   onBlur={() => console.log("blur title")}
                   className={
                     "w-full bg-transparent text-2xl! font-semibold focus-visible:ring-0 tracking-tight p-0 border-none m-0"
                   }
                   placeholder={"Untitled Task"}
                 />
+
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -92,12 +163,12 @@ const TaskPage = () => {
             name={"description"}
             control={control}
             render={({ field, fieldState }) => (
-              <Field>
+              <Field data-invalid={fieldState.invalid}>
                 <Textarea
                   {...field}
                   cols={399}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  value={field.value ?? ""}
+                  aria-invalid={fieldState.invalid}
                   onBlur={() => console.log("blur text area")}
                   className={
                     "w-full resize-none min-h-fit border-none p-0 text-muted-foreground focus-visible:ring-0 text-sm leading-relaxed"
@@ -161,7 +232,8 @@ const TaskPage = () => {
           <TaskDetailsSidebar isOpen={isDetailsOpen} control={control} />
         )}
       </div>
-    </div>
+      {isCreate && <Button type={"submit"}>Create Task</Button>}
+    </form>
   );
 };
 

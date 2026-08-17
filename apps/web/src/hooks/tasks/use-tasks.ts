@@ -1,5 +1,5 @@
+import type { Task } from "@repo/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import {
   createTask,
   deleteTask,
@@ -19,7 +19,7 @@ export function useTasks(projectId?: string) {
 }
 
 export function useTask(taskId: string) {
-  return useQuery({
+  return useQuery<Task>({
     queryKey: taskKeys.detail(taskId),
     queryFn: () => getTask(taskId),
     enabled: Boolean(taskId),

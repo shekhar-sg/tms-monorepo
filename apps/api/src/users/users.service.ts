@@ -80,4 +80,21 @@ export class UsersService {
       },
     });
   }
+
+  async findAll() {
+    return this.prisma.user.findMany({
+      where: {
+        isGuest: false,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+  }
 }

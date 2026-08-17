@@ -262,7 +262,7 @@ export type ProjectCreateInput = {
   dueDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  lead?: Prisma.UserCreateNestedOneWithoutProjectsInput
+  lead?: Prisma.UserCreateNestedOneWithoutLedProjectsInput
   tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput
 }
 
@@ -284,7 +284,7 @@ export type ProjectUpdateInput = {
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  lead?: Prisma.UserUpdateOneWithoutProjectsNestedInput
+  lead?: Prisma.UserUpdateOneWithoutLedProjectsNestedInput
   tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput
 }
 
@@ -503,7 +503,7 @@ export type ProjectCreateWithoutTasksInput = {
   dueDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  lead?: Prisma.UserCreateNestedOneWithoutProjectsInput
+  lead?: Prisma.UserCreateNestedOneWithoutLedProjectsInput
 }
 
 export type ProjectUncheckedCreateWithoutTasksInput = {
@@ -539,7 +539,7 @@ export type ProjectUpdateWithoutTasksInput = {
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  lead?: Prisma.UserUpdateOneWithoutProjectsNestedInput
+  lead?: Prisma.UserUpdateOneWithoutLedProjectsNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTasksInput = {

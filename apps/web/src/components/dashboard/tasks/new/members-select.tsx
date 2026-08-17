@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
-
-import type { FilterOption } from "@/components/dashboard/kanban/toolbar/filter-config";
-import { FILTER_FIELDS } from "@/components/dashboard/kanban/toolbar/filter-config";
+import { type Control, Controller } from "react-hook-form";
 import SelectOptions from "@/components/dashboard/tasks/new/select-options";
+import type { TaskFormValues } from "@/components/dashboard/tasks/new/task-page";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,69 +11,87 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Field, FieldError } from "@/components/ui/field";
+import { useUsers } from "@/hooks/users/use-users";
 
 interface MembersSelectProps {
-  value: string[];
-  onChange: (value: string[]) => void;
+  control: Control<TaskFormValues>;
 }
 
 const MembersSelect = (props: MembersSelectProps) => {
-  const { value, onChange } = props;
+  const { control } = props;
 
-  const [members, setMembers] = useState<FilterOption[]>([]);
-
-  useEffect(() => {
-    const field = FILTER_FIELDS.find((item) => item.key === "members");
-
-    if (!field) return;
-
-    Promise.resolve(field.getOptions()).then(setMembers);
-  }, []);
-
-  const selectedMembers = members.filter((member) =>
-    value.includes(member.value)
-  );
+  const { data: users = [] } = useUsers();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button variant={"ghost"}>
-            <Users />
-            {selectedMembers.length > 0 ? (
-              <span className="truncate">
-                {selectedMembers.map((member) => member.label).join(", ")}
-              </span>
-            ) : (
-              <span className="text-muted-foreground">Add members</span>
-            )}
-          </Button>
-        }
-      />
+    <Controller
+      control={control}
+      name={"members"}
+      render={({ field, fieldState }) => {
+        const selectedMembers = users.filter((user) =>
+          field.value.includes(user.id)
+        );
 
-      <DropdownMenuContent className={"w-48 p-1.5"}>
-        <SelectOptions
-          options={members}
-          type={"multi-select"}
-          selected={value}
-          onChange={onChange}
-          renderOption={AvatarOption}
-        />
-      </DropdownMenuContent>
-    </DropdownMenu>
+        return (
+          <Field data-invalid={fieldState.invalid}>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant={"ghost"}>
+                    <Users />
+                    {selectedMembers.length > 0 ? (
+                      <span className={"truncate"}>
+                        {selectedMembers
+                          .map(
+                            (member) => member.name ?? member.email ?? "Unknown"
+                          )
+                          .join(", ")}
+                      </span>
+                    ) : (
+                      <span className={"text-muted-foreground"}>
+                        Add members
+                      </span>
+                    )}
+                  </Button>
+                }
+              />
+
+              <DropdownMenuContent className={"w-48 p-1.5"}>
+                <SelectOptions
+                  options={users.map((user) => ({
+                    value: user.id,
+                    label: user.name ?? user.email ?? "Unknown",
+                  }))}
+                  type={"multi-select"}
+                  selected={field.value}
+                  onChange={field.onChange}
+                  renderOption={({ option }) => {
+                    const user = users.find((item) => item.id === option.value);
+
+                    return (
+                      <>
+                        <Avatar size={"sm"}>
+                          <AvatarFallback>
+                            {(user?.name ?? user?.email ?? "U")
+                              .charAt(0)
+                              .toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        <span>{option.label}</span>
+                      </>
+                    );
+                  }}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        );
+      }}
+    />
   );
 };
 
 export default MembersSelect;
-
-const AvatarOption = ({ option }: { option: FilterOption }) => {
-  return (
-    <>
-      <Avatar size="sm">
-        <AvatarFallback>{option.label.charAt(0).toUpperCase()}</AvatarFallback>
-      </Avatar>
-
-      <span>{option.label}</span>
-    </>
-  );
-};

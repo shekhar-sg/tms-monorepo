@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import type { DateRange } from "react-day-picker";
 import { type Control, Controller } from "react-hook-form";
-import type { CreateTaskInputWithMore } from "@/components/dashboard/tasks/new/task-page";
+import type { TaskFormValues } from "@/components/dashboard/tasks/new/task-page";
 import { Calendar } from "@/components/ui/calendar";
 import { Field, FieldError } from "@/components/ui/field";
 import {
@@ -15,7 +15,7 @@ interface TriggerRenderProps {
 }
 
 interface DatePickerProps {
-  control?: Control<CreateTaskInputWithMore>;
+  control?: Control<TaskFormValues>;
   value?: DateRange;
   onChange?: (range: DateRange | undefined) => void;
   Trigger: (props: TriggerRenderProps) => ReactElement;
@@ -26,7 +26,7 @@ const DatePicker = ({ control, value, onChange, Trigger }: DatePickerProps) => {
     return (
       <Controller
         control={control}
-        name="dateRange"
+        name={"dateRange"}
         render={({ field, fieldState }) => {
           const range = field.value as DateRange | undefined;
 

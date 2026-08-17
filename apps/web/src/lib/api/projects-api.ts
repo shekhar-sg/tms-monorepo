@@ -1,7 +1,12 @@
 import type { CreateProjectInput, UpdateProjectInput } from "@repo/types";
 import { api } from "./client-api";
 
-export const getProjects = async () => {
+export type ProjectOption = {
+  id: string;
+  title: string;
+};
+
+export const getProjects = async ():Promise<ProjectOption[]> => {
   const response = await api.get("/projects");
 
   return response.data.data;

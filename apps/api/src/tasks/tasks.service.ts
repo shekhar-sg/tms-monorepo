@@ -11,6 +11,21 @@ import type {
 
 import { PrismaService } from "../prisma/prisma.service";
 
+const taskInclude = {
+  reporter: true,
+  members: {
+    include: {
+      user: true,
+    },
+  },
+  labels: {
+    include: {
+      label: true,
+    },
+  },
+  subtasks: true,
+} as const;
+
 @Injectable()
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
@@ -18,23 +33,12 @@ export class TasksService {
   async findAll(userId: string, projectId?: string) {
     return this.prisma.task.findMany({
       where: {
-        ...(projectId
-          ? {
-              projectId,
-              project: {
-                leadId: userId,
-              },
-            }
-          : {
-              project: {
-                leadId: userId,
-              },
-            }),
+        projectId,
+        project: {
+          leadId: userId,
+        },
       },
-      include: {
-        assignee: true,
-        subtasks: true,
-      },
+      include: taskInclude,
       orderBy: [{ status: "asc" }, { position: "asc" }],
     });
   }
@@ -45,9 +49,8 @@ export class TasksService {
     const task = await this.prisma.task.findUnique({
       where: { id },
       include: {
-        assignee: true,
+        ...taskInclude,
         project: true,
-        subtasks: true,
       },
     });
 
@@ -84,16 +87,42 @@ export class TasksService {
       data: {
         title: data.title,
         description: data.description,
+        resource: data.resource,
         priority: data.priority,
         status,
         projectId: data.projectId,
-        assigneeId: data.assigneeId,
+        reporterId: data.reporterId,
         parentId: data.parentId,
-        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+        startDate: data.startDate ? new Date(data.startDate) : null,
+        endDate: data.endDate ? new Date(data.endDate) : null,
         position,
+        members: data.members?.length
+          ? {
+              create: data.members.map((userId) => ({
+                userId,
+              })),
+            }
+          : undefined,
+        labels: data.labels?.length
+          ? {
+              create: data.labels.map((labelId) => ({
+                labelId,
+              })),
+            }
+          : undefined,
       },
       include: {
-        assignee: true,
+        reporter: true,
+        members: {
+          include: {
+            user: true,
+          },
+        },
+        labels: {
+          include: {
+            label: true,
+          },
+        },
         subtasks: true,
       },
     });
@@ -119,25 +148,60 @@ export class TasksService {
     }
 
     return this.prisma.task.update({
-      where: { id },
+      where: {
+        id,
+      },
       data: {
         title: data.title,
         description: data.description,
+        resource: data.resource,
         priority: data.priority,
         status: data.status,
         projectId: data.projectId,
-        assigneeId: data.assigneeId,
+        reporterId: data.reporterId,
         parentId: data.parentId,
-        dueDate:
-          data.dueDate === null
+        startDate:
+          data.startDate === null
             ? null
-            : data.dueDate
-              ? new Date(data.dueDate)
+            : data.startDate
+              ? new Date(data.startDate)
+              : undefined,
+        endDate:
+          data.endDate === null
+            ? null
+            : data.endDate
+              ? new Date(data.endDate)
               : undefined,
         position: data.position,
+        ...(data.members !== undefined && {
+          members: {
+            deleteMany: {},
+            create: data.members.map((userId) => ({
+              userId,
+            })),
+          },
+        }),
+        ...(data.labels !== undefined && {
+          labels: {
+            deleteMany: {},
+            create: data.labels.map((labelId) => ({
+              labelId,
+            })),
+          },
+        }),
       },
       include: {
-        assignee: true,
+        reporter: true,
+        members: {
+          include: {
+            user: true,
+          },
+        },
+        labels: {
+          include: {
+            label: true,
+          },
+        },
         subtasks: true,
       },
     });
@@ -241,10 +305,7 @@ export class TasksService {
         status: data.status,
         position,
       },
-      include: {
-        assignee: true,
-        subtasks: true,
-      },
+      include: taskInclude,
     });
   }
 
@@ -287,7 +348,7 @@ export class TasksService {
   }
 
   private async validateParentTask(
-    parentId: string | undefined,
+    parentId: string | null | undefined,
     projectId: string,
     userId: string
   ) {
@@ -315,6 +376,31 @@ export class TasksService {
 
     if (parentTask.parentId !== null) {
       throw new BadRequestException("A subtask cannot have subtasks");
+    }
+  }
+
+  private async validateIds(model: "user" | "label", ids: string[]) {
+    const uniqueIds = [...new Set(ids)];
+
+    const count =
+      model === "user"
+        ? await this.prisma.user.count({
+            where: {
+              id: {
+                in: uniqueIds,
+              },
+            },
+          })
+        : await this.prisma.label.count({
+            where: {
+              id: {
+                in: uniqueIds,
+              },
+            },
+          });
+
+    if (count !== uniqueIds.length) {
+      throw new NotFoundException(`One or more ${model}s not found`);
     }
   }
 }

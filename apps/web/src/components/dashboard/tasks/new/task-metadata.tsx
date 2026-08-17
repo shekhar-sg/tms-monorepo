@@ -7,7 +7,7 @@ import { RiAttachmentLine } from "react-icons/ri";
 import DatePicker from "@/components/dashboard/tasks/new/date-picker";
 import LabelsCombobox from "@/components/dashboard/tasks/new/labels-combobox";
 import ReporterSelect from "@/components/dashboard/tasks/new/reporter-select";
-import { CreateTaskInputWithMore } from "@/components/dashboard/tasks/new/task-page";
+import { TaskFormValues } from "@/components/dashboard/tasks/new/task-page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError } from "@/components/ui/field";
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/input-group";
 
 interface TaskMetadataPropertiesProps {
-  control: Control<CreateTaskInputWithMore>;
+  control: Control<TaskFormValues>;
 }
 
 const TaskMetadataProperties = ({ control }: TaskMetadataPropertiesProps) => {

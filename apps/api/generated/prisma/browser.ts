@@ -37,3 +37,23 @@ export type Project = Prisma.ProjectModel
  * 
  */
 export type Task = Prisma.TaskModel
+/**
+ * Model TaskMember
+ * 
+ */
+export type TaskMember = Prisma.TaskMemberModel
+/**
+ * Model Label
+ * 
+ */
+export type Label = Prisma.LabelModel
+/**
+ * Model TaskLabel
+ * 
+ */
+export type TaskLabel = Prisma.TaskLabelModel
+/**
+ * Model Comment
+ * 
+ */
+export type Comment = Prisma.CommentModel

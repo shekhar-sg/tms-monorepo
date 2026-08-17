@@ -1,8 +1,6 @@
 import { type Control, Controller } from "react-hook-form";
-import type { FilterOption } from "@/components/dashboard/kanban/toolbar/filter-config";
-import AvatarOption from "@/components/dashboard/tasks/new/avatar-option";
 import SelectOptions from "@/components/dashboard/tasks/new/select-options";
-import type { CreateTaskInputWithMore } from "@/components/dashboard/tasks/new/task-page";
+import type { TaskFormValues } from "@/components/dashboard/tasks/new/task-page";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,66 +11,80 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Field, FieldError } from "@/components/ui/field";
-
-const REPORTER_OPTIONS: FilterOption[] = [
-  {
-    value: "designer",
-    label: "Designer",
-  },
-  {
-    value: "developer",
-    label: "Developer",
-  },
-  {
-    value: "manager",
-    label: "Manager",
-  },
-];
+import { useUsers } from "@/hooks/users/use-users";
 
 interface ReporterSelectProps {
-  control: Control<CreateTaskInputWithMore>;
+  control: Control<TaskFormValues>;
 }
 
-const ReporterSelect = ({ control }: ReporterSelectProps) => {
+const ReporterSelect = (props: ReporterSelectProps) => {
+  const { control } = props;
+
+  const { data: users = [] } = useUsers();
+  const reporterOptions = users.map((user) => ({
+    value: user.id,
+    label: user.name ?? user.email ?? "Unnamed user",
+  }));
+
   return (
     <Controller
       control={control}
-      name="assigneeId"
+      name={"reporterId"}
       render={({ field, fieldState }) => {
-        const selectedReporter = REPORTER_OPTIONS.find(
-          (option) => option.value === field.value
-        );
+        const reporter = users.find((user) => user.id === field.value);
 
         return (
           <Field data-invalid={fieldState.invalid}>
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <Button variant={"ghost"}>
-                    {selectedReporter && (
-                      <Avatar size="sm">
+                  <Button
+                    variant={"ghost"}
+                    className={"h-8 justify-start gap-2 px-2"}
+                  >
+                    {reporter && (
+                      <Avatar size={"sm"}>
                         <AvatarFallback>
-                          {selectedReporter.label.charAt(0).toUpperCase()}
+                          {(reporter.name ?? reporter.email ?? "U")
+                            .charAt(0)
+                            .toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                     )}
 
-                    {selectedReporter?.label ?? "Reporter"}
+                    {reporter?.name ?? reporter?.email ?? "Reporter"}
                   </Button>
                 }
               />
 
-              <DropdownMenuContent className={"w-40 p-1.5"}>
+              <DropdownMenuContent className={"w-48 p-1.5"}>
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>Reporter</DropdownMenuLabel>
                   <SelectOptions
-                    options={REPORTER_OPTIONS}
-                    type="single-select"
+                    options={reporterOptions}
+                    type={"single-select"}
                     selected={field.value ? [field.value] : []}
-                    onChange={(values) => {
-                      field.onChange(values[0] ?? "");
+                    onChange={(values: string[]) => {
+                      field.onChange(values[0] ?? null);
                     }}
-                    renderOption={AvatarOption}
+                    renderOption={({ option }) => {
+                      const user = users.find(
+                        (item) => item.id === option.value
+                      );
+                      return (
+                        <>
+                          <Avatar size={"sm"}>
+                            <AvatarFallback>
+                              {(user?.name ?? user?.email ?? "U")
+                                .charAt(0)
+                                .toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          <span>{option.label}</span>
+                        </>
+                      );
+                    }}
                   />
                 </DropdownMenuGroup>
               </DropdownMenuContent>
