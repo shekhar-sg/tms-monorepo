@@ -49,7 +49,7 @@ export class ProjectsService {
         title: data.title,
         priority: data.priority,
         leadId: userId,
-        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+        dueDate: data.dueDate ? new Date(data.dueDate) : null,
       },
       include: {
         lead: true,

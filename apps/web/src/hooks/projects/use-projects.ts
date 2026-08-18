@@ -13,7 +13,7 @@ import { projectKeys } from "./project-keys";
 export function useProjects() {
   return useQuery({
     queryKey: projectKeys.lists(),
-    queryFn: getProjects,
+    queryFn: () => getProjects(),
   });
 }
 

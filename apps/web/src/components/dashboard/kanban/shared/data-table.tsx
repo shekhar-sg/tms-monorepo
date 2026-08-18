@@ -1,5 +1,6 @@
 "use client";
 
+import { ButtonProps } from "@base-ui/react";
 import {
   type ColumnDef,
   FlexRender,
@@ -10,7 +11,6 @@ import {
   useTable,
 } from "@tanstack/react-table";
 import type { ReactNode } from "react";
-import { LuPlus } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -29,7 +29,7 @@ interface DataTableProps<TData extends RowData, TValue> {
   getRowId?: (row: TData) => string;
   emptyMessage?: string;
   renderRow?: (row: Row<TableFeatures, TData>, index: number) => ReactNode;
-  onAddNew: () => void;
+  addButtonProps: ButtonProps;
 }
 
 const DataTable = <TData extends RowData, TValue>({
@@ -39,7 +39,7 @@ const DataTable = <TData extends RowData, TValue>({
   getRowId,
   emptyMessage = "No results.",
   renderRow,
-  onAddNew,
+  addButtonProps,
 }: DataTableProps<TData, TValue>) => {
   const table = useTable({
     features,
@@ -95,8 +95,8 @@ const DataTable = <TData extends RowData, TValue>({
         <TableFooter className={"bg-transparent"}>
           <TableRow>
             <TableCell colSpan={columnCount}>
-              <Button variant={"ghost"} onClick={onAddNew}>
-                <LuPlus /> Add Task
+              <Button variant={"ghost"} {...addButtonProps}>
+                {addButtonProps.children}
               </Button>
             </TableCell>
           </TableRow>

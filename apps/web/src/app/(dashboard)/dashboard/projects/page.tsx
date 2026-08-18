@@ -1,32 +1,24 @@
-"use client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import ProjectListing from "@/components/dashboard/project/project-listing";
+import { projectKeys } from "@/hooks/projects/project-keys";
+import { getProjects } from "@/lib/api/projects-api";
+import { serverApi } from "@/lib/api/server-api";
+import { getQueryClient } from "@/lib/query/get-query-client";
 
-import DataTable from "@/components/dashboard/kanban/shared/data-table";
-import Toolbar from "@/components/dashboard/kanban/toolbar";
-import {
-  projectColumns,
-  projectTableFeatures,
-} from "@/components/dashboard/project/project-columns";
-import { useProjects } from "@/hooks/projects/use-projects";
+const ProjectsPage = async () => {
+  const queryClient = getQueryClient();
+  const api = await serverApi();
 
-const ProjectPage = () => {
-  const { data: projects } = useProjects();
+  await queryClient.prefetchQuery({
+    queryKey: projectKeys.all,
+    queryFn: () => getProjects(api),
+  });
 
-  console.log({ projects });
   return (
-    <div className={"flex flex-col gap-1 p-4"}>
-      <Toolbar page={"projects"} view={"list"} onViewChange={() => {}} />
-      <div className={"m-2"}>
-        <DataTable
-          features={projectTableFeatures}
-          columns={projectColumns}
-          data={projects ?? []}
-          getRowId={(project) => project.id}
-          emptyMessage="No projects found."
-          onAddNew={() => {}}
-        />
-      </div>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ProjectListing />
+    </HydrationBoundary>
   );
 };
 
-export default ProjectPage;
+export default ProjectsPage;

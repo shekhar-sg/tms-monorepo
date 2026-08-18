@@ -19,7 +19,7 @@ import {
   LuShare2,
 } from "react-icons/lu";
 import { TbDots } from "react-icons/tb";
-import TaskAutoSave from "@/components/dashboard/tasks/new/task-auto-save";
+import AutoSave from "@/components/dashboard/kanban/shared/auto-save";
 import TaskComments from "@/components/dashboard/tasks/new/task-comments";
 import TaskDetailsSidebar from "@/components/dashboard/tasks/new/task-detail-sidebar";
 import TaskMetadataProperties from "@/components/dashboard/tasks/new/task-metadata";
@@ -76,7 +76,7 @@ const TaskPage = (props: TaskPageProps) => {
     isCreate ? zodResolver(createTaskSchema) : zodResolver(updateTaskSchema)
   ) as Resolver<TaskFormValues>;
 
-  const { handleSubmit, control, reset } = useForm<TaskFormValues>({
+  const { handleSubmit, control, reset, getValues } = useForm<TaskFormValues>({
     resolver,
     defaultValues: {
       ...defaultValues,
@@ -137,10 +137,27 @@ const TaskPage = (props: TaskPageProps) => {
       className={"space-y-5 p-6 items-center justify-center"}
     >
       {!isCreate && (
-        <TaskAutoSave
+        <AutoSave
           control={control}
-          taskId={taskId}
+          getValues={getValues}
           enabled={Boolean(data)}
+          transform={(values) => {
+            const { dateRange, ...taskValues } = values;
+            return {
+              ...taskValues,
+              title: taskValues.title ?? "",
+              members: taskValues.members ?? [],
+              labels: taskValues.labels ?? [],
+              startDate: dateRange?.from?.toISOString() ?? null,
+              endDate: dateRange?.to?.toISOString() ?? null,
+            };
+          }}
+          onSave={(payload) => {
+            updateTask({
+              taskId,
+              data: payload,
+            });
+          }}
         />
       )}
       <div

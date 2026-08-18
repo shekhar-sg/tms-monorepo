@@ -1,19 +1,24 @@
-import type { CreateProjectInput, UpdateProjectInput } from "@repo/types";
+import type {
+  CreateProjectInput,
+  Project,
+  UpdateProjectInput,
+} from "@repo/types";
+import type { AxiosInstance } from "axios";
 import { api } from "./client-api";
 
-export type ProjectOption = {
-  id: string;
-  title: string;
-};
-
-export const getProjects = async ():Promise<ProjectOption[]> => {
-  const response = await api.get("/projects");
+export const getProjects = async (
+  client: AxiosInstance = api
+): Promise<Project[]> => {
+  const response = await client.get("/projects");
 
   return response.data.data;
 };
 
-export const getProject = async (projectId: string) => {
-  const response = await api.get(`/projects/${projectId}`);
+export const getProject = async (
+  projectId?: string,
+  client: AxiosInstance = api
+): Promise<Project> => {
+  const response = await client.get(`/projects/${projectId}`);
 
   return response.data.data;
 };
