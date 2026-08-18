@@ -1,3 +1,4 @@
+import type { Task } from "@repo/types";
 import {
   type ColumnDef,
   columnVisibilityFeature,
@@ -5,11 +6,7 @@ import {
   type TableFeatures,
   tableFeatures,
 } from "@tanstack/react-table";
-
-import {
-  columns,
-  type Task,
-} from "@/components/dashboard/kanban/Board-static-data";
+import { columns } from "@/components/dashboard/kanban/Board-static-data";
 import TaskActions from "@/components/dashboard/kanban/shared/task-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -48,7 +45,7 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
       },
     }),
 
-    columnHelper.accessor("assignee", {
+    columnHelper.accessor("members", {
       header: "Members",
 
       cell: ({ getValue }) => {
@@ -76,7 +73,7 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
       },
     }),
 
-    columnHelper.accessor("dueDate", {
+    columnHelper.accessor("endDate", {
       header: "Due Date",
 
       cell: ({ getValue }) => {
@@ -95,7 +92,7 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
         const task = row.original;
 
         const currentColumn = columns.find(
-          (column) => column.id === task.column
+          (column) => column.id === task.status
         );
 
         if (!currentColumn) {

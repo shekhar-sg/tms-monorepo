@@ -1,6 +1,6 @@
 "use client";
 
-import type { Task } from "@/components/dashboard/kanban/Board-static-data";
+import type { Task } from "@repo/types";
 import {
   taskColumns,
   taskTableFeatures,
@@ -24,6 +24,7 @@ const TaskTable = ({ tasks, columnId }: TaskTableProps) => {
       renderRow={(row, index) => (
         <TaskListRow key={row.id} row={row} index={index} columnId={columnId} />
       )}
+      onAddNew={()=>{}}
     />
   );
 };

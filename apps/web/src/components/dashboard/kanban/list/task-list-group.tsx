@@ -5,7 +5,6 @@ import { useDroppable } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { LuChevronDown } from "react-icons/lu";
 import { MdDragIndicator } from "react-icons/md";
-import type { Task } from "@/components/dashboard/kanban/Board-static-data";
 import TaskTable from "@/components/dashboard/kanban/list/task-table";
 import EmptyState from "@/components/dashboard/kanban/shared/empty-state";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+import type { Task } from "@repo/types";
 
 type TaskListGroupProps = {
   id: string;

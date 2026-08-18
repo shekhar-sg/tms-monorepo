@@ -58,7 +58,7 @@ export type Task = {
   position: number;
   createdAt: string;
   updatedAt: string;
-  subtasks: TaskSummary[];
+  subtasks: SubtaskSummary[];
 };
 
 export type TaskMember = {
@@ -77,9 +77,9 @@ export type TaskLabel = {
   label: Label;
 };
 
-export type TaskSummary = Omit<
+export type SubtaskSummary = Omit<
   Task,
-  "reporter" | "members" | "labels" | "subtasks"
+  "reporter" | "labels" | "subtasks"
 > & {
   subtasks?: never;
 };

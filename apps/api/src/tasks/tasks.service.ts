@@ -56,6 +56,13 @@ export class TasksService {
       include: {
         ...taskInclude,
         project: true,
+        subtasks: {
+          include: {
+            members: {
+              include: { user: true },
+            },
+          },
+        },
       },
     });
 

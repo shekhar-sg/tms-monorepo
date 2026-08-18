@@ -9,22 +9,35 @@ interface TaskUpsertPageProps {
   params: Promise<{
     taskId: string;
   }>;
+  searchParams: Promise<{
+    projectId?: string;
+    parentId?: string;
+  }>;
 }
 
-const TaskUpsertPage = async ({ params }: TaskUpsertPageProps) => {
+const TaskUpsertPage = async ({
+  params,
+  searchParams,
+}: TaskUpsertPageProps) => {
   const { taskId } = await params;
-  console.log(taskId);
+  const { projectId, parentId } = await searchParams;
   const queryClient = getQueryClient();
   const api = await serverApi();
 
-  await queryClient.prefetchQuery({
-    queryKey: taskKeys.detail(taskId),
-    queryFn: () => getTask(taskId, api),
-  });
+  if (taskId !== "new") {
+    await queryClient.prefetchQuery({
+      queryKey: taskKeys.detail(taskId),
+      queryFn: () => getTask(taskId, api),
+    });
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <TaskPage taskId={taskId} />
+      <TaskPage
+        taskId={taskId}
+        projectId={projectId}
+        parentId={parentId}
+      />
     </HydrationBoundary>
   );
 };

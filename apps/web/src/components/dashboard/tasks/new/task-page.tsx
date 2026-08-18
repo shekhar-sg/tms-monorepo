@@ -23,6 +23,7 @@ import TaskAutoSave from "@/components/dashboard/tasks/new/task-auto-save";
 import TaskComments from "@/components/dashboard/tasks/new/task-comments";
 import TaskDetailsSidebar from "@/components/dashboard/tasks/new/task-detail-sidebar";
 import TaskMetadataProperties from "@/components/dashboard/tasks/new/task-metadata";
+import TaskSubtasks from "@/components/dashboard/tasks/subtasks/subtasks";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -51,7 +52,14 @@ const defaultValues: TaskFormValues = {
   dateRange: undefined,
 };
 
-const TaskPage = ({ taskId }: { taskId: string }) => {
+interface TaskPageProps {
+  taskId: string;
+  projectId?: string;
+  parentId?: string;
+}
+
+const TaskPage = (props: TaskPageProps) => {
+  const { taskId, parentId, projectId } = props;
   const isCreate = taskId === "new";
   const { data } = useTask(isCreate ? "" : taskId);
   const router = useRouter();
@@ -70,7 +78,11 @@ const TaskPage = ({ taskId }: { taskId: string }) => {
 
   const { handleSubmit, control, reset } = useForm<TaskFormValues>({
     resolver,
-    defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      projectId: projectId ?? data?.projectId,
+      parentId: parentId,
+    },
   });
 
   useEffect(() => {
@@ -225,6 +237,14 @@ const TaskPage = ({ taskId }: { taskId: string }) => {
       <div className={"flex gap-5"}>
         <div className={"space-y-5 flex-1"}>
           <TaskMetadataProperties control={control} />
+          {data && !data.parentId && (
+            <TaskSubtasks
+              subtasks={data.subtasks}
+              taskId={taskId}
+              projectId={data.projectId}
+            />
+          )}
+
           {isMobile && (
             <TaskDetailsSidebar
               isOpen={true}

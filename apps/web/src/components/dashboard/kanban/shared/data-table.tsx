@@ -28,8 +28,8 @@ interface DataTableProps<TData extends RowData, TValue> {
   data: TData[];
   getRowId?: (row: TData) => string;
   emptyMessage?: string;
-
   renderRow?: (row: Row<TableFeatures, TData>, index: number) => ReactNode;
+  onAddNew: () => void;
 }
 
 const DataTable = <TData extends RowData, TValue>({
@@ -39,6 +39,7 @@ const DataTable = <TData extends RowData, TValue>({
   getRowId,
   emptyMessage = "No results.",
   renderRow,
+  onAddNew,
 }: DataTableProps<TData, TValue>) => {
   const table = useTable({
     features,
@@ -94,7 +95,7 @@ const DataTable = <TData extends RowData, TValue>({
         <TableFooter className={"bg-transparent"}>
           <TableRow>
             <TableCell colSpan={columnCount}>
-              <Button variant={"ghost"}>
+              <Button variant={"ghost"} onClick={onAddNew}>
                 <LuPlus /> Add Task
               </Button>
             </TableCell>
