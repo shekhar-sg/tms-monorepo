@@ -6,6 +6,7 @@ import {
   type TableFeatures,
   tableFeatures,
 } from "@tanstack/react-table";
+import { format, parseISO } from "date-fns";
 import { columns } from "@/components/dashboard/kanban/Board-static-data";
 import TaskActions from "@/components/dashboard/kanban/shared/task-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,23 +48,20 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
 
     columnHelper.accessor("members", {
       header: "Members",
-
-      cell: ({ getValue }) => {
-        const assignee = getValue();
-
-        if (!assignee) {
+      cell: ({ row }) => {
+        const reporter = row.original.reporter;
+        if (!reporter) {
           return <span className={"text-muted-foreground"}>—</span>;
         }
-
         return (
           <Avatar size={"sm"}>
-            {assignee.avatar && (
-              <AvatarImage src={assignee.avatar} alt={assignee.name} />
+            {reporter.avatar && (
+              <AvatarImage src={reporter.avatar} alt={reporter.name ?? ""} />
             )}
 
             <AvatarFallback>
-              {assignee.name
-                .split(" ")
+              {reporter.name
+                ?.split(" ")
                 .map((part: string) => part[0])
                 .join("")
                 .slice(0, 2)}
@@ -75,11 +73,12 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
 
     columnHelper.accessor("endDate", {
       header: "Due Date",
-
-      cell: ({ getValue }) => {
-        return (
-          <span className={"text-muted-foreground"}>{getValue() ?? "—"}</span>
-        );
+      cell: ({ row }) => {
+        if (!row.original.endDate) {
+          return <span className={"text-muted-foreground"}>—</span>;
+        }
+        const dueDate = parseISO(row.original.endDate);
+        return <span>{format(dueDate, "dd MMM yyyy") ?? "—"}</span>;
       },
     }),
 
@@ -99,18 +98,7 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
           return null;
         }
 
-        return (
-          <TaskActions
-            column={{
-              id: currentColumn.id,
-              title: currentColumn.title,
-            }}
-            onShowDetails={() => console.log("see details", currentColumn)}
-            onMove={(columnId) => {
-              console.log({ columnId });
-            }}
-          />
-        );
+        return <TaskActions taskId={task.id} />;
       },
     }),
   ]) as ColumnDef<TableFeatures, Task>[];

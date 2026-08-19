@@ -9,7 +9,6 @@ import {
   subtaskTableFeatures,
 } from "@/components/dashboard/tasks/subtasks/subtask-column";
 import SubtaskListRow from "@/components/dashboard/tasks/subtasks/subtask-row";
-import { LuPlus } from "react-icons/lu";
 
 interface TaskSubtasksProps {
   taskId: string;
@@ -41,12 +40,7 @@ const TaskSubtasks = ({ taskId, projectId, subtasks }: TaskSubtasksProps) => {
         emptyMessage="No subtasks"
         renderRow={(row) => <SubtaskListRow key={row.id} row={row.original} />}
         addButtonProps={{
-          children: (
-            <>
-              <LuPlus />
-              Add Task
-            </>
-          ),
+          children: "Add Task",
           onClick: handleAddSubtask,
         }}
       />

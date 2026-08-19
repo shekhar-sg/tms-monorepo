@@ -1,6 +1,7 @@
 "use client";
 
 import type { Task } from "@repo/types";
+import { useRouter } from "next/navigation";
 import {
   taskColumns,
   taskTableFeatures,
@@ -14,6 +15,9 @@ type TaskTableProps = {
 };
 
 const TaskTable = ({ tasks, columnId }: TaskTableProps) => {
+  const router = useRouter();
+  const handleAddTask = () => router.push("/dashboard/tasks/new");
+
   return (
     <DataTable
       features={taskTableFeatures}
@@ -24,7 +28,7 @@ const TaskTable = ({ tasks, columnId }: TaskTableProps) => {
       renderRow={(row, index) => (
         <TaskListRow key={row.id} row={row} index={index} columnId={columnId} />
       )}
-      onAddNew={()=>{}}
+      addButtonProps={{ children: "Add Task", onClick: handleAddTask }}
     />
   );
 };

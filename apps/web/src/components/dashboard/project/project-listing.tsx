@@ -1,6 +1,5 @@
 "use client";
 
-import { LuPlus } from "react-icons/lu";
 import DataTable from "@/components/dashboard/kanban/shared/data-table";
 import Toolbar from "@/components/dashboard/kanban/toolbar";
 import {
@@ -35,7 +34,6 @@ const ProjectListing = () => {
             onClick: handleAddProject,
             children: (
               <>
-                <LuPlus />
                 {isPending ? "Adding..." : "Add Project"}
               </>
             ),

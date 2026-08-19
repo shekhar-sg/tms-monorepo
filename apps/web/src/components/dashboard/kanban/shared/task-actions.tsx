@@ -1,8 +1,7 @@
+import type { Status } from "@repo/types";
+import { useRouter } from "next/navigation";
 import { RiMoreLine } from "react-icons/ri";
-import {
-  type Column,
-  columns,
-} from "@/components/dashboard/kanban/Board-static-data";
+import { columns } from "@/components/dashboard/kanban/Board-static-data";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,15 +12,27 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMoveTask } from "@/hooks/tasks/use-tasks";
 
 interface TaskActionsProps {
-  column: Column;
-  onShowDetails: () => void;
-  onMove: (columnId: string) => void;
+  taskId: string;
 }
 
-const TaskActions = (props: TaskActionsProps) => {
-  const { onMove, onShowDetails } = props;
+const TaskActions = ({ taskId }: TaskActionsProps) => {
+  const { mutate: moveTaskMutation } = useMoveTask();
+  const router = useRouter();
+
+  const handleShowDetails = () => {
+    router.push(`/dashboard/tasks/${taskId}`);
+  };
+  const handleMove = (targetColumnId: string) => {
+    moveTaskMutation({
+      taskId,
+      data: {
+        status: targetColumnId as Status,
+      },
+    });
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -32,7 +43,7 @@ const TaskActions = (props: TaskActionsProps) => {
         }
       />
       <DropdownMenuContent align={"end"} className={"rounded-sm"}>
-        <DropdownMenuItem onClick={onShowDetails}>
+        <DropdownMenuItem onClick={handleShowDetails}>
           Show details
         </DropdownMenuItem>
 
@@ -47,7 +58,7 @@ const TaskActions = (props: TaskActionsProps) => {
             {columns.map((column) => (
               <DropdownMenuItem
                 key={column.id}
-                onClick={() => onMove(column.id)}
+                onClick={() => handleMove(column.id)}
               >
                 {column.title}
               </DropdownMenuItem>

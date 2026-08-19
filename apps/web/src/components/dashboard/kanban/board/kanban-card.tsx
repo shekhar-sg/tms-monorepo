@@ -1,12 +1,10 @@
 import { useSortable } from "@dnd-kit/react/sortable";
 import type { Status } from "@repo/types";
-import {useRouter} from "next/navigation";
 import { LuCalendar, LuTag } from "react-icons/lu";
 import TaskActions from "@/components/dashboard/kanban/shared/task-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useMoveTask } from "@/hooks/tasks/use-tasks";
 import { cn } from "@/lib/utils";
 
 type KanbanCardProps = {
@@ -18,9 +16,6 @@ type KanbanCardProps = {
 
 const KanbanCard = (props: KanbanCardProps) => {
   const { id, column, title, index } = props;
-  const { mutate: moveTaskMutation } = useMoveTask();
-  const router = useRouter();
-
 
   const { ref, isDragging } = useSortable({
     id,
@@ -29,18 +24,6 @@ const KanbanCard = (props: KanbanCardProps) => {
     type: "task",
     accept: "task",
   });
-
-  const handleShowDetails = () => {
-    router.push(`/dashboard/tasks/${id}`);
-  };
-  const handleMove = (targetColumnId: string) => {
-    moveTaskMutation({
-      taskId: id,
-      data: {
-        status: targetColumnId as Status,
-      },
-    });
-  };
 
   return (
     <Card
@@ -53,14 +36,7 @@ const KanbanCard = (props: KanbanCardProps) => {
     >
       <CardHeader className={"flex justify-between items-center"}>
         <CardTitle className={"text-sm"}>{title}</CardTitle>
-        <TaskActions
-          column={{
-            id: column,
-            title,
-          }}
-          onShowDetails={handleShowDetails}
-          onMove={handleMove}
-        />
+        <TaskActions taskId={id} />
       </CardHeader>
       <CardContent className={"space-y-3"}>
         <div className={"flex justify-between items-center"}>

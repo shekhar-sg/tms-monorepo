@@ -11,6 +11,7 @@ import {
   useTable,
 } from "@tanstack/react-table";
 import type { ReactNode } from "react";
+import { LuPlus } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -96,6 +97,7 @@ const DataTable = <TData extends RowData, TValue>({
           <TableRow>
             <TableCell colSpan={columnCount}>
               <Button variant={"ghost"} {...addButtonProps}>
+                <LuPlus />
                 {addButtonProps.children}
               </Button>
             </TableCell>

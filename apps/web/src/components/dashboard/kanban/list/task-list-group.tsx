@@ -3,6 +3,7 @@
 import { CollisionPriority } from "@dnd-kit/abstract";
 import { useDroppable } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
+import type { Task } from "@repo/types";
 import { LuChevronDown } from "react-icons/lu";
 import { MdDragIndicator } from "react-icons/md";
 import TaskTable from "@/components/dashboard/kanban/list/task-table";
@@ -14,7 +15,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import type { Task } from "@repo/types";
 
 type TaskListGroupProps = {
   id: string;
