@@ -149,6 +149,234 @@ a {
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+[data-accent="amber"] {
+  --primary: var(--color-amber-600);
+  --primary-foreground: white;
+
+  --secondary: var(--color-amber-50);
+  --secondary-foreground: var(--color-amber-900);
+
+  --accent: var(--color-amber-100);
+  --accent-foreground: var(--color-amber-900);
+
+  --muted: var(--color-amber-50);
+  --muted-foreground: var(--color-amber-700);
+
+  --ring: var(--color-amber-600);
+
+  --sidebar-primary: var(--color-amber-600);
+  --sidebar-primary-foreground: white;
+}
+
+[data-accent="blue"] {
+  --primary: var(--color-blue-600);
+  --primary-foreground: white;
+
+  --secondary: var(--color-blue-50);
+  --secondary-foreground: var(--color-blue-900);
+
+  --accent: var(--color-blue-100);
+  --accent-foreground: var(--color-blue-900);
+
+  --muted: var(--color-blue-50);
+  --muted-foreground: var(--color-blue-700);
+
+  --ring: var(--color-blue-600);
+
+  --sidebar-primary: var(--color-blue-600);
+  --sidebar-primary-foreground: white;
+}
+
+[data-accent="pink"] {
+  --primary: var(--color-pink-600);
+  --primary-foreground: white;
+
+  --secondary: var(--color-pink-50);
+  --secondary-foreground: var(--color-pink-900);
+
+  --accent: var(--color-pink-100);
+  --accent-foreground: var(--color-pink-900);
+
+  --muted: var(--color-pink-50);
+  --muted-foreground: var(--color-pink-700);
+
+  --ring: var(--color-pink-600);
+
+  --sidebar-primary: var(--color-pink-600);
+  --sidebar-primary-foreground: white;
+}
+
+[data-accent="rose"] {
+  --primary: var(--color-rose-600);
+  --primary-foreground: white;
+
+  --secondary: var(--color-rose-50);
+  --secondary-foreground: var(--color-rose-900);
+
+  --accent: var(--color-rose-100);
+  --accent-foreground: var(--color-rose-900);
+
+  --muted: var(--color-rose-50);
+  --muted-foreground: var(--color-rose-700);
+
+  --ring: var(--color-rose-600);
+
+  --sidebar-primary: var(--color-rose-600);
+  --sidebar-primary-foreground: white;
+}
+
+[data-accent="emerald"] {
+  --primary: var(--color-emerald-600);
+  --primary-foreground: white;
+
+  --secondary: var(--color-emerald-50);
+  --secondary-foreground: var(--color-emerald-900);
+
+  --accent: var(--color-emerald-100);
+  --accent-foreground: var(--color-emerald-900);
+
+  --muted: var(--color-emerald-50);
+  --muted-foreground: var(--color-emerald-700);
+
+  --ring: var(--color-emerald-600);
+
+  --sidebar-primary: var(--color-emerald-600);
+  --sidebar-primary-foreground: white;
+}
+
+[data-accent="black"] {
+  --primary: var(--color-black);
+  --primary-foreground: white;
+
+  --secondary: var(--color-zinc-100);
+  --secondary-foreground: var(--color-zinc-900);
+
+  --accent: var(--color-zinc-100);
+  --accent-foreground: var(--color-zinc-900);
+
+  --muted: var(--color-zinc-100);
+  --muted-foreground: var(--color-zinc-600);
+
+  --ring: var(--color-black);
+
+  --sidebar-primary: var(--color-black);
+  --sidebar-primary-foreground: white;
+}
+
+.dark[data-accent="amber"] {
+  --primary: var(--color-amber-500);
+  --primary-foreground: var(--color-amber-950);
+
+  --secondary: var(--color-zinc-800);
+  --secondary-foreground: var(--color-zinc-100);
+
+  --accent: var(--color-amber-950);
+  --accent-foreground: var(--color-amber-200);
+
+  --muted: var(--color-zinc-800);
+  --muted-foreground: var(--color-zinc-400);
+
+  --ring: var(--color-amber-500);
+
+  --sidebar-primary: var(--color-amber-500);
+  --sidebar-primary-foreground: var(--color-amber-950);
+}
+
+.dark[data-accent="blue"] {
+  --primary: var(--color-blue-500);
+  --primary-foreground: var(--color-blue-950);
+
+  --secondary: var(--color-zinc-800);
+  --secondary-foreground: var(--color-zinc-100);
+
+  --accent: var(--color-blue-950);
+  --accent-foreground: var(--color-blue-200);
+
+  --muted: var(--color-zinc-800);
+  --muted-foreground: var(--color-zinc-400);
+
+  --ring: var(--color-blue-500);
+
+  --sidebar-primary: var(--color-blue-500);
+  --sidebar-primary-foreground: var(--color-blue-950);
+}
+
+.dark[data-accent="pink"] {
+  --primary: var(--color-pink-500);
+  --primary-foreground: var(--color-pink-950);
+
+  --secondary: var(--color-zinc-800);
+  --secondary-foreground: var(--color-zinc-100);
+
+  --accent: var(--color-pink-950);
+  --accent-foreground: var(--color-pink-200);
+
+  --muted: var(--color-zinc-800);
+  --muted-foreground: var(--color-zinc-400);
+
+  --ring: var(--color-pink-500);
+
+  --sidebar-primary: var(--color-pink-500);
+  --sidebar-primary-foreground: var(--color-pink-950);
+}
+
+.dark[data-accent="rose"] {
+  --primary: var(--color-rose-500);
+  --primary-foreground: var(--color-rose-950);
+
+  --secondary: var(--color-zinc-800);
+  --secondary-foreground: var(--color-zinc-100);
+
+  --accent: var(--color-rose-950);
+  --accent-foreground: var(--color-rose-200);
+
+  --muted: var(--color-zinc-800);
+  --muted-foreground: var(--color-zinc-400);
+
+  --ring: var(--color-rose-500);
+
+  --sidebar-primary: var(--color-rose-500);
+  --sidebar-primary-foreground: var(--color-rose-950);
+}
+
+.dark[data-accent="emerald"] {
+  --primary: var(--color-emerald-500);
+  --primary-foreground: var(--color-emerald-950);
+
+  --secondary: var(--color-zinc-800);
+  --secondary-foreground: var(--color-zinc-100);
+
+  --accent: var(--color-emerald-950);
+  --accent-foreground: var(--color-emerald-200);
+
+  --muted: var(--color-zinc-800);
+  --muted-foreground: var(--color-zinc-400);
+
+  --ring: var(--color-emerald-500);
+
+  --sidebar-primary: var(--color-emerald-500);
+  --sidebar-primary-foreground: var(--color-emerald-950);
+}
+
+.dark[data-accent="black"] {
+  --primary: var(--color-zinc-200);
+  --primary-foreground: var(--color-zinc-950);
+
+  --secondary: var(--color-zinc-800);
+  --secondary-foreground: var(--color-zinc-100);
+
+  --accent: var(--color-zinc-800);
+  --accent-foreground: var(--color-zinc-100);
+
+  --muted: var(--color-zinc-800);
+  --muted-foreground: var(--color-zinc-400);
+
+  --ring: var(--color-zinc-300);
+
+  --sidebar-primary: var(--color-zinc-200);
+  --sidebar-primary-foreground: var(--color-zinc-950);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -167,8 +395,8 @@ a {
   }
 
   .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 
     &::-webkit-scrollbar {
       display: none; /* Chrome, Safari and Opera */
@@ -187,6 +415,4 @@ a {
       --ring-width: 0px; /* Reset Tailwind v4 ring bindings */
     }
   }
-
-
 }

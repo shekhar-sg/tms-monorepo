@@ -30,8 +30,8 @@ const PreferenceSelectOption = <T extends string>({
 
   const SelectedIcon = selected?.icon;
 
-  console.log({ options,value });
-  console.log({ SelectedIcon,selected });
+  console.log({ options, value });
+  console.log({ SelectedIcon, selected });
 
   return (
     <DropdownMenuSub>

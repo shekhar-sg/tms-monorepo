@@ -4,11 +4,11 @@ import { type AccentColor, Theme } from "@repo/types";
 import { ChevronsUpDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PiGearBold } from "react-icons/pi";
-import PreferenceSelectOption from "@/components/dashboard/prefferences/preference-select-option";
+import PreferenceSelectOption from "@/components/prefferences/preference-select-option";
 import {
   ACCENT_COLOR_OPTIONS,
   THEME_OPTIONS,
-} from "@/components/dashboard/prefferences/setting-config";
+} from "@/components/prefferences/setting-config";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,

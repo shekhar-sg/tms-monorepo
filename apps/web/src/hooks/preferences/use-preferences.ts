@@ -34,6 +34,42 @@ export const useUpdatePreferences = () => {
   return useMutation({
     mutationFn: updatePreferences,
 
+    onMutate: async (newPreferences) => {
+      await queryClient.cancelQueries({
+        queryKey: preferencesKeys.current(),
+      });
+
+      const previousPreferences = queryClient.getQueryData<UserPreference>(
+        preferencesKeys.current()
+      );
+
+      queryClient.setQueryData<UserPreference>(
+        preferencesKeys.current(),
+        (current) => {
+          if (!current) {
+            return current;
+          }
+          return {
+            ...current,
+            ...newPreferences,
+          };
+        }
+      );
+      return {
+        previousPreferences,
+      };
+    },
+
+    onError: (_error, _newPreferences, context) => {
+      if (!context?.previousPreferences) {
+        return;
+      }
+      queryClient.setQueryData(
+        preferencesKeys.current(),
+        context.previousPreferences
+      );
+    },
+
     onSuccess: (data) => {
       queryClient.setQueryData(preferencesKeys.current(), data);
     },
