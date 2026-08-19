@@ -6,10 +6,12 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
-
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { LabelsService } from "./labels.service";
 
+@UseGuards(JwtAuthGuard)
 @Controller("labels")
 export class LabelsController {
   constructor(private readonly labelsService: LabelsService) {}

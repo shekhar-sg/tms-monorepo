@@ -1,5 +1,7 @@
-import type { Task } from "@repo/types";
+import type { GetTasksQuery, Task } from "@repo/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { taskActivityKeys } from "@/hooks/tasks/use-task-activities";
 import {
   createTask,
   deleteTask,
@@ -10,12 +12,11 @@ import {
 } from "@/lib/api/tasks-api";
 
 import { taskKeys } from "./task-keys";
-import {taskActivityKeys} from "@/hooks/tasks/use-task-activities";
 
-export function useTasks(projectId?: string) {
+export function useTasks(projectId?: string, query?: GetTasksQuery) {
   return useQuery({
-    queryKey: taskKeys.list(projectId),
-    queryFn: () => getTasks(projectId),
+    queryKey: taskKeys.list(projectId, query),
+    queryFn: () => getTasks(projectId, query),
   });
 }
 

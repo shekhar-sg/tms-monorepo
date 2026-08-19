@@ -15,7 +15,7 @@ import { Field, FieldError } from "@/components/ui/field";
 import { useUsers } from "@/hooks/users/use-users";
 
 interface MembersSelectProps {
-  control: Control<TaskFormValues>;
+  control?: Control<TaskFormValues>;
 }
 
 const MembersSelect = (props: MembersSelectProps) => {

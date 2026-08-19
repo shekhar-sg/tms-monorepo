@@ -11,8 +11,6 @@ import {
   LuSignalMedium,
   LuSignalZero,
   LuTag,
-  LuUser,
-  LuUsers,
 } from "react-icons/lu";
 import { PiCircleBold, PiCircleFill, PiCircleNotchFill } from "react-icons/pi";
 
@@ -34,13 +32,6 @@ export interface FilterFieldConfig {
 }
 
 export type ActiveFilters = Record<string, string[]>;
-
-async function getMemberOptions() {
-  return [
-    { value: "user-1", label: "Shekhar" },
-    { value: "user-2", label: "Guest User" },
-  ];
-}
 
 export const STATUS_OPTIONS: FilterOption<Status>[] = [
   {
@@ -108,22 +99,15 @@ export const FILTER_FIELDS: FilterFieldConfig[] = [
     key: "status",
     label: "Status",
     icon: PiCircleBold,
-    type: "single-select",
+    type: "multi-select",
     getOptions: () => STATUS_OPTIONS,
   },
   {
     key: "priority",
     label: "Priority",
     icon: LuSignal,
-    type: "single-select",
-    getOptions: () => PRIORITY_OPTIONS,
-  },
-  {
-    key: "members",
-    label: "Members",
-    icon: LuUsers,
     type: "multi-select",
-    getOptions: getMemberOptions,
+    getOptions: () => PRIORITY_OPTIONS,
   },
   {
     key: "dueDate",
@@ -138,12 +122,5 @@ export const FILTER_FIELDS: FilterFieldConfig[] = [
     icon: LuTag,
     type: "multi-select",
     getOptions: () => [],
-  },
-  {
-    key: "reporter",
-    label: "Reporter",
-    icon: LuUser,
-    type: "single-select",
-    getOptions: getMemberOptions,
   },
 ];

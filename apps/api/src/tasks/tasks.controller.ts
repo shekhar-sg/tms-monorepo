@@ -14,12 +14,15 @@ import {
 import {
   type CreateTaskInput,
   createTaskSchema,
+  type GetTasksQuery,
+  getTasksQuerySchema,
   type MoveTaskInput,
   moveTaskSchema,
   type UpdateTaskInput,
   updateTaskSchema,
 } from "@repo/types";
 import type { Request } from "express";
+
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ZodValidationPipe } from "../common/pipes/zod-validation.pipe";
 import { TasksService } from "./tasks.service";
@@ -30,12 +33,18 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
-  findAll(@Req() request: Request, @Query("projectId") projectId?: string) {
+  findAll(
+    @Req() request: Request,
+    @Query("projectId")
+    projectId?: string,
+    @Query(new ZodValidationPipe(getTasksQuerySchema))
+    query?: GetTasksQuery
+  ) {
     if (!request.user) {
       throw new UnauthorizedException();
     }
 
-    return this.tasksService.findAll(request.user.userId, projectId);
+    return this.tasksService.findAll(request.user.userId, projectId, query);
   }
 
   @Get(":id")

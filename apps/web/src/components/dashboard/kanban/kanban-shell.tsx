@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import {
   type BoardItems,
   type Column,
@@ -11,9 +13,21 @@ import Board from "@/components/dashboard/kanban/board";
 import ListView from "@/components/dashboard/kanban/list";
 import Toolbar from "@/components/dashboard/kanban/toolbar";
 import { useTasks } from "@/hooks/tasks/use-tasks";
+import { parseTaskQueryParams } from "@/lib/tasks/task-query";
 
 const KanbanShell = () => {
-  const { data: tasks = [] } = useTasks();
+  const searchParams = useSearchParams();
+
+  const query = parseTaskQueryParams({
+    search: searchParams.get("search") ?? undefined,
+    status: searchParams.get("status") ?? undefined,
+    priority: searchParams.get("priority") ?? undefined,
+    labels: searchParams.get("labels") ?? undefined,
+    dueDateFrom: searchParams.get("dueDateFrom") ?? undefined,
+    dueDateTo: searchParams.get("dueDateTo") ?? undefined,
+  });
+
+  const { data: tasks = [] } = useTasks(undefined, query);
 
   const [view, setView] = useState<"board" | "list">("board");
   const [columns, setColumns] = useState<Column[]>(initialColumns);
@@ -21,6 +35,10 @@ const KanbanShell = () => {
   const [items, setItems] = useState<BoardItems>(() =>
     groupTasksByStatus(tasks)
   );
+
+  useEffect(() => {
+    setItems(groupTasksByStatus(tasks));
+  }, [tasks]);
 
   return (
     <div className="flex flex-col gap-1 p-4">

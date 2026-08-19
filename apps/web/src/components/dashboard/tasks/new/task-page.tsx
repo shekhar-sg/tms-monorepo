@@ -261,6 +261,7 @@ const TaskPage = (props: TaskPageProps) => {
               projectId={data.projectId}
             />
           )}
+          {isCreate && <Button type={"submit"}>Create Task</Button>}
 
           {isMobile && (
             <TaskDetailsSidebar
@@ -279,7 +280,6 @@ const TaskPage = (props: TaskPageProps) => {
           />
         )}
       </div>
-      {isCreate && <Button type={"submit"}>Create Task</Button>}
     </form>
   );
 };

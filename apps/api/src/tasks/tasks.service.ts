@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import type {
   CreateTaskInput,
+  GetTasksQuery,
   MoveTaskInput,
   UpdateTaskInput,
 } from "@repo/types";
@@ -35,14 +36,70 @@ type TaskActivityInput = {
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(userId: string, projectId?: string) {
+  async findAll(userId: string, projectId?: string, query?: GetTasksQuery) {
+    const { search, status, priority, labels, dueDateFrom, dueDateTo } =
+      query ?? {};
+
     return this.prisma.task.findMany({
       where: {
         projectId,
         project: {
           leadId: userId,
         },
+
+        ...(status?.length && {
+          status: {
+            in: status,
+          },
+        }),
+
+        ...(priority?.length && {
+          priority: {
+            in: priority,
+          },
+        }),
+
+        ...(search && {
+          OR: [
+            {
+              title: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              description: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }),
+
+        ...(labels?.length && {
+          labels: {
+            some: {
+              labelId: {
+                in: labels,
+              },
+            },
+          },
+        }),
+
+        ...(dueDateFrom || dueDateTo
+          ? {
+              endDate: {
+                ...(dueDateFrom && {
+                  gte: new Date(dueDateFrom),
+                }),
+                ...(dueDateTo && {
+                  lte: new Date(dueDateTo),
+                }),
+              },
+            }
+          : {}),
       },
+
       include: taskInclude,
       orderBy: [{ status: "asc" }, { position: "asc" }],
     });

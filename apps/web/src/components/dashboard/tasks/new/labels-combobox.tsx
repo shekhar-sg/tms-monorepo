@@ -19,7 +19,7 @@ import {
 import { Field, FieldError } from "@/components/ui/field";
 import { useLabels } from "@/hooks/labels/use-labels";
 
-const LabelsCombobox = ({ control }: { control: Control<TaskFormValues> }) => {
+const LabelsCombobox = ({ control }: { control?: Control<TaskFormValues> }) => {
   const anchor = useComboboxAnchor();
   const { data: labels = [], isLoading } = useLabels();
 
@@ -71,7 +71,7 @@ const LabelsCombobox = ({ control }: { control: Control<TaskFormValues> }) => {
                       );
                     })}
 
-                    <ComboboxChipsInput />
+                    <ComboboxChipsInput/>
                   </>
                 )}
               </ComboboxValue>

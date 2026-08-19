@@ -1,5 +1,6 @@
 import type {
   CreateTaskInput,
+  GetTasksQuery,
   MoveTaskInput,
   Task,
   UpdateTaskInput,
@@ -9,15 +10,37 @@ import type { AxiosInstance } from "axios";
 import { api } from "./client-api";
 
 export const getTasks = async (
-  projectId?: string,
-  client: AxiosInstance = api
+    projectId?: string,
+    query?: GetTasksQuery,
+    client: AxiosInstance = api,
 ): Promise<Task[]> => {
   const response = await client.get("/tasks", {
-    params: projectId ? { projectId } : undefined,
+    params: {
+      ...(projectId && { projectId }),
+      ...(query?.search && {
+        search: query.search,
+      }),
+      ...(query?.status?.length && {
+        status: query.status.join(","),
+      }),
+      ...(query?.priority?.length && {
+        priority: query.priority.join(","),
+      }),
+      ...(query?.labels?.length && {
+        labels: query.labels.join(","),
+      }),
+      ...(query?.dueDateFrom && {
+        dueDateFrom: query.dueDateFrom,
+      }),
+      ...(query?.dueDateTo && {
+        dueDateTo: query.dueDateTo,
+      }),
+    },
   });
 
   return response.data.data;
 };
+
 
 export const getTask = async (
   taskId: string,

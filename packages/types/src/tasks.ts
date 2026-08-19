@@ -36,9 +36,28 @@ export const moveTaskSchema = z.object({
   afterTaskId: z.uuid().nullable().optional(),
 });
 
+const csvArray = z.string().transform((value) =>
+  value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean)
+);
+
+export const getTasksQuerySchema = z
+  .object({
+    search: z.string().trim(),
+    status: csvArray.pipe(z.array(statusSchema)),
+    priority: csvArray.pipe(z.array(prioritySchema)),
+    labels: csvArray.pipe(z.array(z.uuid())),
+    dueDateFrom: z.iso.datetime(),
+    dueDateTo: z.iso.datetime(),
+  })
+  .partial();
+
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export type MoveTaskInput = z.infer<typeof moveTaskSchema>;
+export type GetTasksQuery = z.infer<typeof getTasksQuerySchema>;
 
 export type Task = {
   id: string;
@@ -77,9 +96,6 @@ export type TaskLabel = {
   label: Label;
 };
 
-export type SubtaskSummary = Omit<
-  Task,
-  "reporter" | "labels" | "subtasks"
-> & {
+export type SubtaskSummary = Omit<Task, "reporter" | "labels" | "subtasks"> & {
   subtasks?: never;
 };
