@@ -47,3 +47,24 @@ export const TaskActivityType = {
 } as const
 
 export type TaskActivityType = (typeof TaskActivityType)[keyof typeof TaskActivityType]
+
+
+export const Theme = {
+  LIGHT: 'LIGHT',
+  DARK: 'DARK',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type Theme = (typeof Theme)[keyof typeof Theme]
+
+
+export const AccentColor = {
+  AMBER: 'AMBER',
+  BLUE: 'BLUE',
+  PINK: 'PINK',
+  ROSE: 'ROSE',
+  EMERALD: 'EMERALD',
+  BLACK: 'BLACK'
+} as const
+
+export type AccentColor = (typeof AccentColor)[keyof typeof AccentColor]

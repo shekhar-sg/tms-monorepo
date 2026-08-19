@@ -25,19 +25,20 @@ enum TaskStatus {
 }
 
 model User {
-  id             String         @id @default(uuid())
-  email          String?        @unique
+  id             String          @id @default(uuid())
+  email          String?         @unique
   name           String?
   avatar         String?
-  isGuest        Boolean        @default(false)
+  isGuest        Boolean         @default(false)
   accounts       Account[]
-  ledProjects    Project[]      @relation("ProjectLeader")
-  reportedTasks  Task[]         @relation("TaskReporter")
+  ledProjects    Project[]       @relation("ProjectLeader")
+  reportedTasks  Task[]          @relation("TaskReporter")
   taskMembers    TaskMember[]
   comments       Comment[]
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   taskActivities TaskActivity[]
+  userPreference UserPreference?
 }
 
 model Account {
@@ -168,4 +169,29 @@ enum TaskActivityType {
   LABEL_REMOVED
   RESOURCE_CHANGED
   COMMENT_ADDED
+}
+
+enum Theme {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+enum AccentColor {
+  AMBER
+  BLUE
+  PINK
+  ROSE
+  EMERALD
+  BLACK
+}
+
+model UserPreference {
+  id          String      @id @default(cuid())
+  userId      String      @unique
+  theme       Theme       @default(SYSTEM)
+  accentColor AccentColor @default(BLUE)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }

@@ -1,12 +1,16 @@
-import { ChevronRight, GalleryVerticalEnd, LayoutDashboard } from "lucide-react"
-import Link from "next/link"
-import type * as React from "react"
-import UserMenuButton from "@/components/dashboard/user-menu-button"
+import {
+  ChevronRight,
+  GalleryVerticalEnd,
+  LayoutDashboard,
+} from "lucide-react";
+import Link from "next/link";
+import type * as React from "react";
+import UserMenu from "@/components/dashboard/prefferences/user-menu";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +21,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const navMain = [
   {
@@ -35,13 +39,13 @@ const navMain = [
       },
     ],
   },
-]
+];
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <UserMenuButton />
+        <UserMenu />
       </SidebarHeader>
       <SidebarContent>
         {navMain.map((item) => (
@@ -71,7 +75,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                 <SidebarGroupContent>
                   <SidebarMenu>
                     {item.items.map((subItem) => {
-                      const { title, url, icon: Icon } = subItem
+                      const { title, url, icon: Icon } = subItem;
                       return (
                         <SidebarMenuItem key={title}>
                           <SidebarMenuButton
@@ -84,7 +88,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                             }
                           ></SidebarMenuButton>
                         </SidebarMenuItem>
-                      )
+                      );
                     })}
                   </SidebarMenu>
                 </SidebarGroupContent>
@@ -94,7 +98,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
         ))}
       </SidebarContent>
     </Sidebar>
-  )
-}
+  );
+};
 
-export default AppSidebar
+export default AppSidebar;

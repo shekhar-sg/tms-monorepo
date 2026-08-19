@@ -277,6 +277,40 @@ export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonNullableFilter<$PrismaModel>
 }
 
+export type EnumThemeFilter<$PrismaModel = never> = {
+  equals?: $Enums.Theme | Prisma.EnumThemeFieldRefInput<$PrismaModel>
+  in?: $Enums.Theme[] | Prisma.ListEnumThemeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Theme[] | Prisma.ListEnumThemeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumThemeFilter<$PrismaModel> | $Enums.Theme
+}
+
+export type EnumAccentColorFilter<$PrismaModel = never> = {
+  equals?: $Enums.AccentColor | Prisma.EnumAccentColorFieldRefInput<$PrismaModel>
+  in?: $Enums.AccentColor[] | Prisma.ListEnumAccentColorFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AccentColor[] | Prisma.ListEnumAccentColorFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAccentColorFilter<$PrismaModel> | $Enums.AccentColor
+}
+
+export type EnumThemeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Theme | Prisma.EnumThemeFieldRefInput<$PrismaModel>
+  in?: $Enums.Theme[] | Prisma.ListEnumThemeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Theme[] | Prisma.ListEnumThemeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumThemeWithAggregatesFilter<$PrismaModel> | $Enums.Theme
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumThemeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumThemeFilter<$PrismaModel>
+}
+
+export type EnumAccentColorWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AccentColor | Prisma.EnumAccentColorFieldRefInput<$PrismaModel>
+  in?: $Enums.AccentColor[] | Prisma.ListEnumAccentColorFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AccentColor[] | Prisma.ListEnumAccentColorFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAccentColorWithAggregatesFilter<$PrismaModel> | $Enums.AccentColor
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAccentColorFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAccentColorFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -524,6 +558,40 @@ export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
   gt?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   gte?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
+}
+
+export type NestedEnumThemeFilter<$PrismaModel = never> = {
+  equals?: $Enums.Theme | Prisma.EnumThemeFieldRefInput<$PrismaModel>
+  in?: $Enums.Theme[] | Prisma.ListEnumThemeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Theme[] | Prisma.ListEnumThemeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumThemeFilter<$PrismaModel> | $Enums.Theme
+}
+
+export type NestedEnumAccentColorFilter<$PrismaModel = never> = {
+  equals?: $Enums.AccentColor | Prisma.EnumAccentColorFieldRefInput<$PrismaModel>
+  in?: $Enums.AccentColor[] | Prisma.ListEnumAccentColorFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AccentColor[] | Prisma.ListEnumAccentColorFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAccentColorFilter<$PrismaModel> | $Enums.AccentColor
+}
+
+export type NestedEnumThemeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.Theme | Prisma.EnumThemeFieldRefInput<$PrismaModel>
+  in?: $Enums.Theme[] | Prisma.ListEnumThemeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.Theme[] | Prisma.ListEnumThemeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumThemeWithAggregatesFilter<$PrismaModel> | $Enums.Theme
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumThemeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumThemeFilter<$PrismaModel>
+}
+
+export type NestedEnumAccentColorWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AccentColor | Prisma.EnumAccentColorFieldRefInput<$PrismaModel>
+  in?: $Enums.AccentColor[] | Prisma.ListEnumAccentColorFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AccentColor[] | Prisma.ListEnumAccentColorFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAccentColorWithAggregatesFilter<$PrismaModel> | $Enums.AccentColor
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAccentColorFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAccentColorFilter<$PrismaModel>
 }
 
 

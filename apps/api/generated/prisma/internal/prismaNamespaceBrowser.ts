@@ -59,7 +59,8 @@ export const ModelName = {
   Label: 'Label',
   TaskLabel: 'TaskLabel',
   Comment: 'Comment',
-  TaskActivity: 'TaskActivity'
+  TaskActivity: 'TaskActivity',
+  UserPreference: 'UserPreference'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -187,6 +188,18 @@ export const TaskActivityScalarFieldEnum = {
 } as const
 
 export type TaskActivityScalarFieldEnum = (typeof TaskActivityScalarFieldEnum)[keyof typeof TaskActivityScalarFieldEnum]
+
+
+export const UserPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  theme: 'theme',
+  accentColor: 'accentColor',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserPreferenceScalarFieldEnum = (typeof UserPreferenceScalarFieldEnum)[keyof typeof UserPreferenceScalarFieldEnum]
 
 
 export const SortOrder = {

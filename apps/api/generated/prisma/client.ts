@@ -84,3 +84,8 @@ export type Comment = Prisma.CommentModel
  * 
  */
 export type TaskActivity = Prisma.TaskActivityModel
+/**
+ * Model UserPreference
+ * 
+ */
+export type UserPreference = Prisma.UserPreferenceModel

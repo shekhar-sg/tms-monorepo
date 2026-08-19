@@ -4,6 +4,7 @@ import { AuthModule } from "./auth/auth.module";
 import { CommentsModule } from "./comments/comments.module";
 import { envValidationSchema } from "./config/env.validation";
 import { LabelsModule } from "./labels/labels.module";
+import { PreferencesModule } from "./preferences/preferences.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProjectsModule } from "./projects/projects.module";
 import { TaskActivitiesModule } from "./task-activities/task-activities.module";
@@ -25,6 +26,7 @@ import { UsersModule } from "./users/users.module";
     LabelsModule,
     CommentsModule,
     TaskActivitiesModule,
+    PreferencesModule,
   ],
 })
 export class AppModule {}
