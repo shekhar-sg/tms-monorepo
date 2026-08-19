@@ -3,7 +3,7 @@
 import type { SubtaskSummary } from "@repo/types";
 import { useRouter } from "next/navigation";
 
-import DataTable from "@/components/dashboard/kanban/shared/data-table";
+import DataTable from "@/components/dashboard/tasks/feed/shared/data-table";
 import {
   subtaskColumns,
   subtaskTableFeatures,

@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type * as React from "react";
-import UserMenu from "@/components/prefferences/user-menu";
+import UserMenu from "@/components/preferences/user-menu";
 import {
   Collapsible,
   CollapsibleContent,

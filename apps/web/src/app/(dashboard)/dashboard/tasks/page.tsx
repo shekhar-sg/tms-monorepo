@@ -1,5 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import KanbanShell from "@/components/dashboard/kanban/kanban-shell";
+import TaskFeedShell from "@/components/dashboard/tasks/feed/task-feed-shell";
 import { taskKeys } from "@/hooks/tasks/task-keys";
 import { serverApi } from "@/lib/api/server-api";
 import { getTasks } from "@/lib/api/tasks-api";
@@ -27,7 +27,7 @@ const TasksPage = async ({ searchParams }: TasksPageProps) => {
   });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <KanbanShell />
+      <TaskFeedShell />
     </HydrationBoundary>
   );
 };

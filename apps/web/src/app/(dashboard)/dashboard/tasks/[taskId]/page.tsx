@@ -1,5 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import TaskPage from "@/components/dashboard/tasks/new/task-page";
+import TaskPage from "@/components/dashboard/tasks/detail/task-page";
 import { taskKeys } from "@/hooks/tasks/task-keys";
 import { serverApi } from "@/lib/api/server-api";
 import { getTask } from "@/lib/api/tasks-api";

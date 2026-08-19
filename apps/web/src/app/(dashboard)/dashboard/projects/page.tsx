@@ -1,5 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import ProjectListing from "@/components/dashboard/project/project-listing";
+import ProjectListing from "@/components/dashboard/projects/project-listing";
 import { projectKeys } from "@/hooks/projects/project-keys";
 import { getProjects } from "@/lib/api/projects-api";
 import { serverApi } from "@/lib/api/server-api";
