@@ -7,17 +7,17 @@ export function proxy(request: NextRequest) {
 
   const isAuthenticated = Boolean(token);
 
-  if (pathname.startsWith("/dashboard") && !isAuthenticated) {
+  if (!isAuthenticated) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   if (pathname === "/login" && isAuthenticated) {
-    return NextResponse.redirect(new URL("/dashboard/tasks", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login"],
+  matcher: ["/dashboard/:path*", "/login", "/profile"],
 };
