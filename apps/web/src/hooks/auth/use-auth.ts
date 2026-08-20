@@ -5,7 +5,7 @@ import { getCurrentUser, guestLogin } from "@/lib/api/auth-api";
 export function useCurrentUser() {
   return useQuery({
     queryKey: authKeys.currentUser,
-    queryFn: getCurrentUser,
+    queryFn: () => getCurrentUser(),
     retry: false,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
