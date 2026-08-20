@@ -1,4 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import {UpdateUserInput} from "@repo/types";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
@@ -83,18 +88,34 @@ export class UsersService {
 
   async findAll() {
     return this.prisma.user.findMany({
-      where: {
-        isGuest: false,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        avatar: true,
-      },
       orderBy: {
         name: "asc",
       },
+    });
+  }
+
+  async updateMe(id: string, data: UpdateUserInput) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    if (user.isGuest && data.email !== undefined) {
+      throw new BadRequestException("Guest users cannot update their email");
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async leaveWorkspace(id: string) {
+    return this.prisma.user.delete({
+      where: { id },
     });
   }
 }

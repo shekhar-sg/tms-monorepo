@@ -28,6 +28,8 @@ model User {
   id             String          @id @default(uuid())
   email          String?         @unique
   name           String?
+  username       String?         @unique
+  title          String?
   avatar         String?
   isGuest        Boolean         @default(false)
   accounts       Account[]

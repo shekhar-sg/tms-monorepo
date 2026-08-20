@@ -1,7 +1,11 @@
+import { User } from "@repo/types";
+import type { AxiosInstance } from "axios";
 import { api } from "./client-api";
 
-export const getCurrentUser = async () => {
-  const response = await api.get("/auth/me");
+export const getCurrentUser = async (
+  client: AxiosInstance = api
+): Promise<User> => {
+  const response = await client.get("/users/me");
 
   return response.data.data;
 };
