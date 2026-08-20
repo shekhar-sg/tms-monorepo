@@ -265,7 +265,7 @@ a {
 
 .dark[data-accent="amber"] {
   --primary: var(--color-amber-500);
-  --primary-foreground: var(--color-amber-950);
+  --primary-foreground: white;
 
   --secondary: var(--color-zinc-800);
   --secondary-foreground: var(--color-zinc-100);
@@ -284,7 +284,7 @@ a {
 
 .dark[data-accent="blue"] {
   --primary: var(--color-blue-500);
-  --primary-foreground: var(--color-blue-950);
+  --primary-foreground: white;
 
   --secondary: var(--color-zinc-800);
   --secondary-foreground: var(--color-zinc-100);
@@ -303,7 +303,7 @@ a {
 
 .dark[data-accent="pink"] {
   --primary: var(--color-pink-500);
-  --primary-foreground: var(--color-pink-950);
+  --primary-foreground: white;
 
   --secondary: var(--color-zinc-800);
   --secondary-foreground: var(--color-zinc-100);
@@ -322,7 +322,7 @@ a {
 
 .dark[data-accent="rose"] {
   --primary: var(--color-rose-500);
-  --primary-foreground: var(--color-rose-950);
+  --primary-foreground: white;
 
   --secondary: var(--color-zinc-800);
   --secondary-foreground: var(--color-zinc-100);
@@ -341,7 +341,7 @@ a {
 
 .dark[data-accent="emerald"] {
   --primary: var(--color-emerald-500);
-  --primary-foreground: var(--color-emerald-950);
+  --primary-foreground: white;
 
   --secondary: var(--color-zinc-800);
   --secondary-foreground: var(--color-zinc-100);
