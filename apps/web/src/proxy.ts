@@ -7,7 +7,7 @@ export function proxy(request: NextRequest) {
 
   const isAuthenticated = Boolean(token);
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && pathname !== "/login") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
