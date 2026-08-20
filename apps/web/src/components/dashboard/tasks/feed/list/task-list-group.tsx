@@ -1,11 +1,7 @@
 "use client";
 
-import { CollisionPriority } from "@dnd-kit/abstract";
-import { useDroppable } from "@dnd-kit/react";
-import { useSortable } from "@dnd-kit/react/sortable";
 import type { Task } from "@repo/types";
 import { LuChevronDown } from "react-icons/lu";
-import { MdDragIndicator } from "react-icons/md";
 import TaskTable from "@/components/dashboard/tasks/feed/list/task-table";
 import EmptyState from "@/components/dashboard/tasks/feed/shared/empty-state";
 import { Button } from "@/components/ui/button";
@@ -14,7 +10,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
 
 type TaskListGroupProps = {
   id: string;
@@ -24,46 +19,16 @@ type TaskListGroupProps = {
 };
 
 const TaskListGroup = (props: TaskListGroupProps) => {
-  const { id, title, tasks, index } = props;
-  const {
-    ref: sortableRef,
-    isDragging,
-    handleRef,
-  } = useSortable({
-    id,
-    index,
-    group: "list-columns",
-    type: "column",
-    accept: "column",
-  });
-
-  const { ref: droppableRef } = useDroppable({
-    id: id,
-    type: "column",
-    collisionPriority: CollisionPriority.Low,
-  });
+  const { id, title, tasks } = props;
 
   return (
-    <Collapsible
-      defaultOpen
-      ref={sortableRef}
-      className={cn({ "opacity-50": isDragging })}
-    >
+    <Collapsible defaultOpen>
       <section>
-        <Button
-          ref={handleRef}
-          variant={"ghost"}
-          size={"icon-sm"}
-          className={"size-7 cursor-grab touch-none"}
-          aria-label={`Move ${title}`}
-        >
-          <MdDragIndicator />
-        </Button>
         <CollapsibleTrigger render={<Button variant={"link"} />}>
           <LuChevronDown />
           {title}
         </CollapsibleTrigger>
-        <CollapsibleContent ref={droppableRef}>
+        <CollapsibleContent>
           {tasks.length === 0 ? (
             <EmptyState />
           ) : (

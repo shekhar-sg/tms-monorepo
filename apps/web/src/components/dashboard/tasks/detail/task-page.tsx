@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateTask, useTask, useUpdateTask } from "@/hooks/tasks/use-tasks";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useBreadcrumb } from "@/providers/breadcrumb-context";
 
 export type TaskFormValues = CreateTaskInput & {
   dateRange?: DateRange;
@@ -62,6 +63,8 @@ const TaskPage = (props: TaskPageProps) => {
   const { taskId, parentId, projectId } = props;
   const isCreate = taskId === "new";
   const { data } = useTask(isCreate ? "" : taskId);
+  const { setDynamicLabel } = useBreadcrumb();
+
   const router = useRouter();
 
   const { mutate: createTask } = useCreateTask();
@@ -99,6 +102,14 @@ const TaskPage = (props: TaskPageProps) => {
       },
     });
   }, [data, isCreate, reset]);
+
+  useEffect(() => {
+    if (isCreate) {
+      setDynamicLabel("Create Task");
+      return;
+    }
+    setDynamicLabel(data?.title ?? null);
+  }, [data?.title, isCreate, setDynamicLabel]);
 
   const onSubmit = (values: TaskFormValues) => {
     const { dateRange, ...taskValues } = values;

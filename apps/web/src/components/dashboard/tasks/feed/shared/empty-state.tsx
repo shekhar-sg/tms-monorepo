@@ -7,7 +7,7 @@ const EmptyState = () => {
     >
       <p className="text-sm font-medium text-muted-foreground">No tasks yet</p>
       <p className="mt-1 text-xs text-muted-foreground/70">
-        Add a task or drag one here
+        Add a task or Add one here
       </p>
     </div>
   );

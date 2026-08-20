@@ -6,7 +6,6 @@ import {
   taskColumns,
   taskTableFeatures,
 } from "@/components/dashboard/tasks/feed/list/task-list-column";
-import TaskListRow from "@/components/dashboard/tasks/feed/list/task-list-row";
 import DataTable from "@/components/dashboard/tasks/feed/shared/data-table";
 import { useTaskFeedPreferences } from "@/components/dashboard/tasks/feed/task-feed-preferences-context";
 
@@ -33,9 +32,6 @@ const TaskTable = ({ tasks, columnId }: TaskTableProps) => {
       data={tasks}
       getRowId={(task) => task.id}
       emptyMessage="No tasks in this status."
-      renderRow={(row, index) => (
-        <TaskListRow key={row.id} row={row} index={index} columnId={columnId} />
-      )}
       addButtonProps={{ children: "Add Task", onClick: handleAddTask }}
       columnVisibility={columnVisibility}
     />
