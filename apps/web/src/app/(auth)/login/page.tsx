@@ -21,7 +21,7 @@ const LoginPage = () => {
   const handleGuestLogin = () => {
     loginAsGuest(undefined, {
       onSuccess: () => {
-        router.push("/dashboard/tasks");
+        router.push("/dashboard");
       },
     });
   };

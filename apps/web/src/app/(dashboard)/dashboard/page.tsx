@@ -173,6 +173,7 @@ const DashboardPage = async () => {
                 </p>
 
                 <Button
+                  nativeButton={false}
                   size={"sm"}
                   render={<Link href={"/dashboard/projects"} />}
                 >
