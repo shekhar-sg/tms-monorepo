@@ -1,4 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { TaskFeedPreferencesProvider } from "@/components/dashboard/tasks/feed/task-feed-preferences-context";
 import TaskFeedShell from "@/components/dashboard/tasks/feed/task-feed-shell";
 import { taskKeys } from "@/hooks/tasks/task-keys";
 import { serverApi } from "@/lib/api/server-api";
@@ -27,7 +28,9 @@ const TasksPage = async ({ searchParams }: TasksPageProps) => {
   });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <TaskFeedShell />
+      <TaskFeedPreferencesProvider>
+        <TaskFeedShell />
+      </TaskFeedPreferencesProvider>
     </HydrationBoundary>
   );
 };

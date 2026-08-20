@@ -2,6 +2,7 @@
 
 import { LuColumns3, LuGrid2X2 } from "react-icons/lu";
 import { PiListBold } from "react-icons/pi";
+import { useTaskFeedPreferences } from "@/components/dashboard/tasks/feed/task-feed-preferences-context";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -14,13 +15,11 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const fields = [
-  "Priority",
-  "Members",
-  "Due Date",
-  "Labels",
-  "Status",
-  "Reporter",
-];
+  { id: "priority", label: "Priority" },
+  { id: "members", label: "Members" },
+  { id: "dueDate", label: "Due Date" },
+  { id: "actions", label: "Actions" },
+] as const;
 
 interface FieldsProps {
   currentView: "board" | "list";
@@ -29,6 +28,16 @@ interface FieldsProps {
 
 const Fields = (props: FieldsProps) => {
   const { currentView, onViewChange } = props;
+  const { visibleFields, setVisibleFields } = useTaskFeedPreferences();
+
+  const handleFieldChange = (fieldId: string, checked: boolean) => {
+    const nextFields = checked
+      ? [...visibleFields, fieldId]
+      : visibleFields.filter((field) => field !== fieldId);
+
+    setVisibleFields(nextFields);
+  };
+
   return (
     <Popover>
       <PopoverTrigger
@@ -61,18 +70,22 @@ const Fields = (props: FieldsProps) => {
         <FieldGroup className={"gap-1.5"}>
           {fields.map((field, index) => (
             <Field
-              key={field + index}
+              key={field.id + index}
               orientation={"horizontal"}
               role={"switch"}
             >
               <FieldLabel
-                htmlFor={field + index}
+                htmlFor={field.id + index}
                 className={"h-6.5 cursor-pointer"}
               >
-                {field}
+                {field.label}
               </FieldLabel>
               <Checkbox
-                id={field + index}
+                id={field.id}
+                checked={visibleFields.includes(field.id)}
+                onCheckedChange={(checked) => {
+                  handleFieldChange(field.id, checked);
+                }}
                 className={"bg-input border-input text-foreground"}
               />
             </Field>

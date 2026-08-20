@@ -31,6 +31,7 @@ interface DataTableProps<TData extends RowData, TValue> {
   emptyMessage?: string;
   renderRow?: (row: Row<TableFeatures, TData>, index: number) => ReactNode;
   addButtonProps: ButtonProps;
+  columnVisibility?: Record<string, boolean>;
 }
 
 const DataTable = <TData extends RowData, TValue>({
@@ -41,11 +42,15 @@ const DataTable = <TData extends RowData, TValue>({
   emptyMessage = "No results.",
   renderRow,
   addButtonProps,
+  columnVisibility,
 }: DataTableProps<TData, TValue>) => {
   const table = useTable({
     features,
     columns,
     data,
+    state: {
+      columnVisibility,
+    },
     ...(getRowId ? { getRowId } : {}),
   } as TableOptions<TableFeatures, TData>);
 

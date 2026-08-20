@@ -3,6 +3,7 @@
 import { CollisionPriority } from "@dnd-kit/abstract";
 import { useDroppable } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { LuPlus } from "react-icons/lu";
 import { MdDragIndicator } from "react-icons/md";
@@ -17,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useNavigationTransition } from "@/providers/navigation-transition-context";
 
 type KanbanColumnProps = {
   id: string;
@@ -28,6 +30,11 @@ type KanbanColumnProps = {
 
 const KanbanColumn = (props: KanbanColumnProps) => {
   const { id, index, children, title, isEmpty } = props;
+  const { navigate } = useNavigationTransition();
+  const router = useRouter();
+  const handleCreateNew = () => {
+    navigate(() => router.push("/dashboard/tasks/new"));
+  };
 
   const {
     ref: sortableRef,
@@ -80,7 +87,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
           {title}
         </CardTitle>
         <CardAction>
-          <Button variant={"ghost"} size={"icon-sm"}>
+          <Button variant={"ghost"} size={"icon-sm"} onClick={handleCreateNew}>
             <LuPlus />
           </Button>
           <Button variant={"ghost"} size={"icon-sm"}>
@@ -96,7 +103,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
         </div>
       </CardContent>
       <CardAction className={"px-2.5"}>
-        <Button variant={"ghost"}>
+        <Button variant={"ghost"} onClick={handleCreateNew}>
           <LuPlus /> Add Task
         </Button>
       </CardAction>

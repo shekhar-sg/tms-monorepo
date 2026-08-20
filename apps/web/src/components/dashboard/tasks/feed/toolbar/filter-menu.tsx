@@ -2,10 +2,6 @@
 
 import { useState } from "react";
 import { LuFilter } from "react-icons/lu";
-import {
-  type ActiveFilters,
-  FILTER_FIELDS,
-} from "@/lib/tasks/filter-config";
 import FilterSubmenu from "@/components/dashboard/tasks/feed/toolbar/filter-submenu";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { type ActiveFilters, FILTER_FIELDS } from "@/lib/tasks/filter-config";
 
 interface FilterMenuProps {
   value: ActiveFilters;

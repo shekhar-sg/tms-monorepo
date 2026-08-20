@@ -11,6 +11,7 @@ import TaskActions from "@/components/dashboard/tasks/feed/shared/task-actions";
 import { taskStatusGroups } from "@/components/dashboard/tasks/feed/task-feed-utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { PRIORITY_OPTIONS } from "@/lib/tasks/filter-config";
 
 export const taskTableFeatures = tableFeatures({
   columnVisibilityFeature,
@@ -25,53 +26,51 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
     }),
 
     columnHelper.accessor("priority", {
+      id: "priority",
       header: "Priority",
-
-      cell: ({ getValue }) => {
-        const priority = getValue();
+      cell: ({ row }) => {
+        const currentPriority = row.original.priority;
+        const priority = PRIORITY_OPTIONS.find(
+          (priority) => priority.value === currentPriority
+        );
+        const Icon = priority?.icon;
 
         return (
-          <Badge
-            variant={
-              priority === "urgent" || priority === "high"
-                ? "destructive"
-                : priority === "medium"
-                  ? "outline"
-                  : "secondary"
-            }
-          >
-            {priority === "none" ? "No Priority" : priority}
+          <Badge variant={"link"} className={priority?.color}>
+            {Icon && <Icon />}
+            {priority?.label}
           </Badge>
         );
       },
     }),
 
     columnHelper.accessor("members", {
+      id: "members",
       header: "Members",
       cell: ({ row }) => {
-        const reporter = row.original.reporter;
-        if (!reporter) {
+        const members = row.original.members;
+        if (!members || members.length === 0) {
           return <span className={"text-muted-foreground"}>—</span>;
         }
-        return (
-          <Avatar size={"sm"}>
-            {reporter.avatar && (
-              <AvatarImage src={reporter.avatar} alt={reporter.name ?? ""} />
+        return members.map(({ user, userId }) => (
+          <Avatar size={"sm"} key={userId}>
+            {user.avatar && (
+              <AvatarImage src={user.avatar} alt={user.name ?? ""} />
             )}
-
             <AvatarFallback>
-              {reporter.name
+              {user.name
                 ?.split(" ")
                 .map((part: string) => part[0])
                 .join("")
                 .slice(0, 2)}
             </AvatarFallback>
           </Avatar>
-        );
+        ));
       },
     }),
 
     columnHelper.accessor("endDate", {
+      id: "dueDate",
       header: "Due Date",
       cell: ({ row }) => {
         if (!row.original.endDate) {

@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Board from "@/components/dashboard/tasks/feed/board";
 import ListView from "@/components/dashboard/tasks/feed/list";
+import { useTaskFeedPreferences } from "@/components/dashboard/tasks/feed/task-feed-preferences-context";
 import {
   groupTasksByStatus,
   type TaskStatusGroup,
@@ -27,13 +28,13 @@ const TaskFeedShell = () => {
 
   const { data: tasks = [] } = useTasks(undefined, query);
 
-  const [view, setView] = useState<"board" | "list">("board");
   const [statusGroups, setStatusGroups] =
     useState<TaskStatusGroup[]>(taskStatusGroups);
-
   const [tasksByStatus, setTasksByStatus] = useState<TasksByStatus>(
     groupTasksByStatus(tasks)
   );
+
+  const { view, setView } = useTaskFeedPreferences();
 
   useEffect(() => {
     setTasksByStatus(groupTasksByStatus(tasks));
@@ -41,7 +42,7 @@ const TaskFeedShell = () => {
 
   return (
     <div className="flex flex-col gap-1 p-4">
-      <Toolbar view={view} onViewChange={setView} page="tasks" />
+      <Toolbar view={view} onViewChange={setView} page={"tasks"} />
 
       {view === "board" ? (
         <Board

@@ -94,10 +94,9 @@ const Board = (props: KanbanBoardProps) => {
               {items[group.id].map((task, index) => (
                 <KanbanCard
                   key={task.id}
-                  id={task.id}
                   index={index}
                   group={group.id}
-                  title={task.title}
+                  task={task}
                 />
               ))}
             </KanbanColumn>

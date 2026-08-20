@@ -1,5 +1,6 @@
 import { useSortable } from "@dnd-kit/react/sortable";
-import type { Status } from "@repo/types";
+import type { Status, Task } from "@repo/types";
+import { formatDate } from "date-fns";
 import { LuCalendar, LuTag } from "react-icons/lu";
 import TaskActions from "@/components/dashboard/tasks/feed/shared/task-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,14 +9,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 type KanbanCardProps = {
-  id: string;
   index: number;
   group: Status;
-  title: string;
+  task: Task;
 };
 
 const KanbanCard = (props: KanbanCardProps) => {
-  const { id, group, title, index } = props;
+  const { group, index, task } = props;
+  const { id, title, labels, endDate, reporter } = task;
+  const { name, avatar } = reporter ?? {};
 
   const { ref, isDragging } = useSortable({
     id,
@@ -29,36 +31,40 @@ const KanbanCard = (props: KanbanCardProps) => {
     <Card
       ref={ref}
       data-size={"xs"}
-      className={cn("min-w-68.25 rounded-md hover:cursor-grab", {
+      className={cn("w-68.25 overflow-hidden rounded-md hover:cursor-grab", {
         "opacity-50": isDragging,
       })}
       size={"sm"}
     >
       <CardHeader className={"flex justify-between items-center"}>
-        <CardTitle className={"text-sm"}>{title}</CardTitle>
+        <CardTitle className={"text-sm truncate"}>{title}</CardTitle>
         <TaskActions taskId={id} />
       </CardHeader>
       <CardContent className={"space-y-3"}>
         <div className={"flex justify-between items-center"}>
           <Badge variant={"ghost"} className={"h-fit p-0"}>
             <Avatar size={"sm"}>
-              <AvatarImage />
-              <AvatarFallback>OM</AvatarFallback>
+              <AvatarImage
+                src={avatar ?? "https://github.com/shadcn.png"}
+                alt={name ?? "Guest"}
+              />
+              <AvatarFallback>{name ?? "G"}</AvatarFallback>
             </Avatar>
-            &nbsp;Admin
+            &nbsp;{name ?? "Guest"}
           </Badge>
-          <Badge variant={"destructive"} className={"p-2"}>
-            <LuCalendar />
-            44 Jul
-          </Badge>
+          {endDate && (
+            <Badge variant={"destructive"} className={"p-2"}>
+              <LuCalendar />
+              {formatDate(endDate, "dd MMM")}
+            </Badge>
+          )}
         </div>
-        <div className={"space-x-1.5"}>
-          <Badge variant={"secondary"}>
-            <LuTag /> Deployment
-          </Badge>
-          <Badge variant={"secondary"}>
-            <LuTag /> Deployment
-          </Badge>
+        <div className={"flex gap-1.5"}>
+          {labels.slice(0, 3).map((label) => (
+            <Badge key={label.labelId} variant={"secondary"}>
+              <LuTag /> {label.label.name}
+            </Badge>
+          ))}
         </div>
       </CardContent>
     </Card>

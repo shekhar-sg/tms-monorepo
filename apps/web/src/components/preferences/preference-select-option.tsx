@@ -1,6 +1,5 @@
 "use client";
 
-import type { FilterOption } from "@/lib/tasks/filter-config";
 import SelectOptions from "@/components/dashboard/tasks/detail/select-options";
 import {
   DropdownMenuGroup,
@@ -9,6 +8,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { FilterOption } from "@/lib/tasks/filter-config";
 
 interface PreferenceSelectProps<T extends string> {
   value?: T;

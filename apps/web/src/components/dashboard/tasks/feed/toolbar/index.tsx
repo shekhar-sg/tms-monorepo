@@ -5,15 +5,15 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LuPlus } from "react-icons/lu";
 import Fields from "@/components/dashboard/tasks/feed/toolbar/fields";
-import type { ActiveFilters } from "@/lib/tasks/filter-config";
 import { FilterMenu } from "@/components/dashboard/tasks/feed/toolbar/filter-menu";
+import SearchBox from "@/components/dashboard/tasks/feed/toolbar/search-box";
+import { Button } from "@/components/ui/button";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import type { ActiveFilters } from "@/lib/tasks/filter-config";
 import {
   filtersToSearchParams,
   searchParamsToFilters,
 } from "@/lib/tasks/filter-url";
-import SearchBox from "@/components/dashboard/tasks/feed/toolbar/search-box";
-import { Button } from "@/components/ui/button";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useNavigationTransition } from "@/providers/navigation-transition-context";
 
 interface KanbanToolbarProps {
@@ -54,7 +54,7 @@ const Toolbar = (props: KanbanToolbarProps) => {
         scroll: false,
       });
     });
-  }, [debouncedSearch, pathname, router, searchParams]);
+  }, [debouncedSearch, pathname, router, searchParams, navigate]);
 
   const handleFiltersChange = (nextFilters: ActiveFilters) => {
     const params = filtersToSearchParams(nextFilters, searchParams);
@@ -71,7 +71,10 @@ const Toolbar = (props: KanbanToolbarProps) => {
       <h2 className={"font-semibold capitalize"}>{page}</h2>
       <div className={"flex gap-2"}>
         <SearchBox value={search} onChange={setSearch} />
-        <Fields currentView={view} onViewChange={onViewChange} />
+        <Fields
+          currentView={view}
+          onViewChange={onViewChange}
+        />
         <FilterMenu value={filters} onChange={handleFiltersChange} />
         <Button
           nativeButton={false}
