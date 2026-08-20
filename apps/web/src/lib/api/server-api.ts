@@ -6,7 +6,7 @@ export async function serverApi() {
 
   const isProd = process.env.NODE_ENV === "production";
   return axios.create({
-    baseURL: isProd ? process.env.NEXT_PUBLIC_API_URL : "http://localhost:4000",
+    baseURL: isProd ? process.env.API_URL : "http://localhost:4000",
     headers: {
       Cookie: cookieStore.toString(),
     },
