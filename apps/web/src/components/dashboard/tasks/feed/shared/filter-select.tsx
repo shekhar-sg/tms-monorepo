@@ -1,4 +1,3 @@
-import type { FilterOption } from "@/lib/tasks/filter-config";
 import SelectOptions from "@/components/dashboard/tasks/detail/select-options";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,6 +5,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { FilterOption } from "@/lib/tasks/filter-config";
+import { cn } from "@/lib/utils";
 
 interface FilterSelectProps<T extends string> {
   value?: T;
@@ -34,10 +35,9 @@ const FilterSelect = <T extends string>({
             variant="link"
             size="sm"
             disabled={disabled}
-            className="h-8 cursor-pointer"
+            className={cn("h-8 cursor-pointer", selected?.color)}
           >
-            {SelectedIcon && <SelectedIcon className={selected.color} />}
-
+            {SelectedIcon && <SelectedIcon />}
             {selected?.label ?? placeholder}
           </Button>
         }

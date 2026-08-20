@@ -71,17 +71,14 @@ const Toolbar = (props: KanbanToolbarProps) => {
       <h2 className={"font-semibold capitalize"}>{page}</h2>
       <div className={"flex gap-2"}>
         <SearchBox value={search} onChange={setSearch} />
-        <Fields
-          currentView={view}
-          onViewChange={onViewChange}
-        />
+        <Fields currentView={view} onViewChange={onViewChange} />
         <FilterMenu value={filters} onChange={handleFiltersChange} />
         <Button
           nativeButton={false}
           className={"text-xs text-primary-foreground!"}
           render={<Link href={"/dashboard/tasks/new"} />}
         >
-          <LuPlus /> Add Task
+          <LuPlus /> Add {page}
         </Button>
       </div>
     </div>

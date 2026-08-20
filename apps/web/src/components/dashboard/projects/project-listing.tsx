@@ -1,11 +1,10 @@
 "use client";
 
-import DataTable from "@/components/dashboard/tasks/feed/shared/data-table";
-import Toolbar from "@/components/dashboard/tasks/feed/toolbar";
 import {
   projectColumns,
   projectTableFeatures,
 } from "@/components/dashboard/projects/project-columns";
+import DataTable from "@/components/dashboard/tasks/feed/shared/data-table";
 import { useCreateProject, useProjects } from "@/hooks/projects/use-projects";
 
 const ProjectListing = () => {
@@ -21,7 +20,7 @@ const ProjectListing = () => {
 
   return (
     <div className={"flex flex-col gap-1 p-4"}>
-      <Toolbar page={"projects"} view={"list"} onViewChange={() => {}} />
+      <h2 className={"p-2.5 font-semibold capitalize"}>Projects</h2>
       <div className={"m-2"}>
         <DataTable
           features={projectTableFeatures}
@@ -32,11 +31,7 @@ const ProjectListing = () => {
           addButtonProps={{
             disabled: isPending,
             onClick: handleAddProject,
-            children: (
-              <>
-                {isPending ? "Adding..." : "Add Project"}
-              </>
-            ),
+            children: <>{isPending ? "Adding..." : "Add Project"}</>,
           }}
         />
       </div>

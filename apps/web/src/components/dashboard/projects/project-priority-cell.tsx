@@ -1,7 +1,7 @@
 import type { Priority } from "@repo/types";
 import FilterSelect from "@/components/dashboard/tasks/feed/shared/filter-select";
-import {PRIORITY_OPTIONS} from "@/lib/tasks/filter-config";
 import { useUpdateProject } from "@/hooks/projects/use-projects";
+import { PRIORITY_OPTIONS } from "@/lib/tasks/filter-config";
 
 interface ProjectPriorityCellProps {
   projectId: string;
