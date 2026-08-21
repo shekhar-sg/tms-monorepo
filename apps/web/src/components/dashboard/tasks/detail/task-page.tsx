@@ -142,6 +142,25 @@ const TaskPage = (props: TaskPageProps) => {
     });
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: data?.title,
+          text: `Check out "${data?.title}"`,
+          url,
+        });
+        return;
+      }
+
+      await navigator.clipboard.writeText(url);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -240,7 +259,12 @@ const TaskPage = (props: TaskPageProps) => {
           >
             <LuEye /> &nbsp;1
           </Button>
-          <Button variant={"outline"} size={"icon"} className={"rounded-[4px]"}>
+          <Button
+            variant={"outline"}
+            size={"icon"}
+            className={"rounded-[4px]"}
+            onClick={handleShare}
+          >
             <LuShare2 />
           </Button>
           <Button

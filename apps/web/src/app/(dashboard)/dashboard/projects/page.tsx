@@ -5,7 +5,7 @@ import { getProjects } from "@/lib/api/projects-api";
 import { serverApi } from "@/lib/api/server-api";
 import { getQueryClient } from "@/lib/query/get-query-client";
 
-const ProjectsPage = async () => {
+const ProjectsListingPage = async () => {
   const queryClient = getQueryClient();
   const api = await serverApi();
 
@@ -21,4 +21,4 @@ const ProjectsPage = async () => {
   );
 };
 
-export default ProjectsPage;
+export default ProjectsListingPage;

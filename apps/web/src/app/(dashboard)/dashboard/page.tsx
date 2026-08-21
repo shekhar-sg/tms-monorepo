@@ -27,10 +27,16 @@ import { getProjects } from "@/lib/api/projects-api";
 import { serverApi } from "@/lib/api/server-api";
 import { getTasks } from "@/lib/api/tasks-api";
 import { STATUS_OPTIONS } from "@/lib/tasks/filter-config";
+import {cookies} from "next/headers";
 
 const DashboardPage = async () => {
   const api = await serverApi();
+  const cookieStore = await cookies();
 
+  console.log(
+      "accessToken exists:",
+      Boolean(cookieStore.get("accessToken")),
+  );
   const [tasks, projects] = await Promise.all([
     getTasks(undefined, undefined, api),
     getProjects(api),

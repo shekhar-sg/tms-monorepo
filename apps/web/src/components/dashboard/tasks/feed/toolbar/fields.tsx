@@ -67,30 +67,32 @@ const Fields = (props: FieldsProps) => {
           </ToggleGroup>
         </PopoverHeader>
 
-        <FieldGroup className={"gap-1.5"}>
-          {fields.map((field, index) => (
-            <Field
-              key={field.id + index}
-              orientation={"horizontal"}
-              role={"switch"}
-            >
-              <FieldLabel
-                htmlFor={field.id + index}
-                className={"h-6.5 cursor-pointer"}
+        {currentView !== "board" && (
+          <FieldGroup className={"gap-1.5"}>
+            {fields.map((field, index) => (
+              <Field
+                key={field.id + index}
+                orientation={"horizontal"}
+                role={"switch"}
               >
-                {field.label}
-              </FieldLabel>
-              <Checkbox
-                id={field.id}
-                checked={visibleFields.includes(field.id)}
-                onCheckedChange={(checked) => {
-                  handleFieldChange(field.id, checked);
-                }}
-                className={"bg-input border-input text-foreground"}
-              />
-            </Field>
-          ))}
-        </FieldGroup>
+                <FieldLabel
+                  htmlFor={field.id}
+                  className={"h-6.5 cursor-pointer"}
+                >
+                  {field.label}
+                </FieldLabel>
+                <Checkbox
+                  id={field.id}
+                  checked={visibleFields.includes(field.id)}
+                  onCheckedChange={(checked) => {
+                    handleFieldChange(field.id, checked);
+                  }}
+                  className={"bg-input border-input text-foreground"}
+                />
+              </Field>
+            ))}
+          </FieldGroup>
+        )}
       </PopoverContent>
     </Popover>
   );

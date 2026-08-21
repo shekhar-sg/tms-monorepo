@@ -17,10 +17,12 @@ interface KanbanBoardProps {
   items: TasksByStatus;
   setGroups: Dispatch<SetStateAction<TaskStatusGroup[]>>;
   setItems: Dispatch<SetStateAction<TasksByStatus>>;
+  reorder?: boolean;
 }
 
 const Board = (props: KanbanBoardProps) => {
-  const { groups, setGroups, items, setItems } = props;
+  const { groups, setGroups, items, setItems, reorder = false } = props;
+
   const { mutate: moveTaskMutation } = useMoveTask();
 
   const previousItems = useRef(items);
@@ -41,7 +43,7 @@ const Board = (props: KanbanBoardProps) => {
 
     const taskId = String(source.id);
 
-    const position = getTaskPosition(items, groups, taskId);
+    const position = getTaskPosition(items, groups, taskId, reorder);
 
     if (!position) {
       return;
@@ -97,6 +99,7 @@ const Board = (props: KanbanBoardProps) => {
                   index={index}
                   group={group.id}
                   task={task}
+                  reorder={reorder}
                 />
               ))}
             </KanbanColumn>
@@ -112,7 +115,8 @@ export default Board;
 const getTaskPosition = (
   items: TasksByStatus,
   columns: TaskStatusGroup[],
-  taskId: string
+  taskId: string,
+  reorder: boolean
 ) => {
   for (const column of columns) {
     const tasks = items[column.id];
@@ -122,7 +126,13 @@ const getTaskPosition = (
     if (index === -1) {
       continue;
     }
-
+    if (!reorder) {
+      return {
+        status: column.id,
+        beforeTaskId: null,
+        afterTaskId: null,
+      };
+    }
     const beforeTask = tasks[index - 1];
     const afterTask = tasks[index + 1];
 

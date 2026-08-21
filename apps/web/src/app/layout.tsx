@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </QueryProvider>
+        <Analytics />
       </body>
     </html>
   );

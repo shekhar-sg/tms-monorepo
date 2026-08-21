@@ -1,7 +1,8 @@
 "use client";
 
+import type { Task } from "@repo/types";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Board from "@/components/dashboard/tasks/feed/board";
 import ListView from "@/components/dashboard/tasks/feed/list";
 import { useTaskFeedPreferences } from "@/components/dashboard/tasks/feed/task-feed-preferences-context";
@@ -15,30 +16,44 @@ import Toolbar from "@/components/dashboard/tasks/feed/toolbar";
 import { useTasks } from "@/hooks/tasks/use-tasks";
 import { parseTaskQueryParams } from "@/lib/tasks/task-query";
 
-const TaskFeedShell = () => {
-  const searchParams = useSearchParams();
-  const query = parseTaskQueryParams({
-    search: searchParams.get("search") ?? undefined,
-    status: searchParams.get("status") ?? undefined,
-    priority: searchParams.get("priority") ?? undefined,
-    labels: searchParams.get("labels") ?? undefined,
-    dueDateFrom: searchParams.get("dueDateFrom") ?? undefined,
-    dueDateTo: searchParams.get("dueDateTo") ?? undefined,
-  });
+const EMPTY_TASKS: Task[] = [];
 
-  const { data: tasks = [] } = useTasks(undefined, query);
+const TaskFeedShell = ({
+  projectId,
+  reorder,
+}: {
+  projectId?: string;
+  reorder: boolean;
+}) => {
+  const searchParams = useSearchParams();
+
+  const query = useMemo(
+    () =>
+      parseTaskQueryParams({
+        search: searchParams.get("search") ?? undefined,
+        status: searchParams.get("status") ?? undefined,
+        priority: searchParams.get("priority") ?? undefined,
+        labels: searchParams.get("labels") ?? undefined,
+        dueDateFrom: searchParams.get("dueDateFrom") ?? undefined,
+        dueDateTo: searchParams.get("dueDateTo") ?? undefined,
+      }),
+    [searchParams]
+  );
+
+  const { data: tasks } = useTasks(projectId ?? undefined, query);
+  const safeTasks = tasks ?? EMPTY_TASKS;
 
   const [statusGroups, setStatusGroups] =
     useState<TaskStatusGroup[]>(taskStatusGroups);
   const [tasksByStatus, setTasksByStatus] = useState<TasksByStatus>(
-    groupTasksByStatus(tasks)
+    groupTasksByStatus(safeTasks)
   );
 
   const { view, setView } = useTaskFeedPreferences();
 
   useEffect(() => {
-    setTasksByStatus(groupTasksByStatus(tasks));
-  }, [tasks]);
+    setTasksByStatus(groupTasksByStatus(safeTasks));
+  }, [safeTasks]);
 
   return (
     <div className="flex flex-col gap-1 p-4">
@@ -50,6 +65,7 @@ const TaskFeedShell = () => {
           items={tasksByStatus}
           setGroups={setStatusGroups}
           setItems={setTasksByStatus}
+          reorder={reorder}
         />
       ) : (
         <ListView

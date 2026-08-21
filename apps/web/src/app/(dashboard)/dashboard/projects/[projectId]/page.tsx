@@ -5,34 +5,33 @@ import { taskKeys } from "@/hooks/tasks/task-keys";
 import { serverApi } from "@/lib/api/server-api";
 import { getTasks } from "@/lib/api/tasks-api";
 import { getQueryClient } from "@/lib/query/get-query-client";
-import {
-  parseTaskQueryParams,
-  type TaskQueryParams,
-} from "@/lib/tasks/task-query";
+import { parseTaskQueryParams, TaskQueryParams } from "@/lib/tasks/task-query";
 
-interface TasksPageProps {
+interface ProjectPageProps {
+  params: Promise<{
+    projectId: string;
+  }>;
   searchParams: Promise<TaskQueryParams>;
 }
 
-const TasksPage = async ({ searchParams }: TasksPageProps) => {
-  const params = await searchParams;
-
-  const query = parseTaskQueryParams(params);
-
+const ProjectPage = async ({ params, searchParams }: ProjectPageProps) => {
+  const { projectId } = await params;
+  const queryParams = await searchParams;
+  const query = parseTaskQueryParams(queryParams);
   const queryClient = getQueryClient();
   const api = await serverApi();
 
   await queryClient.prefetchQuery({
-    queryKey: taskKeys.list(undefined, query),
-    queryFn: () => getTasks(undefined, query, api),
+    queryKey: taskKeys.list(projectId, query),
+    queryFn: () => getTasks(projectId, query, api),
   });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <TaskFeedPreferencesProvider>
-        <TaskFeedShell reorder={false}/>
+        <TaskFeedShell reorder={true} projectId={projectId}/>
       </TaskFeedPreferencesProvider>
     </HydrationBoundary>
   );
 };
 
-export default TasksPage;
+export default ProjectPage;
