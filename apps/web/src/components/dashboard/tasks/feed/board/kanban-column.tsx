@@ -51,6 +51,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
   const { ref: droppableRef, isDropTarget } = useDroppable({
     id,
     type: "column",
+    accept:"task",
     collisionPriority: CollisionPriority.Low,
   });
 

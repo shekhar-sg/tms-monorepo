@@ -100,10 +100,7 @@ const SortableCard = ({ task, index, group }: KanbanCardProps) => {
 const DraggableCard = ({ task }: KanbanCardProps) => {
   const { ref, isDragging } = useDraggable({
     id: task.id,
-    data: {
-      type: "task",
-      task,
-    },
+    type: "task",
   });
 
   return <CardContentView task={task} ref={ref} isDragging={isDragging} />;
