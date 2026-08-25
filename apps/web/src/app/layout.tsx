@@ -3,6 +3,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
+import { VisitorTracker } from "@/components/visitor-tracker";
 import { cn } from "@/lib/utils";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -37,6 +38,7 @@ export default function RootLayout({
           </ThemeProvider>
         </QueryProvider>
         <Analytics />
+        <VisitorTracker />
       </body>
     </html>
   );
