@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
       country: geo.country,
       latitude: geo.latitude,
       longitude: geo.longitude,
+      postalCode: geo.postalCode,
     },
 
     userAgent,
@@ -25,5 +26,5 @@ export async function POST(request: NextRequest) {
   });
   console.log("=============================");
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, geo });
 }
