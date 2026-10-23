@@ -228,6 +228,26 @@ export class TasksService {
 
     const activities = this.buildTaskActivities(existingTask, data);
 
+    if (data.members?.length) await this.validateIds("user", data.members);
+    if (data.labels?.length) await this.validateIds("label", data.labels);
+    if (data.reporterId) await this.validateIds("user", [data.reporterId]);
+
+    if (data.projectId && data.projectId !== existingTask.projectId) {
+      await this.validateParentTask(
+        data.parentId === undefined ? existingTask.parentId : data.parentId,
+        data.projectId,
+        userId
+      );
+      const children = await this.prisma.task.count({
+        where: { parentId: id },
+      });
+      if (children > 0) {
+        throw new BadRequestException(
+          "Move or remove subtasks before changing this task's project"
+        );
+      }
+    }
+
     const task = await this.prisma.$transaction(async (tx) => {
       const updatedTask = await tx.task.update({
         where: {
@@ -331,6 +351,7 @@ export class TasksService {
       select: {
         id: true,
         projectId: true,
+        parentId: true,
         status: true,
         position: true,
       },
@@ -344,6 +365,12 @@ export class TasksService {
       if (neighbor.projectId !== task.projectId) {
         throw new BadRequestException(
           "Adjacent tasks must belong to the same project"
+        );
+      }
+
+      if (neighbor.parentId !== task.parentId) {
+        throw new BadRequestException(
+          "Adjacent tasks must belong to the same parent"
         );
       }
 
@@ -374,6 +401,7 @@ export class TasksService {
       const lastTask = await this.prisma.task.findFirst({
         where: {
           projectId: task.projectId,
+          parentId: task.parentId,
           status: data.status,
           id: {
             not: task.id,
@@ -390,13 +418,23 @@ export class TasksService {
       position = (lastTask?.position ?? 0) + 100;
     }
 
-    return this.prisma.task.update({
-      where: { id },
-      data: {
-        status: data.status,
-        position,
-      },
-      include: taskInclude,
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.task.update({
+        where: { id },
+        data: { status: data.status, position },
+        include: taskInclude,
+      });
+      if (task.status !== data.status) {
+        await tx.taskActivity.create({
+          data: {
+            taskId: id,
+            userId,
+            type: "STATUS_CHANGED",
+            metadata: { from: task.status, to: data.status },
+          },
+        });
+      }
+      return updated;
     });
   }
 

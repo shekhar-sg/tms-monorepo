@@ -51,9 +51,9 @@ const Fields = (props: FieldsProps) => {
             value={[currentView]}
             variant={"outline"}
             className={"w-full gap-0"}
-            onValueChange={(value) =>
-              onViewChange(value[0] as "board" | "list")
-            }
+            onValueChange={(value) => {
+              if (value[0] === "board" || value[0] === "list") onViewChange(value[0]);
+            }}
           >
             <ToggleGroupItem className={"flex-1 rounded-r-none"} value={"list"}>
               <PiListBold /> List

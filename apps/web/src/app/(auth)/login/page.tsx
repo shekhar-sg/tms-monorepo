@@ -1,94 +1,99 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { RiGoogleFill } from "react-icons/ri";
-import { TbBrandPrisma } from "react-icons/tb";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  ArrowRight,
+  CheckCheck,
+  Layers3,
+  LayoutDashboard,
+  ListTodo,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { useGuestLogin } from "@/hooks/auth/use-auth";
 
-const LoginPage = () => {
+export default function LoginPage() {
   const router = useRouter();
-
   const { mutate: loginAsGuest, isPending } = useGuestLogin();
-  const handleGuestLogin = () => {
-    loginAsGuest(undefined, {
-      onSuccess: () => {
-        router.push("/dashboard");
-      },
-    });
-  };
   return (
-    <div
-      className={"flex flex-col min-h-screen items-center justify-center gap-6"}
-    >
-      <div className={"flex items-center gap-2"}>
-        <div
-          className={
-            "bg-sidebar-primary size-6 rounded-md flex items-center justify-center"
-          }
-        >
-          <TbBrandPrisma
-            className={"text-sidebar-primary-foreground"}
-            strokeWidth={2.2}
-          />
+    <main className="grid min-h-svh lg:grid-cols-2">
+      <section className="relative hidden flex-col justify-between overflow-hidden bg-zinc-950 p-12 text-white lg:flex xl:p-16">
+        <div className="flex items-center gap-3 text-lg font-semibold">
+          <Layers3 className="size-7" />
+          Task Manager
         </div>
-        <span className={"text-sm leading-none font-semibold"}>Pyramid</span>
-      </div>
-      <Card
-        className={
-          "rounded-4xl ring-1 shadow-xs p-6! gap-6 max-w-96 w-full text-center"
-        }
-      >
-        <CardHeader className={"gap-1.5"}>
-          <CardTitle className={"text-xl font-semibold lead-[100%]"}>
-            Let's get back on track
-          </CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className={"flex flex-col gap-3"}>
+        <div className="relative z-10 max-w-lg space-y-6">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">
+            Clarity for every workday
+          </p>
+          <h1 className="text-5xl font-semibold leading-[1.1] tracking-tight xl:text-6xl">
+            Great work starts
+            <br />
+            with a clear plan.
+          </h1>
+          <p className="max-w-md text-base leading-relaxed text-zinc-400">
+            Bring projects, tasks, and conversations into one focused workspace.
+            Know what matters. Keep moving forward.
+          </p>
+          <div className="space-y-4 pt-6">
+            {[
+              { icon: ListTodo, text: "Track every task from idea to done" },
+              {
+                icon: LayoutDashboard,
+                text: "See your priorities in a single view",
+              },
+              { icon: CheckCheck, text: "Keep project updates in context" },
+            ].map(({ icon: Icon, text }) => (
+              <div
+                key={text}
+                className="flex items-center gap-3 text-sm text-zinc-300"
+              >
+                <span className="rounded-lg border border-white/10 bg-white/5 p-2">
+                  <Icon className="size-4" />
+                </span>
+                {text}
+              </div>
+            ))}
+          </div>
+        </div>
+        <p className="text-xs text-zinc-500">Less friction. More focus.</p>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-40 -bottom-48 size-[32rem] rounded-full border border-white/5 shadow-[0_0_0_80px_#ffffff03,0_0_0_160px_#ffffff02]"
+        />
+      </section>
+      <section className="flex flex-col items-center justify-center bg-background px-6 py-12 sm:px-12">
+        <div className="w-full max-w-sm">
+          <div className="mb-12 flex items-center gap-3 text-sm font-semibold lg:hidden">
+            <Layers3 className="size-6" />
+            Task Manager
+          </div>
+          <span className="mb-6 flex size-12 items-center justify-center rounded-2xl border bg-card shadow-sm">
+            <Layers3 className="size-6" />
+          </span>
+          <h2 className="text-3xl font-semibold tracking-tight">
+            Welcome to your workspace
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            Get organized, set priorities, and bring your next project to life.
+          </p>
           <Button
-            className={"cursor-pointer rounded-full"}
-            onClick={handleGuestLogin}
+            className="mt-8 h-11 w-full"
             disabled={isPending}
+            onClick={() => {
+              if (!isPending)
+                loginAsGuest(undefined, {
+                  onSuccess: () => router.replace("/dashboard"),
+                });
+            }}
           >
-            {isPending ? "Signing in..." : "Continue as Guest"}
+            {isPending ? "Preparing your workspace…" : "Continue as guest"}
+            <ArrowRight />
           </Button>
-          <Button
-            variant={"outline"}
-            className={"cursor-pointer rounded-full"}
-            disabled
-          >
-            <RiGoogleFill />
-            Login with Google
-          </Button>
-        </CardContent>
-      </Card>
-      <div
-        className={
-          "w-full max-w-52 font-normal text-xs text-muted-foreground text-center"
-        }
-      >
-        By clicking continue, you agree to our{" "}
-        <Link href={"/"} className={"underline! underline-offset-3!"}>
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link href={"/"} className={"underline! underline-offset-3!"}>
-          Privacy Policy
-        </Link>
-      </div>
-    </div>
+          <p className="mt-4 text-center text-xs leading-relaxed text-muted-foreground">
+            Start with a guest workspace. No account setup required.
+          </p>
+        </div>
+      </section>
+    </main>
   );
-};
-
-export default LoginPage;
+}

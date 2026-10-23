@@ -35,9 +35,9 @@ const TaskMetadataProperties = ({ control }: TaskMetadataPropertiesProps) => {
             control={control}
             Trigger={({ range }) => (
               <Badge
-                variant={"destructive"}
+                variant={"link"}
                 render={
-                  <Button variant={"destructive"} className={"cursor-pointer"}>
+                  <Button variant={"ghost"} className={"cursor-pointer"}>
                     <CalendarIcon />
                     {range?.from
                       ? range.to
@@ -77,7 +77,7 @@ const TaskMetadataProperties = ({ control }: TaskMetadataPropertiesProps) => {
                 <InputGroupInput
                   {...field}
                   value={field.value ?? ""}
-                  placeholder={"Add document or link..."}
+                  placeholder={"Add document link..."}
                   className={"text-xs focus-visible:ring-0 h-fit"}
                 />
               </InputGroup>

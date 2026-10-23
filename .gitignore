@@ -38,3 +38,7 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Local package store and TypeScript cache
+.pnpm-store/
+*.tsbuildinfo

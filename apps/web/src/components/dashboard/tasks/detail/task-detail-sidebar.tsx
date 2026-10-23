@@ -5,11 +5,6 @@ import { CalendarIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { type Control, Controller } from "react-hook-form";
 import { PiArrowRight } from "react-icons/pi";
-import FilterSelect from "@/components/dashboard/tasks/feed/shared/filter-select";
-import {
-  PRIORITY_OPTIONS,
-  STATUS_OPTIONS,
-} from "@/lib/tasks/filter-config";
 import CollapsibleCard from "@/components/dashboard/tasks/detail/collapsible-card";
 import DatePicker from "@/components/dashboard/tasks/detail/date-picker";
 import LabelsCombobox from "@/components/dashboard/tasks/detail/labels-combobox";
@@ -18,10 +13,12 @@ import ProjectSelect from "@/components/dashboard/tasks/detail/project-select";
 import ReporterSelect from "@/components/dashboard/tasks/detail/reporter-select";
 import type { TaskFormValues } from "@/components/dashboard/tasks/detail/task-page";
 import TaskUpdates from "@/components/dashboard/tasks/detail/task-updates";
+import FilterSelect from "@/components/dashboard/tasks/feed/shared/filter-select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError } from "@/components/ui/field";
 import { Item, ItemActions, ItemTitle } from "@/components/ui/item";
+import { PRIORITY_OPTIONS, STATUS_OPTIONS } from "@/lib/tasks/filter-config";
 import { cn } from "@/lib/utils";
 
 interface TaskSidebarProps {
@@ -34,7 +31,7 @@ const TaskDetailsSidebar = (props: TaskSidebarProps) => {
   const { isOpen, control, taskId } = props;
   return (
     <aside
-      className={cn("max-w-xs space-y-5", {
+      className={cn("w-full shrink-0 space-y-5 md:w-72", {
         hidden: !isOpen,
       })}
     >

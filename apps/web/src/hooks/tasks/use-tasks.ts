@@ -35,8 +35,12 @@ export function useCreateTask() {
     mutationFn: createTask,
 
     onSuccess: (_, variables) => {
+      if (variables.parentId)
+        queryClient.invalidateQueries({
+          queryKey: taskKeys.detail(variables.parentId),
+        });
       queryClient.invalidateQueries({
-        queryKey: taskKeys.list(variables.projectId),
+        queryKey: taskKeys.lists(),
       });
     },
   });
@@ -67,9 +71,13 @@ export function useMoveTask() {
 
   return useMutation({
     mutationFn: moveTask,
+    scope: { id: "task-moves" },
 
     onSuccess: (task) => {
       queryClient.setQueryData(taskKeys.detail(task.id), task);
+      queryClient.invalidateQueries({
+        queryKey: taskActivityKeys.task(task.id),
+      });
 
       queryClient.invalidateQueries({
         queryKey: taskKeys.lists(),
@@ -85,6 +93,7 @@ export function useDeleteTask() {
     mutationFn: deleteTask,
 
     onSuccess: (_, taskId) => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.all });
       queryClient.removeQueries({
         queryKey: taskKeys.detail(taskId),
       });

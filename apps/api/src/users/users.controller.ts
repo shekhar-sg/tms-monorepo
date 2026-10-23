@@ -8,9 +8,10 @@ import {
   UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
-import type { UpdateUserInput } from "@repo/types";
+import { type UpdateUserInput, updateUserSchema } from "@repo/types";
 import type { Request } from "express";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { ZodValidationPipe } from "../common/pipes/zod-validation.pipe";
 import { UsersService } from "./users.service";
 
 @UseGuards(JwtAuthGuard)
@@ -30,7 +31,10 @@ export class UsersController {
   }
 
   @Patch("me")
-  updateMe(@Req() request: Request, @Body() data: UpdateUserInput) {
+  updateMe(
+    @Req() request: Request,
+    @Body(new ZodValidationPipe(updateUserSchema)) data: UpdateUserInput
+  ) {
     if (!request.user) throw new UnauthorizedException();
     return this.usersService.updateMe(request.user.userId, data);
   }

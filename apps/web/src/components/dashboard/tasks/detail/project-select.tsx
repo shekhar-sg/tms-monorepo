@@ -38,7 +38,7 @@ const ProjectSelect = ({ control }: ProjectSelectProps) => {
                     size={"sm"}
                     className={"h-8 justify-start gap-2 px-2"}
                   >
-                    {selectedProject?.title ?? "Select projects"}
+                    {selectedProject?.title ?? "Select project"}
                   </Button>
                 }
               />

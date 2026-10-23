@@ -71,7 +71,7 @@ const LabelsCombobox = ({ control }: { control?: Control<TaskFormValues> }) => {
                       );
                     })}
 
-                    <ComboboxChipsInput />
+                    <ComboboxChipsInput placeholder={"Select labels"} />
                   </>
                 )}
               </ComboboxValue>

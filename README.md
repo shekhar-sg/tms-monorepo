@@ -1,159 +1,68 @@
-# Turborepo starter
+# Task Manager
 
-This Turborepo starter is maintained by the Turborepo core team.
+A task and project workspace built with Next.js, NestJS, PostgreSQL, and Prisma. The monorepo uses pnpm workspaces and Turborepo; shared Zod schemas and TypeScript contracts live in `packages/types`.
 
-## Using this example
+## Local setup
 
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Use Node.js 22.12 or newer and pnpm 9 (the version declared in `package.json`).
 
 ```sh
-cd my-turborepo
-turbo build
+pnpm install --frozen-lockfile
 ```
 
-Without global `turbo`, use your package manager:
+Create `apps/api/.env` with your own values:
+
+```dotenv
+NODE_ENV=development
+PORT=4000
+DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/task_manager
+JWT_SECRET=REPLACE_WITH_A_RANDOM_SECRET_AT_LEAST_32_CHARACTERS
+FRONTEND_URL=http://localhost:3000
+```
+
+Guest login requires no OAuth setup. The existing Google integration requires valid `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_CALLBACK_URL` if it is enabled separately.
+
+Create `apps/web/.env.local`:
+
+```dotenv
+API_URL=http://localhost:4000
+```
+
+Browser requests use the web application's `/api` proxy, and server requests use `API_URL`. Set it consistently to the intended API for each environment; rewrites are evaluated at build time. Cookies are HttpOnly and same-site. Production requires HTTPS.
+
+Initialize a local database (use a separate database for testing):
 
 ```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+pnpm --filter api prisma:generate
+pnpm --filter api prisma:migrate
+pnpm --filter @repo/types build
+pnpm dev
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Open http://localhost:3000 and continue as a guest. Create a project, then create tasks within it. Do not run development migrations against a production database.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Checks
 
 ```sh
-turbo build --filter=docs
+pnpm lint
+pnpm check-types
+pnpm test
+pnpm build
 ```
 
-Without global `turbo`:
+`lint` and `check-types` do not rewrite source. `pnpm check` checks formatting and imports without rewriting files. `pnpm format` explicitly formats files. API tests mock persistence; the web tests use Node's built-in runner for URL parsing and filter regressions.
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+The web dev/build scripts use webpack because the installed Next.js Turbopack CSS worker fails on this Windows environment. Typography uses a system font stack, with no network font fetch needed for builds.
 
-### Develop
+## Behavior and verification
 
-To develop all apps and packages, run the following command:
+- Existing accent colors and light/dark/system preferences remain available in the user menu.
+- Task edits validate and save after a short delay, with serialized writes, save status, and retry after a failed save. The pause button suspends autosave; resume before leaving to persist edits.
+- Task/project deletion requires confirmation. Project deletion also removes its task data.
+- Invalid URL filters are ignored independently; the API still validates input strictly.
+- A task update is partial: omitted fields stay unchanged; explicit null clears supported optional fields, and empty arrays clear members or labels.
+- Board status updates and status activity records share a database transaction.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+For release acceptance, verify guest sign-in; project creation/inline editing; task creation, autosave, subtasks, comments/replies, moves and deletion; profile and preference persistence; expired-session redirects; and loading/error/empty states. Check 390px, 768px, and desktop widths, both themes, and all accents. Use disposable accounts/projects and clean them up after testing.
 
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Production deployment and database migrations are separate steps; this refresh does not require a schema migration.

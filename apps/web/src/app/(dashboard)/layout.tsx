@@ -18,10 +18,12 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
         <BreadcrumbProvider>
           <SidebarProvider className={"min-h-screen"}>
             <AppSidebar />
-            <SidebarInset className={"flex flex-col h-screen overflow-scroll"}>
+            <SidebarInset
+              className={"flex min-w-0 flex-col h-svh overflow-hidden"}
+            >
               <header
                 className={
-                  "sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4"
+                  "relative z-30 flex h-14 shrink-0 items-center gap-2 border-b bg-card/95 px-4 backdrop-blur-sm sm:px-6"
                 }
               >
                 <SidebarTrigger className={"-ml-1"} />
@@ -31,7 +33,9 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
                 />
                 <DashboardBreadcrumb />
               </header>
-              <main>{children}</main>
+              <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+                {children}
+              </div>
             </SidebarInset>
           </SidebarProvider>
         </BreadcrumbProvider>

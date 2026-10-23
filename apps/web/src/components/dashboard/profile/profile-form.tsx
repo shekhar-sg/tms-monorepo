@@ -46,15 +46,15 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
     name: user.name ?? "",
     username: user.username ?? "",
     title: user.title ?? "",
-    email: user.email ?? "",
+    email: user.email ?? undefined,
     avatar: user.avatar ?? "",
   };
 
   const {
     register,
     control,
-    reset,
     getValues,
+    trigger,
     formState: { errors },
   } = useForm<UpdateUserInput>({
     defaultValues,
@@ -76,30 +76,23 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
       return;
     }
 
-    const updatedUser = await updateUser(payload);
-
-    reset({
-      name: updatedUser.name ?? "",
-      username: updatedUser.username ?? "",
-      title: updatedUser.title ?? "",
-      email: updatedUser.email ?? "",
-      avatar: updatedUser.avatar ?? "",
-    });
+    await updateUser(payload);
   };
 
   const { mutateAsync: leaveWorkspace, isPending: isLeaving } =
     useLeaveWorkspace();
 
   return (
-    <div
-      className={
-        "flex min-h-[calc(100svh-300px)] flex-col items-center justify-center gap-12 p-10 max-sm:gap-8 max-sm:p-4"
-      }
-    >
-      <div className={"flex w-full max-w-160 flex-col gap-8"}>
-        <h1 className={"ml-4 text-2xl font-medium"}>Profile</h1>
+    <div className={"workspace-page flex flex-col gap-8"}>
+      <div className="flex w-full max-w-3xl flex-col gap-6">
+        <header>
+          <h1 className="page-heading">Your profile</h1>
+          <p className="page-description">
+            Manage your personal details and workspace identity.
+          </p>
+        </header>
 
-        <Card className={"rounded-md"}>
+        <Card className="rounded-xl border shadow-sm ring-0">
           <CardHeader className={"flex items-center justify-between"}>
             <CardTitle>Profile picture</CardTitle>
 
@@ -225,7 +218,7 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
         <div className={"w-full space-y-6"}>
           <h2 className={"ml-4"}>Workspace access</h2>
 
-          <Card className={"rounded-md"}>
+          <Card className="rounded-xl border shadow-sm ring-0">
             <CardContent>
               <Item className={"p-0"}>
                 <ItemContent>
@@ -279,6 +272,7 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
       </div>
 
       <AutoSave
+        validate={trigger}
         getValues={getValues}
         control={control}
         transform={(values) => values}

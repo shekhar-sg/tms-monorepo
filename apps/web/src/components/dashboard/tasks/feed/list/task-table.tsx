@@ -8,6 +8,7 @@ import {
 } from "@/components/dashboard/tasks/feed/list/task-list-column";
 import DataTable from "@/components/dashboard/tasks/feed/shared/data-table";
 import { useTaskFeedPreferences } from "@/components/dashboard/tasks/feed/task-feed-preferences-context";
+import { useCreateTaskHref } from "@/hooks/tasks/use-create-task-href";
 
 type TaskTableProps = {
   tasks: Task[];
@@ -15,8 +16,9 @@ type TaskTableProps = {
 };
 
 const TaskTable = ({ tasks, columnId }: TaskTableProps) => {
+  const createHref = useCreateTaskHref();
   const router = useRouter();
-  const handleAddTask = () => router.push("/dashboard/tasks/new");
+  const handleAddTask = () => router.push(createHref);
   const { visibleFields } = useTaskFeedPreferences();
   const columnVisibility = {
     priority: visibleFields.includes("priority"),

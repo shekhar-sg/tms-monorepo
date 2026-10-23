@@ -58,9 +58,9 @@ const DataTable = <TData extends RowData, TValue>({
   const columnCount = table.getAllLeafColumns().length;
 
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="min-w-0 overflow-hidden rounded-xl border bg-card shadow-sm">
       <Table>
-        <TableHeader className={"bg-accent"}>
+        <TableHeader className={"bg-muted/50"}>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (

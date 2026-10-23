@@ -17,7 +17,7 @@ export class AuthController {
     response.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
+      sameSite: "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
@@ -56,5 +56,16 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   getCurrentUser(@Req() request: Request) {
     return request.user;
+  }
+
+  @Post("logout")
+  logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+    return { success: true };
   }
 }

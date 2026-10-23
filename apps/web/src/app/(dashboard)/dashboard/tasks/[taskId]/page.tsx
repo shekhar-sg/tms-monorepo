@@ -34,6 +34,7 @@ const TaskUpsertPage = async ({
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <TaskPage
+        key={taskId}
         taskId={taskId}
         projectId={projectId}
         parentId={parentId}

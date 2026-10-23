@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://tms-monorepo-api.vercel.app/:path*",
+        destination: `${process.env.API_URL || "http://localhost:4000"}/:path*`,
       },
     ];
   },

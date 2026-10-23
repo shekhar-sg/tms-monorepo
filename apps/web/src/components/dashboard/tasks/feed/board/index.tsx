@@ -23,7 +23,7 @@ interface KanbanBoardProps {
 const Board = (props: KanbanBoardProps) => {
   const { groups, setGroups, items, setItems, reorder = false } = props;
 
-  const { mutate: moveTaskMutation } = useMoveTask();
+  const { mutate: moveTaskMutation, isPending } = useMoveTask();
 
   const previousItems = useRef(items);
   const previousGroup = useRef(groups);
@@ -37,11 +37,18 @@ const Board = (props: KanbanBoardProps) => {
 
     const { source } = event.operation;
 
-    if (!source || source.type !== "task") {
+    if (source?.type !== "task" || isPending) {
       return;
     }
 
     const taskId = String(source.id);
+    const previousStatus = groups.find((group) =>
+      previousItems.current[group.id].some((task) => task.id === taskId)
+    )?.id;
+    const nextStatus = groups.find((group) =>
+      items[group.id].some((task) => task.id === taskId)
+    )?.id;
+    if (!reorder && previousStatus === nextStatus) return;
 
     const position = getTaskPosition(items, groups, taskId, reorder);
 
@@ -57,6 +64,7 @@ const Board = (props: KanbanBoardProps) => {
       {
         onError: () => {
           setItems(previousItems.current);
+          setGroups(previousGroup.current);
         },
       }
     );
@@ -71,7 +79,7 @@ const Board = (props: KanbanBoardProps) => {
       onDragOver={(event) => {
         const { source } = event.operation;
 
-        if (!source) return;
+        if (!source || isPending) return;
 
         if (source.type === "task") {
           setItems((current) => move(current, event));
@@ -83,8 +91,8 @@ const Board = (props: KanbanBoardProps) => {
       }}
       onDragEnd={handleDragEnd}
     >
-      <ScrollArea className="flex-1 border-none rounded-md border whitespace-nowrap">
-        <div className="flex flex-1 gap-4 m-2">
+      <ScrollArea className="min-w-0 w-full rounded-xl">
+        <div className="flex w-max min-w-full items-start gap-4 pb-4">
           {groups.map((group, index) => (
             <KanbanColumn
               key={group.id}

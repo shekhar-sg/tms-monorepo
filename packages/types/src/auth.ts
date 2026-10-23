@@ -23,10 +23,26 @@ export const authResponseSchema = z.object({
 
 export const updateUserSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100).optional(),
-  username: z.string().trim().min(1, "Username is required").max(50).optional(),
-  title: z.string().trim().min(1, "Title is required").max(100).optional(),
+  username: z
+    .string()
+    .trim()
+    .max(50)
+    .transform((value) => value || null)
+    .nullable()
+    .optional(),
+  title: z
+    .string()
+    .trim()
+    .max(100)
+    .transform((value) => value || null)
+    .nullable()
+    .optional(),
   email: z.email("Enter a valid email").optional(),
-  avatar: z.url("Enter a valid avatar URL").optional(),
+  avatar: z
+    .union([z.url("Enter a valid avatar URL"), z.literal("")])
+    .transform((value) => value || null)
+    .nullable()
+    .optional(),
 });
 
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;

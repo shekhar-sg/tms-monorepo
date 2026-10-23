@@ -4,11 +4,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3000",
-    "build": "next build",
+    "dev": "next dev --webpack --port 3000",
+    "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint --max-warnings 0",
-    "check-types": "next typegen && tsc --noEmit"
+    "lint": "biome lint src",
+    "check-types": "next typegen && tsc --noEmit",
+    "test": "node --experimental-strip-types --test test/*.test.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
