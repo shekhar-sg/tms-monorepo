@@ -1,15 +1,18 @@
 "use client";
 
+import { useSortable } from "@dnd-kit/react/sortable";
 import type { SubtaskSummary } from "@repo/types";
+import { GripVertical } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RiMoreLine } from "react-icons/ri";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 
 interface SubtaskListRowProps {
   row: SubtaskSummary;
+  index: number;
 }
 
 const priorityVariant = {
@@ -20,16 +23,42 @@ const priorityVariant = {
   LOW: "secondary",
 } as const;
 
-const SubtaskListRow = ({ row }: SubtaskListRowProps) => {
+const SubtaskListRow = ({ row, index }: SubtaskListRowProps) => {
   const router = useRouter();
+  const { ref, handleRef, isDragging } = useSortable({
+    id: row.id,
+    index,
+    group: row.status,
+    type: "task",
+    accept: "task",
+  });
 
   const handleOpen = () => {
     router.push(`/dashboard/tasks/${row.id}`);
   };
 
   return (
-    <TableRow>
-      <TableCell className={"font-medium"}>{row.title}</TableCell>
+    <TableRow ref={ref} className={isDragging ? "opacity-40" : ""}>
+      <TableCell className="font-medium">
+        <div className="flex items-center gap-2">
+          <Button
+            ref={handleRef}
+            variant="ghost"
+            size="icon-sm"
+            className="cursor-grab touch-none"
+            aria-label={`Move ${row.title}`}
+          >
+            <GripVertical />
+          </Button>
+          <span className={`status-dot status-${row.status}`} />
+          <Link
+            className="hover:text-primary"
+            href={`/dashboard/tasks/${row.id}`}
+          >
+            {row.title}
+          </Link>
+        </div>
+      </TableCell>
 
       <TableCell>
         <Badge variant={priorityVariant[row.priority]}>
@@ -38,24 +67,9 @@ const SubtaskListRow = ({ row }: SubtaskListRowProps) => {
       </TableCell>
 
       <TableCell>
-        {row.members?.length ? (
-          <div className={"flex -space-x-2"}>
-            {row.members.slice(0, 3).map((member) => (
-              <Avatar key={member.userId} size={"sm"}>
-                {member.user.avatar && <AvatarImage src={member.user.avatar} />}
-                <AvatarFallback>
-                  {member.user.name
-                    ?.split(" ")
-                    .map((part) => part[0])
-                    .join("")
-                    .slice(0, 2) ?? "U"}
-                </AvatarFallback>
-              </Avatar>
-            ))}
-          </div>
-        ) : (
-          <span className={"text-muted-foreground"}>—</span>
-        )}
+        <Badge variant="secondary">
+          {row.status.replaceAll("_", " ").toLowerCase()}
+        </Badge>
       </TableCell>
 
       <TableCell className={"text-muted-foreground"}>

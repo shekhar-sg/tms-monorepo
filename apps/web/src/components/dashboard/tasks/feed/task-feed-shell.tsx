@@ -1,17 +1,13 @@
 "use client";
 
-import { useBreadcrumb } from "@/providers/breadcrumb-context";
-
 import type { Task } from "@repo/types";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import Board from "@/components/dashboard/tasks/feed/board";
 import ListView from "@/components/dashboard/tasks/feed/list";
 import { useTaskFeedPreferences } from "@/components/dashboard/tasks/feed/task-feed-preferences-context";
 import {
-  groupTasksByStatus,
-  type TaskStatusGroup,
   type TasksByStatus,
   taskStatusGroups,
 } from "@/components/dashboard/tasks/feed/task-feed-utils";
@@ -19,21 +15,19 @@ import Toolbar from "@/components/dashboard/tasks/feed/toolbar";
 import { Button } from "@/components/ui/button";
 import { QueryState } from "@/components/ui/query-state";
 import { useProject, useProjects } from "@/hooks/projects/use-projects";
-
 import { useTasks } from "@/hooks/tasks/use-tasks";
-
 import { parseTaskQueryParams } from "@/lib/tasks/task-query";
+import { useBreadcrumb } from "@/providers/breadcrumb-context";
+import { TaskOrdering } from "./task-ordering";
 
 const EMPTY_TASKS: Task[] = [];
 
 const TaskFeedShell = ({
   projectId,
-
-  reorder,
 }: {
   projectId?: string;
 
-  reorder: boolean;
+  reorder?: boolean;
 }) => {
   const searchParams = useSearchParams();
 
@@ -77,28 +71,49 @@ const TaskFeedShell = ({
 
   const safeTasks = tasks ?? EMPTY_TASKS;
 
-  const [statusGroups, setStatusGroups] =
-    useState<TaskStatusGroup[]>(taskStatusGroups);
-
-  const [tasksByStatus, setTasksByStatus] = useState<TasksByStatus>(
-    groupTasksByStatus(safeTasks)
+  const { view, setView, sort, columns, setColumns } = useTaskFeedPreferences();
+  const statusGroups = columns.map(
+    (id) => taskStatusGroups.find((g) => g.id === id)!
   );
-
-  const { view, setView } = useTaskFeedPreferences();
-
-  useEffect(() => {
-    setTasksByStatus(groupTasksByStatus(safeTasks));
-  }, [safeTasks]);
+  const manual = sort === "manual" && !filtered;
+  const priorityRank = { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3, NONE: 4 };
+  const sorted = (items: TasksByStatus): TasksByStatus =>
+    Object.fromEntries(
+      Object.entries(items).map(([status, tasks]) => [
+        status,
+        sort === "manual"
+          ? tasks
+          : [...tasks].sort((a, b) => {
+              const result =
+                sort === "priority"
+                  ? priorityRank[a.priority] - priorityRank[b.priority]
+                  : sort === "title"
+                    ? a.title.localeCompare(b.title)
+                    : sort === "created"
+                      ? Date.parse(b.createdAt) - Date.parse(a.createdAt)
+                      : (a.endDate ? Date.parse(a.endDate) : Infinity) -
+                        (b.endDate ? Date.parse(b.endDate) : Infinity);
+              return (
+                result || a.position - b.position || a.id.localeCompare(b.id)
+              );
+            }),
+      ])
+    ) as TasksByStatus;
 
   return (
     <div className="workspace-page flex min-w-0 flex-col gap-6">
-      {project && (
-        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-          {project.title}
+      <Toolbar
+        view={view}
+        onViewChange={setView}
+        page={"tasks"}
+        title={project?.title}
+      />
+      {!manual && (
+        <p className="-mt-3 text-xs text-muted-foreground">
+          Status moves are available. Clear filters and choose Manual order to
+          reorder tasks.
         </p>
       )}
-
-      <Toolbar view={view} onViewChange={setView} page={"tasks"} />
 
       {isPending ? (
         <QueryState loading title="Loading tasks…" />
@@ -142,21 +157,35 @@ const TaskFeedShell = ({
                 : "Create task"}
           </Button>
         </QueryState>
-      ) : view === "board" ? (
-        <Board
-          groups={statusGroups}
-          items={tasksByStatus}
-          setGroups={setStatusGroups}
-          setItems={setTasksByStatus}
-          reorder={reorder}
-        />
       ) : (
-        <ListView
+        <TaskOrdering
+          key={projectId ?? "all"}
+          tasks={safeTasks}
+          manual={manual}
           columns={statusGroups}
-          items={tasksByStatus}
-          setColumns={setStatusGroups}
-          setItems={setTasksByStatus}
-        />
+          onColumnsChange={(next, persist) =>
+            setColumns(
+              next.map((g) => g.id),
+              persist
+            )
+          }
+        >
+          {(items) =>
+            view === "board" ? (
+              <Board
+                groups={statusGroups}
+                items={sorted(items)}
+                reorder={manual}
+              />
+            ) : (
+              <ListView
+                columns={statusGroups}
+                items={sorted(items)}
+                reorder={manual}
+              />
+            )
+          }
+        </TaskOrdering>
       )}
     </div>
   );

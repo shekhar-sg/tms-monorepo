@@ -67,7 +67,7 @@ const UserMenu = () => {
               >
                 <Avatar>
                   <AvatarImage
-                    src={"https://github.com/shadcn.png"}
+                    src={user?.avatar ?? undefined}
                     alt={user?.name ?? "User"}
                   />
 
@@ -95,7 +95,7 @@ const UserMenu = () => {
               >
                 <Avatar size={"lg"}>
                   <AvatarImage
-                    src={"https://github.com/shadcn.png"}
+                    src={user?.avatar ?? undefined}
                     alt={user?.name ?? "User"}
                   />
 
@@ -113,6 +113,13 @@ const UserMenu = () => {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
+            {user?.isGuest && (
+              <DropdownMenuItem
+                onClick={() => window.location.assign("/api/auth/google")}
+              >
+                Save your work with Google
+              </DropdownMenuItem>
+            )}
             <DropdownMenuGroup>
               <PreferenceSelectOption
                 title={"Change Theme"}
@@ -131,7 +138,7 @@ const UserMenu = () => {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={()=>router.push("/profile")}>
+              <DropdownMenuItem onClick={() => router.push("/profile")}>
                 <PiGearBold />
                 Settings
               </DropdownMenuItem>

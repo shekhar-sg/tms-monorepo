@@ -1,155 +1,40 @@
 "use client";
-
-import { move } from "@dnd-kit/helpers";
-import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
-import { type Dispatch, type SetStateAction, useRef } from "react";
-import KanbanCard from "@/components/dashboard/tasks/feed/board/kanban-card";
-import KanbanColumn from "@/components/dashboard/tasks/feed/board/kanban-column";
-import type {
-  TaskStatusGroup,
-  TasksByStatus,
-} from "@/components/dashboard/tasks/feed/task-feed-utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useMoveTask } from "@/hooks/tasks/use-tasks";
-
-interface KanbanBoardProps {
+import type { TaskStatusGroup, TasksByStatus } from "../task-feed-utils";
+import KanbanCard from "./kanban-card";
+import KanbanColumn from "./kanban-column";
+export default function Board({
+  groups,
+  items,
+  reorder,
+}: {
   groups: TaskStatusGroup[];
   items: TasksByStatus;
-  setGroups: Dispatch<SetStateAction<TaskStatusGroup[]>>;
-  setItems: Dispatch<SetStateAction<TasksByStatus>>;
-  reorder?: boolean;
-}
-
-const Board = (props: KanbanBoardProps) => {
-  const { groups, setGroups, items, setItems, reorder = false } = props;
-
-  const { mutate: moveTaskMutation, isPending } = useMoveTask();
-
-  const previousItems = useRef(items);
-  const previousGroup = useRef(groups);
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    if (event.canceled) {
-      setItems(previousItems.current);
-      setGroups(previousGroup.current);
-      return;
-    }
-
-    const { source } = event.operation;
-
-    if (source?.type !== "task" || isPending) {
-      return;
-    }
-
-    const taskId = String(source.id);
-    const previousStatus = groups.find((group) =>
-      previousItems.current[group.id].some((task) => task.id === taskId)
-    )?.id;
-    const nextStatus = groups.find((group) =>
-      items[group.id].some((task) => task.id === taskId)
-    )?.id;
-    if (!reorder && previousStatus === nextStatus) return;
-
-    const position = getTaskPosition(items, groups, taskId, reorder);
-
-    if (!position) {
-      return;
-    }
-
-    moveTaskMutation(
-      {
-        taskId,
-        data: position,
-      },
-      {
-        onError: () => {
-          setItems(previousItems.current);
-          setGroups(previousGroup.current);
-        },
-      }
-    );
-  };
-
+  reorder: boolean;
+}) {
   return (
-    <DragDropProvider
-      onDragStart={() => {
-        previousItems.current = items;
-        previousGroup.current = groups;
-      }}
-      onDragOver={(event) => {
-        const { source } = event.operation;
-
-        if (!source || isPending) return;
-
-        if (source.type === "task") {
-          setItems((current) => move(current, event));
-        }
-
-        if (source.type === "column") {
-          setGroups((current) => move(current, event));
-        }
-      }}
-      onDragEnd={handleDragEnd}
-    >
-      <ScrollArea className="min-w-0 w-full rounded-xl">
-        <div className="flex w-max min-w-full items-start gap-4 pb-4">
-          {groups.map((group, index) => (
-            <KanbanColumn
-              key={group.id}
-              id={group.id}
-              title={group.title}
-              index={index}
-              isEmpty={items[group.id].length === 0}
-            >
-              {items[group.id].map((task, index) => (
-                <KanbanCard
-                  key={task.id}
-                  index={index}
-                  group={group.id}
-                  task={task}
-                  reorder={reorder}
-                />
-              ))}
-            </KanbanColumn>
-          ))}
-        </div>
-      </ScrollArea>
-    </DragDropProvider>
+    <div className="min-w-0 overflow-x-auto pb-4">
+      <div className="flex w-max min-w-full items-start gap-3">
+        {groups.map((group, index) => (
+          <KanbanColumn
+            key={group.id}
+            id={group.id}
+            title={group.title}
+            index={index}
+            count={items[group.id].length}
+            isEmpty={!items[group.id].length}
+          >
+            {items[group.id].map((task, index) => (
+              <KanbanCard
+                key={task.id}
+                index={index}
+                group={group.id}
+                task={task}
+                reorder={reorder}
+              />
+            ))}
+          </KanbanColumn>
+        ))}
+      </div>
+    </div>
   );
-};
-
-export default Board;
-
-const getTaskPosition = (
-  items: TasksByStatus,
-  columns: TaskStatusGroup[],
-  taskId: string,
-  reorder: boolean
-) => {
-  for (const column of columns) {
-    const tasks = items[column.id];
-
-    const index = tasks.findIndex((task) => task.id === taskId);
-
-    if (index === -1) {
-      continue;
-    }
-    if (!reorder) {
-      return {
-        status: column.id,
-        beforeTaskId: null,
-        afterTaskId: null,
-      };
-    }
-    const beforeTask = tasks[index - 1];
-    const afterTask = tasks[index + 1];
-
-    return {
-      status: column.id,
-      beforeTaskId: beforeTask?.id ?? null,
-      afterTaskId: afterTask?.id ?? null,
-    };
-  }
-
-  return null;
-};
+}

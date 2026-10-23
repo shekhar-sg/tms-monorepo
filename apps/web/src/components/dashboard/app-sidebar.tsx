@@ -37,13 +37,13 @@ export default function AppSidebar(props: ComponentProps<typeof Sidebar>) {
           href="/dashboard"
           className="flex items-center gap-3 font-semibold tracking-tight"
         >
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+          <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Layers3 className="size-5" />
           </span>
           <span>
             Task Manager
             <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
-              Your workspace, organized
+              Personal workspace
             </span>
           </span>
         </Link>

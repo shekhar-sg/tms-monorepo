@@ -5,6 +5,8 @@ export const apiErrorCodes = [
   "NOT_FOUND",
   "CONFLICT",
   "DATABASE_UNAVAILABLE",
+  "RATE_LIMITED",
+  "SERVICE_UNAVAILABLE",
   "INTERNAL_ERROR",
 ] as const;
 
@@ -15,4 +17,5 @@ export interface ApiErrorDetails {
   message: string;
   retryable: boolean;
   errors?: Record<string, string[]>;
+  retryAfter?: number;
 }

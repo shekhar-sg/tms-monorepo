@@ -8,9 +8,7 @@ import { PiArrowRight } from "react-icons/pi";
 import CollapsibleCard from "@/components/dashboard/tasks/detail/collapsible-card";
 import DatePicker from "@/components/dashboard/tasks/detail/date-picker";
 import LabelsCombobox from "@/components/dashboard/tasks/detail/labels-combobox";
-import MembersSelect from "@/components/dashboard/tasks/detail/members-select";
 import ProjectSelect from "@/components/dashboard/tasks/detail/project-select";
-import ReporterSelect from "@/components/dashboard/tasks/detail/reporter-select";
 import type { TaskFormValues } from "@/components/dashboard/tasks/detail/task-page";
 import TaskUpdates from "@/components/dashboard/tasks/detail/task-updates";
 import FilterSelect from "@/components/dashboard/tasks/feed/shared/filter-select";
@@ -77,21 +75,6 @@ const TaskDetailsSidebar = (props: TaskSidebarProps) => {
             )}
           />
         </DetailItem>
-        <DetailItem title={"Members"}>
-          <Controller
-            name={"members"}
-            control={control}
-            render={({ field, fieldState }) => (
-              <Field>
-                <MembersSelect control={control} />
-
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-        </DetailItem>
         <DetailItem title={"Dates"}>
           <DatePicker
             control={control}
@@ -119,9 +102,6 @@ const TaskDetailsSidebar = (props: TaskSidebarProps) => {
         </DetailItem>
         <DetailItem title={"Labels"}>
           <LabelsCombobox control={control} />
-        </DetailItem>
-        <DetailItem title={"Reporter"}>
-          <ReporterSelect control={control} />
         </DetailItem>
       </CollapsibleCard>
 

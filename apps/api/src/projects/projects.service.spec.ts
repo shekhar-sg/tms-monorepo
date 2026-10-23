@@ -4,11 +4,15 @@ import { ProjectsService } from "./projects.service";
 
 describe("Project ownership and edits", () => {
   const prisma = {
+    user: { update: jest.fn() },
+    $transaction: jest.fn(),
     project: { findFirst: jest.fn(), update: jest.fn(), delete: jest.fn() },
   };
   const service = new ProjectsService(prisma as unknown as PrismaService);
   beforeEach(() => {
     jest.resetAllMocks();
+    prisma.$transaction.mockImplementation((fn) => fn(prisma));
+    prisma.user.update.mockResolvedValue({ disabledAt: null });
     prisma.project.findFirst.mockResolvedValue({ id: "project" });
   });
   it("rejects deletion by another owner", async () => {

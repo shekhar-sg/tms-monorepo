@@ -65,12 +65,7 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
   const { mutateAsync: updateUser } = useUpdateUser();
 
   const handleSave = async (data: UpdateUserInput) => {
-    const payload = user.isGuest
-      ? (() => {
-          const { email, ...profileData } = data;
-          return profileData;
-        })()
-      : data;
+    const { email: _email, ...payload } = data;
 
     if (Object.keys(payload).length === 0) {
       return;
@@ -120,12 +115,14 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
                     })}
                   >
                     <InputGroupInput
-                      disabled={user.isGuest}
+                      disabled={true}
                       {...register("email")}
-                      readOnly={user.isGuest}
+                      readOnly={true}
                       aria-invalid={!!errors.email}
                       className={"w-fit underline"}
-                      placeholder={user.email ?? "guest can't update email"}
+                      placeholder={
+                        user.email ?? "Sign in with Google to add an email"
+                      }
                     />
 
                     <InputGroupAddon align={"inline-end"}>
@@ -134,7 +131,7 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
                         variant={"ghost"}
                         size={"icon"}
                         className={"rounded-full"}
-                        disabled={user.isGuest}
+                        disabled={true}
                       >
                         <LuPen />
                       </Button>

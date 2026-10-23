@@ -33,6 +33,7 @@ export const useUpdatePreferences = () => {
 
   return useMutation({
     mutationFn: updatePreferences,
+    scope: { id: "preferences" },
 
     onMutate: async (newPreferences) => {
       await queryClient.cancelQueries({
@@ -52,6 +53,7 @@ export const useUpdatePreferences = () => {
           return {
             ...current,
             ...newPreferences,
+            taskViews: { ...current.taskViews, ...newPreferences.taskViews },
           };
         }
       );

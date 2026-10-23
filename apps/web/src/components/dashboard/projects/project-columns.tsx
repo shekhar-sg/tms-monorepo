@@ -13,7 +13,6 @@ import Link from "next/link";
 import ProjectDueDateCell from "@/components/dashboard/projects/project-due-date-cell";
 import ProjectPriorityCell from "@/components/dashboard/projects/project-priority-cell";
 import ProjectTitleCell from "@/components/dashboard/projects/project-title-cell";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DeleteButton } from "@/components/ui/delete-button";
 import { useDeleteProject } from "@/hooks/projects/use-projects";
@@ -48,25 +47,24 @@ export const projectColumns: ColumnDef<TableFeatures, Project>[] =
       ),
     }),
 
-    columnHelper.accessor("lead", {
-      header: "Lead",
-
+    columnHelper.display({
+      id: "progress",
+      header: "Progress",
       cell: ({ row }) => {
-        const lead = row.original.lead;
+        const count = row.original.taskCount ?? 0;
+        const done = row.original.completedTaskCount ?? 0;
         return (
-          <Avatar size="sm">
-            {lead.avatar && (
-              <AvatarImage src={lead.avatar} alt={lead.name ?? ""} />
-            )}
-            <AvatarFallback>
-              {lead.name
-                ?.split(" ")
-                .map((part) => part[0])
-                .join("")
-                .slice(0, 2)
-                .toUpperCase() ?? "U"}
-            </AvatarFallback>
-          </Avatar>
+          <div className="min-w-28 max-w-44 space-y-1.5">
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {done} / {count} tasks
+            </span>
+            <progress
+              aria-label={`${row.original.title} completion`}
+              value={done}
+              max={count || 1}
+              className="block h-1.5 w-full accent-primary"
+            />
+          </div>
         );
       },
     }),

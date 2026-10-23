@@ -35,6 +35,7 @@ export function useCreateTask() {
     mutationFn: createTask,
 
     onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
       if (variables.parentId)
         queryClient.invalidateQueries({
           queryKey: taskKeys.detail(variables.parentId),
@@ -53,6 +54,7 @@ export function useUpdateTask() {
     mutationFn: updateTask,
 
     onSuccess: (task) => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
       queryClient.setQueryData(taskKeys.detail(task.id), task);
 
       queryClient.invalidateQueries({
@@ -74,6 +76,7 @@ export function useMoveTask() {
     scope: { id: "task-moves" },
 
     onSuccess: (task) => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
       queryClient.setQueryData(taskKeys.detail(task.id), task);
       queryClient.invalidateQueries({
         queryKey: taskActivityKeys.task(task.id),
@@ -93,6 +96,7 @@ export function useDeleteTask() {
     mutationFn: deleteTask,
 
     onSuccess: (_, taskId) => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
       queryClient.removeQueries({
         queryKey: taskKeys.detail(taskId),

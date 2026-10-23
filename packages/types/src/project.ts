@@ -17,6 +17,8 @@ export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 
 export interface Project {
+  taskCount?: number;
+  completedTaskCount?: number;
   id: string;
   title: string;
   priority: Priority | null;

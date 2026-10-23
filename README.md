@@ -20,7 +20,7 @@ JWT_SECRET=REPLACE_WITH_A_RANDOM_SECRET_AT_LEAST_32_CHARACTERS
 FRONTEND_URL=http://localhost:3000
 ```
 
-Guest login requires no OAuth setup. The existing Google integration requires valid `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_CALLBACK_URL` if it is enabled separately.
+Guest login requires no OAuth setup. Google sign-in is available when `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_CALLBACK_URL` are configured. Copy the values documented in `apps/api/.env.example`. Register `http://localhost:3000/api/auth/google/callback` as the authorized redirect URI in your Google Cloud Web application client. The value must match exactly (including port and path); `http://localhost:4000/api/auth/google/callback` is not an API route. Restart the API after changing `.env`; the development source watcher does not reload environment files. In production use the HTTPS web origin and keep `FRONTEND_URL` consistent. The callback must use the web origin so session cookies remain available to Next.js.
 
 Create `apps/web/.env.local`:
 
@@ -65,4 +65,34 @@ The web dev/build scripts use webpack because the installed Next.js Turbopack CS
 
 For release acceptance, verify guest sign-in; project creation/inline editing; task creation, autosave, subtasks, comments/replies, moves and deletion; profile and preference persistence; expired-session redirects; and loading/error/empty states. Check 390px, 768px, and desktop widths, both themes, and all accents. Use disposable accounts/projects and clean them up after testing.
 
-Production deployment and database migrations are separate steps; this refresh does not require a schema migration.
+## Workspace upgrade
+
+Apply the checked-in migration before running the new API:
+
+```sh
+pnpm --filter api prisma:generate
+pnpm --filter @repo/types build
+pnpm --filter api exec prisma migrate deploy
+```
+
+The migration preserves tasks and projects, normalizes ordering, and copies legacy shared labels into private labels for each referencing project owner. Original unreferenced labels remain archived. Google sign-in upgrades a new guest in place or transfers work transactionally into an existing Google account; cancelled sign-in keeps the guest session. Guest work is tied to its browser session until upgraded. An expired or cleared guest cookie cannot recover anonymous work.
+
+Board cards, table rows, and subtasks share transactional ordering and optimistic move queues. Manual order is shared across a user's projects within each status; project pages show a subset. Clear filters and choose Manual order to reorder; other sorts still allow status changes. View preferences persist per user/page. Top-level feeds count parent tasks; subtasks remain on their parent.
+
+### Ask AI with Groq's free plan
+
+Set `GROQ_API_KEY` on the API server. The official `groq-sdk` uses `openai/gpt-oss-20b` with strict structured output and a maximum of 1,800 completion tokens. `GROQ_MODEL` can select another model that supports strict structured output and low reasoning effort. No paid features or automatic model upgrades are enabled.
+
+The app defaults to one AI request per minute and 100 per day across the installation (`AI_GLOBAL_RPM`, `AI_GLOBAL_RPD`), plus 5 requests/hour per guest, 10/hour per guest IP, and 60/hour per Google user. These app safeguards do not guarantee staying within every Groq account limit; the provider's actual organization/token quotas still apply. Provider quota failures show a retry message. Automatic SDK retries are disabled to avoid repeated free-plan consumption.
+
+The assistant sends bounded, recent accessible project/task context, the selected task's short description, and the last conversation turn to Groq. It discloses partial context, offers links, and never claims to have saved proposals. Review and edit suggestions, deselect unwanted tasks/remove subtasks, then use Create selected. The API validates ownership and saves the hierarchy atomically, with idempotent retries. Existing work cannot be edited or deleted by AI. Conversations stay in the mounted session; only quota counters and apply receipts persist. Missing provider configuration leaves manual workflows available.
+
+### Database regression checks
+
+```sh
+pnpm --filter api test:database
+```
+
+This command uses the configured connection to create a uniquely named `codex_verify_` schema, checks migration backfill on populated fixtures, applies migrations to a fresh isolated schema, runs concurrency/isolation/guest-transfer/AI-creation tests, and drops only its temporary schema in a finally block. The database role needs schema-create permission. It never migrates or seeds the application's configured schema. Normal unit tests skip these integration tests unless the guarded test URL is set.
+
+Release checks include OAuth success/cancellation with real Google credentials and a Groq smoke request when keys are configured. Production hosting deployment remains a separate step.

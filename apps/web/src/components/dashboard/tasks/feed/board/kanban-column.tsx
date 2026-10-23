@@ -26,15 +26,20 @@ type KanbanColumnProps = {
   index: number;
   children: ReactNode;
   isEmpty: boolean;
+  count: number;
 };
 
 const KanbanColumn = (props: KanbanColumnProps) => {
-  const { id, index, children, title, isEmpty } = props;
+  const { id, index, children, title, isEmpty, count } = props;
   const { navigate } = useNavigationTransition();
   const createHref = useCreateTaskHref();
   const router = useRouter();
   const handleCreateNew = () => {
-    navigate(() => router.push(createHref));
+    navigate(() =>
+      router.push(
+        `${createHref}${createHref.includes("?") ? "&" : "?"}status=${id}`
+      )
+    );
   };
 
   const {
@@ -66,7 +71,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
       ref={setRefs}
       data-size={"xs"}
       className={cn(
-        "w-80 shrink-0 rounded-xl border bg-muted/45 shadow-none ring-0 min-h-64 max-h-[calc(100svh-210px)]",
+        "w-[290px] shrink-0 rounded-lg border border-transparent bg-muted/35 shadow-none ring-0 min-h-64 max-h-[calc(100svh-240px)]",
         {
           "opacity-50": isDragging,
           "ring-2 ring-primary": isDropTarget,
@@ -86,7 +91,11 @@ const KanbanColumn = (props: KanbanColumnProps) => {
           >
             <MdDragIndicator size={16} />
           </Button>
+          <span className={`status-dot status-${id}`} />
           {title}
+          <span className="ml-2 text-muted-foreground font-normal tabular-nums">
+            {count}
+          </span>
         </CardTitle>
         <CardAction>
           <Button

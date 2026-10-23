@@ -80,10 +80,9 @@ export default async function DashboardPage() {
           <p className="mb-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">
             Workspace overview
           </p>
-          <h1 className="page-heading">A clear view of your work</h1>
+          <h1 className="page-heading">Overview</h1>
           <p className="page-description">
-            Track priorities, keep projects moving, and focus on what comes
-            next.
+            Your priorities, deadlines, and project progress.
           </p>
         </div>
         <Button
@@ -104,7 +103,7 @@ export default async function DashboardPage() {
         {metrics.map(({ label, value, detail, icon: Icon }) => (
           <Card
             key={label}
-            className="gap-4 rounded-xl border shadow-sm ring-0"
+            className="gap-4 rounded-xl border shadow-none ring-0"
           >
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -122,7 +121,7 @@ export default async function DashboardPage() {
         ))}
       </div>
       <div className="grid gap-6 xl:grid-cols-3">
-        <Card className="rounded-xl border shadow-sm ring-0 xl:col-span-2">
+        <Card className="rounded-xl border shadow-none ring-0 xl:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-3">
             <div>
               <CardTitle>Deadlines to watch</CardTitle>
@@ -186,7 +185,7 @@ export default async function DashboardPage() {
             )}
           </CardContent>
         </Card>
-        <Card className="rounded-xl border shadow-sm ring-0">
+        <Card className="rounded-xl border shadow-none ring-0">
           <CardHeader>
             <CardTitle>Work by status</CardTitle>
             <CardDescription>
@@ -245,7 +244,7 @@ export default async function DashboardPage() {
             <Link
               key={project.id}
               href={`/dashboard/projects/${project.id}`}
-              className="group min-w-0 rounded-xl border bg-card p-5 shadow-sm transition-colors hover:border-primary/40"
+              className="group min-w-0 rounded-xl border bg-card p-5 shadow-none transition-colors hover:border-primary/40"
             >
               <div className="mb-4 flex items-center justify-between">
                 <span className="rounded-lg bg-muted p-2">

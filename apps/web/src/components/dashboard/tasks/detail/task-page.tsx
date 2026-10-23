@@ -10,7 +10,7 @@ import {
 } from "@repo/types";
 import axios from "axios";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { Controller, type Resolver, useForm } from "react-hook-form";
@@ -67,8 +67,6 @@ const defaultValues: TaskFormValues = {
 
   labels: [],
 
-  position: 0,
-
   dateRange: undefined,
 };
 
@@ -84,6 +82,16 @@ const TaskPage = (props: TaskPageProps) => {
   const { taskId, parentId, projectId } = props;
 
   const isCreate = taskId === "new";
+  const searchParams = useSearchParams();
+  const initialStatus = [
+    "BACKLOG",
+    "TODO",
+    "IN_PROGRESS",
+    "REVIEW",
+    "DONE",
+  ].includes(searchParams.get("status") ?? "")
+    ? (searchParams.get("status") as CreateTaskInput["status"])
+    : "TODO";
 
   const {
     data,
@@ -127,6 +135,7 @@ const TaskPage = (props: TaskPageProps) => {
         projectId: projectId ?? data?.projectId ?? "",
 
         parentId: parentId,
+        status: initialStatus,
       },
     });
 
@@ -160,8 +169,6 @@ const TaskPage = (props: TaskPageProps) => {
 
       labels: data.labels.map((label) => label.labelId),
 
-      position: data.position,
-
       dateRange: {
         from: data.startDate ? new Date(data.startDate) : undefined,
         to: data.endDate ? new Date(data.endDate) : undefined,
@@ -175,8 +182,11 @@ const TaskPage = (props: TaskPageProps) => {
       // server snapshot. A slow response must never replace newer typing.
       const current = getValues();
       for (const key of Object.keys(nextValues) as (keyof TaskFormValues)[]) {
-        if (JSON.stringify(current[key]) === JSON.stringify(previousServerValues.current[key]) &&
-            JSON.stringify(current[key]) !== JSON.stringify(nextValues[key])) {
+        if (
+          JSON.stringify(current[key]) ===
+            JSON.stringify(previousServerValues.current[key]) &&
+          JSON.stringify(current[key]) !== JSON.stringify(nextValues[key])
+        ) {
           setValue(key, nextValues[key]);
         }
       }

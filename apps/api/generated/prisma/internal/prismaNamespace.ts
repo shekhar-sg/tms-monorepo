@@ -406,7 +406,10 @@ export const ModelName = {
   TaskLabel: 'TaskLabel',
   Comment: 'Comment',
   TaskActivity: 'TaskActivity',
-  UserPreference: 'UserPreference'
+  UserPreference: 'UserPreference',
+  OAuthAttempt: 'OAuthAttempt',
+  AiReceipt: 'AiReceipt',
+  AiQuota: 'AiQuota'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -422,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "project" | "task" | "taskMember" | "label" | "taskLabel" | "comment" | "taskActivity" | "userPreference"
+    modelProps: "user" | "account" | "project" | "task" | "taskMember" | "label" | "taskLabel" | "comment" | "taskActivity" | "userPreference" | "oAuthAttempt" | "aiReceipt" | "aiQuota"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1166,6 +1169,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    OAuthAttempt: {
+      payload: Prisma.$OAuthAttemptPayload<ExtArgs>
+      fields: Prisma.OAuthAttemptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OAuthAttemptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OAuthAttemptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload>
+        }
+        findFirst: {
+          args: Prisma.OAuthAttemptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OAuthAttemptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload>
+        }
+        findMany: {
+          args: Prisma.OAuthAttemptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload>[]
+        }
+        create: {
+          args: Prisma.OAuthAttemptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload>
+        }
+        createMany: {
+          args: Prisma.OAuthAttemptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OAuthAttemptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload>[]
+        }
+        delete: {
+          args: Prisma.OAuthAttemptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload>
+        }
+        update: {
+          args: Prisma.OAuthAttemptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload>
+        }
+        deleteMany: {
+          args: Prisma.OAuthAttemptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OAuthAttemptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OAuthAttemptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload>[]
+        }
+        upsert: {
+          args: Prisma.OAuthAttemptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OAuthAttemptPayload>
+        }
+        aggregate: {
+          args: Prisma.OAuthAttemptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOAuthAttempt>
+        }
+        groupBy: {
+          args: Prisma.OAuthAttemptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OAuthAttemptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OAuthAttemptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OAuthAttemptCountAggregateOutputType> | number
+        }
+      }
+    }
+    AiReceipt: {
+      payload: Prisma.$AiReceiptPayload<ExtArgs>
+      fields: Prisma.AiReceiptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AiReceiptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AiReceiptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload>
+        }
+        findFirst: {
+          args: Prisma.AiReceiptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AiReceiptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload>
+        }
+        findMany: {
+          args: Prisma.AiReceiptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload>[]
+        }
+        create: {
+          args: Prisma.AiReceiptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload>
+        }
+        createMany: {
+          args: Prisma.AiReceiptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AiReceiptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload>[]
+        }
+        delete: {
+          args: Prisma.AiReceiptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload>
+        }
+        update: {
+          args: Prisma.AiReceiptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload>
+        }
+        deleteMany: {
+          args: Prisma.AiReceiptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AiReceiptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AiReceiptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload>[]
+        }
+        upsert: {
+          args: Prisma.AiReceiptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiReceiptPayload>
+        }
+        aggregate: {
+          args: Prisma.AiReceiptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAiReceipt>
+        }
+        groupBy: {
+          args: Prisma.AiReceiptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiReceiptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AiReceiptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiReceiptCountAggregateOutputType> | number
+        }
+      }
+    }
+    AiQuota: {
+      payload: Prisma.$AiQuotaPayload<ExtArgs>
+      fields: Prisma.AiQuotaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AiQuotaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AiQuotaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload>
+        }
+        findFirst: {
+          args: Prisma.AiQuotaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AiQuotaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload>
+        }
+        findMany: {
+          args: Prisma.AiQuotaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload>[]
+        }
+        create: {
+          args: Prisma.AiQuotaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload>
+        }
+        createMany: {
+          args: Prisma.AiQuotaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AiQuotaCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload>[]
+        }
+        delete: {
+          args: Prisma.AiQuotaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload>
+        }
+        update: {
+          args: Prisma.AiQuotaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload>
+        }
+        deleteMany: {
+          args: Prisma.AiQuotaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AiQuotaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AiQuotaUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload>[]
+        }
+        upsert: {
+          args: Prisma.AiQuotaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AiQuotaPayload>
+        }
+        aggregate: {
+          args: Prisma.AiQuotaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAiQuota>
+        }
+        groupBy: {
+          args: Prisma.AiQuotaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiQuotaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AiQuotaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AiQuotaCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1213,6 +1438,8 @@ export const UserScalarFieldEnum = {
   title: 'title',
   avatar: 'avatar',
   isGuest: 'isGuest',
+  disabledAt: 'disabledAt',
+  orderRevision: 'orderRevision',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1253,6 +1480,7 @@ export const TaskScalarFieldEnum = {
   priority: 'priority',
   status: 'status',
   position: 'position',
+  revision: 'revision',
   projectId: 'projectId',
   reporterId: 'reporterId',
   parentId: 'parentId',
@@ -1278,6 +1506,7 @@ export const LabelScalarFieldEnum = {
   id: 'id',
   name: 'name',
   color: 'color',
+  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1323,11 +1552,44 @@ export const UserPreferenceScalarFieldEnum = {
   userId: 'userId',
   theme: 'theme',
   accentColor: 'accentColor',
+  taskViews: 'taskViews',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserPreferenceScalarFieldEnum = (typeof UserPreferenceScalarFieldEnum)[keyof typeof UserPreferenceScalarFieldEnum]
+
+
+export const OAuthAttemptScalarFieldEnum = {
+  id: 'id',
+  browserHash: 'browserHash',
+  guestId: 'guestId',
+  returnTo: 'returnTo',
+  expiresAt: 'expiresAt'
+} as const
+
+export type OAuthAttemptScalarFieldEnum = (typeof OAuthAttemptScalarFieldEnum)[keyof typeof OAuthAttemptScalarFieldEnum]
+
+
+export const AiReceiptScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  key: 'key',
+  hash: 'hash',
+  result: 'result',
+  createdAt: 'createdAt'
+} as const
+
+export type AiReceiptScalarFieldEnum = (typeof AiReceiptScalarFieldEnum)[keyof typeof AiReceiptScalarFieldEnum]
+
+
+export const AiQuotaScalarFieldEnum = {
+  key: 'key',
+  count: 'count',
+  expiresAt: 'expiresAt'
+} as const
+
+export type AiQuotaScalarFieldEnum = (typeof AiQuotaScalarFieldEnum)[keyof typeof AiQuotaScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1344,6 +1606,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1409,6 +1678,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -1507,20 +1790,6 @@ export type EnumAccentColorFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'AccentColor[]'
  */
 export type ListEnumAccentColorFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccentColor[]'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 /**
@@ -1684,6 +1953,9 @@ export type GlobalOmitConfig = {
   comment?: Prisma.CommentOmit
   taskActivity?: Prisma.TaskActivityOmit
   userPreference?: Prisma.UserPreferenceOmit
+  oAuthAttempt?: Prisma.OAuthAttemptOmit
+  aiReceipt?: Prisma.AiReceiptOmit
+  aiQuota?: Prisma.AiQuotaOmit
 }
 
 /* Types for Logging */

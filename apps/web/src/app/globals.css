@@ -503,6 +503,57 @@ a {
   }
 }
 @layer components {
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    background: var(--muted-foreground);
+    margin-right: 4px;
+  }
+  .status-TODO {
+    background: #64748b;
+  }
+  .status-IN_PROGRESS {
+    background: #3b82f6;
+  }
+  .status-REVIEW {
+    background: #a78bfa;
+  }
+  .status-DONE {
+    background: #22a06b;
+  }
+  progress {
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--muted);
+  }
+  progress::-webkit-progress-bar {
+    background: var(--muted);
+    border-radius: 999px;
+  }
+  progress::-webkit-progress-value {
+    background: var(--primary);
+    border-radius: 999px;
+  }
+  progress::-moz-progress-bar {
+    background: var(--primary);
+    border-radius: 999px;
+  }
+  [data-slot="table-head"] {
+    height: 36px;
+    font-size: 11px;
+    color: var(--muted-foreground);
+    font-weight: 500;
+  }
+  [data-slot="table-cell"] {
+    height: 48px;
+    padding-inline: 14px;
+    font-size: 13px;
+  }
   .workspace-page {
     width: 100%;
     max-width: 1600px;

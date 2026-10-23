@@ -24,7 +24,6 @@ const taskRelationsSchema = {
   startDate: z.iso.datetime().nullable().optional(),
   endDate: z.iso.datetime().nullable().optional(),
   labels: z.array(z.uuid()).default([]),
-  position: z.number().optional(),
 };
 
 export const createTaskSchema = z.object(taskRelationsSchema);
@@ -38,6 +37,7 @@ export const updateTaskSchema = z
   .partial();
 
 export const moveTaskSchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
   status: statusSchema,
   beforeTaskId: z.uuid().nullable().optional(),
   afterTaskId: z.uuid().nullable().optional(),
@@ -66,6 +66,7 @@ export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export type MoveTaskInput = z.infer<typeof moveTaskSchema>;
 export type GetTasksQuery = z.infer<typeof getTasksQuerySchema>;
 
+export type TaskActor = Pick<User, "id" | "name" | "avatar">;
 export type Task = {
   id: string;
   title: string;
@@ -75,13 +76,15 @@ export type Task = {
   status: Status;
   projectId: string;
   reporterId: string | null;
-  reporter: User | null;
+  reporter: TaskActor | null;
   members: TaskMember[];
   parentId: string | null;
   startDate: string | null;
   endDate: string | null;
   labels: TaskLabel[];
   position: number;
+  revision: number;
+  project?: { id: string; title: string };
   createdAt: string;
   updatedAt: string;
   subtasks: SubtaskSummary[];
@@ -89,7 +92,7 @@ export type Task = {
 
 export type TaskMember = {
   userId: string;
-  user: User;
+  user: TaskActor;
 };
 
 export type Label = {

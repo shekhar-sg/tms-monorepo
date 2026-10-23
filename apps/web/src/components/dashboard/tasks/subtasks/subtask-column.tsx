@@ -13,8 +13,8 @@ export const subtaskColumns: ColumnDef<TableFeatures, SubtaskSummary>[] = [
     header: "Priority",
   },
   {
-    id: "members",
-    header: "Members",
+    id: "status",
+    header: "Status",
   },
   {
     accessorKey: "endDate",

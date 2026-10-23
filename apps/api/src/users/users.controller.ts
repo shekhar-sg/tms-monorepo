@@ -20,8 +20,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Req() request: Request) {
+    return this.usersService.findAll(request.user!.userId);
   }
 
   @Get("me")

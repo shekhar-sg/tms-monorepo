@@ -2,17 +2,24 @@ import { Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
 import type { Request, Response } from "express";
 
 import { AuthService } from "./auth.service";
-import { GoogleAuthGuard } from "./guards/google-auth.guard";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
-import type { GoogleAuthRequest } from "./types/google-auth-request";
+import { OAuthService } from "./oauth.service";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly oauth: OAuthService
+  ) {}
 
   @Post("guest")
-  async guestLogin(@Res({ passthrough: true }) response: Response) {
-    const { accessToken, user } = await this.authService.guestLogin();
+  async guestLogin(
+    @Res({ passthrough: true }) response: Response,
+    @Req() request: Request
+  ) {
+    const { accessToken, user } = await this.authService.guestLogin(
+      request.cookies?.accessToken
+    );
 
     response.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -26,30 +33,19 @@ export class AuthController {
     };
   }
 
+  @Get("providers")
+  providers() {
+    return this.oauth.availability();
+  }
+
   @Get("google")
-  @UseGuards(GoogleAuthGuard)
-  googleLogin() {}
+  googleLogin(@Req() req: Request, @Res() res: Response) {
+    return this.oauth.start(req, res);
+  }
 
   @Get("google/callback")
-  @UseGuards(GoogleAuthGuard)
-  async googleCallback(
-    @Req() request: GoogleAuthRequest,
-    @Res({ passthrough: true }) response: Response
-  ) {
-    const { accessToken, user } = await this.authService.googleLogin(
-      request.user
-    );
-
-    response.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    });
-
-    return {
-      user,
-    };
+  googleCallback(@Req() req: Request, @Res() res: Response) {
+    return this.oauth.callback(req, res);
   }
 
   @Get("me")

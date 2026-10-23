@@ -20,8 +20,18 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
+}
+
+export type UserAvgAggregateOutputType = {
+  orderRevision: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  orderRevision: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -32,6 +42,8 @@ export type UserMinAggregateOutputType = {
   title: string | null
   avatar: string | null
   isGuest: boolean | null
+  disabledAt: Date | null
+  orderRevision: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +56,8 @@ export type UserMaxAggregateOutputType = {
   title: string | null
   avatar: string | null
   isGuest: boolean | null
+  disabledAt: Date | null
+  orderRevision: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,11 +70,21 @@ export type UserCountAggregateOutputType = {
   title: number
   avatar: number
   isGuest: number
+  disabledAt: number
+  orderRevision: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type UserAvgAggregateInputType = {
+  orderRevision?: true
+}
+
+export type UserSumAggregateInputType = {
+  orderRevision?: true
+}
 
 export type UserMinAggregateInputType = {
   id?: true
@@ -70,6 +94,8 @@ export type UserMinAggregateInputType = {
   title?: true
   avatar?: true
   isGuest?: true
+  disabledAt?: true
+  orderRevision?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +108,8 @@ export type UserMaxAggregateInputType = {
   title?: true
   avatar?: true
   isGuest?: true
+  disabledAt?: true
+  orderRevision?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -94,6 +122,8 @@ export type UserCountAggregateInputType = {
   title?: true
   avatar?: true
   isGuest?: true
+  disabledAt?: true
+  orderRevision?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -137,6 +167,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -167,6 +209,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -179,9 +223,13 @@ export type UserGroupByOutputType = {
   title: string | null
   avatar: string | null
   isGuest: boolean
+  disabledAt: Date | null
+  orderRevision: number
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -212,8 +260,11 @@ export type UserWhereInput = {
   title?: Prisma.StringNullableFilter<"User"> | string | null
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   isGuest?: Prisma.BoolFilter<"User"> | boolean
+  disabledAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  orderRevision?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  ownedLabels?: Prisma.LabelListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   ledProjects?: Prisma.ProjectListRelationFilter
   reportedTasks?: Prisma.TaskListRelationFilter
@@ -231,8 +282,11 @@ export type UserOrderByWithRelationInput = {
   title?: Prisma.SortOrderInput | Prisma.SortOrder
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   isGuest?: Prisma.SortOrder
+  disabledAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  orderRevision?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  ownedLabels?: Prisma.LabelOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   ledProjects?: Prisma.ProjectOrderByRelationAggregateInput
   reportedTasks?: Prisma.TaskOrderByRelationAggregateInput
@@ -253,8 +307,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringNullableFilter<"User"> | string | null
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   isGuest?: Prisma.BoolFilter<"User"> | boolean
+  disabledAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  orderRevision?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  ownedLabels?: Prisma.LabelListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   ledProjects?: Prisma.ProjectListRelationFilter
   reportedTasks?: Prisma.TaskListRelationFilter
@@ -272,11 +329,15 @@ export type UserOrderByWithAggregationInput = {
   title?: Prisma.SortOrderInput | Prisma.SortOrder
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   isGuest?: Prisma.SortOrder
+  disabledAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  orderRevision?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -290,6 +351,8 @@ export type UserScalarWhereWithAggregatesInput = {
   title?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   avatar?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   isGuest?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  disabledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  orderRevision?: Prisma.IntWithAggregatesFilter<"User"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -302,8 +365,11 @@ export type UserCreateInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
@@ -321,8 +387,11 @@ export type UserUncheckedCreateInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelUncheckedCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
@@ -340,8 +409,11 @@ export type UserUpdateInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
@@ -359,8 +431,11 @@ export type UserUncheckedUpdateInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUncheckedUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
@@ -378,6 +453,8 @@ export type UserCreateManyInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -390,6 +467,8 @@ export type UserUpdateManyMutationInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -402,6 +481,8 @@ export type UserUncheckedUpdateManyInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -414,8 +495,14 @@ export type UserCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
   isGuest?: Prisma.SortOrder
+  disabledAt?: Prisma.SortOrder
+  orderRevision?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  orderRevision?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -426,6 +513,8 @@ export type UserMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
   isGuest?: Prisma.SortOrder
+  disabledAt?: Prisma.SortOrder
+  orderRevision?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -438,8 +527,14 @@ export type UserMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
   isGuest?: Prisma.SortOrder
+  disabledAt?: Prisma.SortOrder
+  orderRevision?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  orderRevision?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -462,6 +557,18 @@ export type NullableStringFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -528,6 +635,22 @@ export type UserUpdateOneRequiredWithoutTaskMembersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTaskMembersInput, Prisma.UserUpdateWithoutTaskMembersInput>, Prisma.UserUncheckedUpdateWithoutTaskMembersInput>
 }
 
+export type UserCreateNestedOneWithoutOwnedLabelsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOwnedLabelsInput, Prisma.UserUncheckedCreateWithoutOwnedLabelsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnedLabelsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutOwnedLabelsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOwnedLabelsInput, Prisma.UserUncheckedCreateWithoutOwnedLabelsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnedLabelsInput
+  upsert?: Prisma.UserUpsertWithoutOwnedLabelsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOwnedLabelsInput, Prisma.UserUpdateWithoutOwnedLabelsInput>, Prisma.UserUncheckedUpdateWithoutOwnedLabelsInput>
+}
+
 export type UserCreateNestedOneWithoutCommentsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutCommentsInput, Prisma.UserUncheckedCreateWithoutCommentsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutCommentsInput
@@ -578,8 +701,11 @@ export type UserCreateWithoutAccountsInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelCreateNestedManyWithoutOwnerInput
   ledProjects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   taskMembers?: Prisma.TaskMemberCreateNestedManyWithoutUserInput
@@ -596,8 +722,11 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelUncheckedCreateNestedManyWithoutOwnerInput
   ledProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   taskMembers?: Prisma.TaskMemberUncheckedCreateNestedManyWithoutUserInput
@@ -630,8 +759,11 @@ export type UserUpdateWithoutAccountsInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUpdateManyWithoutOwnerNestedInput
   ledProjects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   taskMembers?: Prisma.TaskMemberUpdateManyWithoutUserNestedInput
@@ -648,8 +780,11 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUncheckedUpdateManyWithoutOwnerNestedInput
   ledProjects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   taskMembers?: Prisma.TaskMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -666,8 +801,11 @@ export type UserCreateWithoutLedProjectsInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
   taskMembers?: Prisma.TaskMemberCreateNestedManyWithoutUserInput
@@ -684,8 +822,11 @@ export type UserUncheckedCreateWithoutLedProjectsInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelUncheckedCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
   taskMembers?: Prisma.TaskMemberUncheckedCreateNestedManyWithoutUserInput
@@ -718,8 +859,11 @@ export type UserUpdateWithoutLedProjectsInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
   taskMembers?: Prisma.TaskMemberUpdateManyWithoutUserNestedInput
@@ -736,8 +880,11 @@ export type UserUncheckedUpdateWithoutLedProjectsInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUncheckedUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
   taskMembers?: Prisma.TaskMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -754,8 +901,11 @@ export type UserCreateWithoutReportedTasksInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
   taskMembers?: Prisma.TaskMemberCreateNestedManyWithoutUserInput
@@ -772,8 +922,11 @@ export type UserUncheckedCreateWithoutReportedTasksInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelUncheckedCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
   taskMembers?: Prisma.TaskMemberUncheckedCreateNestedManyWithoutUserInput
@@ -806,8 +959,11 @@ export type UserUpdateWithoutReportedTasksInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
   taskMembers?: Prisma.TaskMemberUpdateManyWithoutUserNestedInput
@@ -824,8 +980,11 @@ export type UserUncheckedUpdateWithoutReportedTasksInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUncheckedUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
   taskMembers?: Prisma.TaskMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -842,8 +1001,11 @@ export type UserCreateWithoutTaskMembersInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
@@ -860,8 +1022,11 @@ export type UserUncheckedCreateWithoutTaskMembersInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelUncheckedCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
@@ -894,8 +1059,11 @@ export type UserUpdateWithoutTaskMembersInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
@@ -912,11 +1080,114 @@ export type UserUncheckedUpdateWithoutTaskMembersInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUncheckedUpdateManyWithoutOwnerNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  ledProjects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
+  reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
+  taskActivities?: Prisma.TaskActivityUncheckedUpdateManyWithoutUserNestedInput
+  userPreference?: Prisma.UserPreferenceUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutOwnedLabelsInput = {
+  id?: string
+  email?: string | null
+  name?: string | null
+  username?: string | null
+  title?: string | null
+  avatar?: string | null
+  isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  ledProjects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
+  reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
+  taskMembers?: Prisma.TaskMemberCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
+  taskActivities?: Prisma.TaskActivityCreateNestedManyWithoutUserInput
+  userPreference?: Prisma.UserPreferenceCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutOwnedLabelsInput = {
+  id?: string
+  email?: string | null
+  name?: string | null
+  username?: string | null
+  title?: string | null
+  avatar?: string | null
+  isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  ledProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
+  reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
+  taskMembers?: Prisma.TaskMemberUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
+  taskActivities?: Prisma.TaskActivityUncheckedCreateNestedManyWithoutUserInput
+  userPreference?: Prisma.UserPreferenceUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutOwnedLabelsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutOwnedLabelsInput, Prisma.UserUncheckedCreateWithoutOwnedLabelsInput>
+}
+
+export type UserUpsertWithoutOwnedLabelsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutOwnedLabelsInput, Prisma.UserUncheckedUpdateWithoutOwnedLabelsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutOwnedLabelsInput, Prisma.UserUncheckedCreateWithoutOwnedLabelsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutOwnedLabelsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutOwnedLabelsInput, Prisma.UserUncheckedUpdateWithoutOwnedLabelsInput>
+}
+
+export type UserUpdateWithoutOwnedLabelsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  ledProjects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
+  reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
+  taskMembers?: Prisma.TaskMemberUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
+  taskActivities?: Prisma.TaskActivityUpdateManyWithoutUserNestedInput
+  userPreference?: Prisma.UserPreferenceUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutOwnedLabelsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
+  taskMembers?: Prisma.TaskMemberUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
   taskActivities?: Prisma.TaskActivityUncheckedUpdateManyWithoutUserNestedInput
   userPreference?: Prisma.UserPreferenceUncheckedUpdateOneWithoutUserNestedInput
@@ -930,8 +1201,11 @@ export type UserCreateWithoutCommentsInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
@@ -948,8 +1222,11 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelUncheckedCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
@@ -982,8 +1259,11 @@ export type UserUpdateWithoutCommentsInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
@@ -1000,8 +1280,11 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUncheckedUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
@@ -1018,8 +1301,11 @@ export type UserCreateWithoutTaskActivitiesInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
@@ -1036,8 +1322,11 @@ export type UserUncheckedCreateWithoutTaskActivitiesInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelUncheckedCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
@@ -1070,8 +1359,11 @@ export type UserUpdateWithoutTaskActivitiesInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
@@ -1088,8 +1380,11 @@ export type UserUncheckedUpdateWithoutTaskActivitiesInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUncheckedUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
@@ -1106,8 +1401,11 @@ export type UserCreateWithoutUserPreferenceInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskCreateNestedManyWithoutReporterInput
@@ -1124,8 +1422,11 @@ export type UserUncheckedCreateWithoutUserPreferenceInput = {
   title?: string | null
   avatar?: string | null
   isGuest?: boolean
+  disabledAt?: Date | string | null
+  orderRevision?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedLabels?: Prisma.LabelUncheckedCreateNestedManyWithoutOwnerInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ledProjects?: Prisma.ProjectUncheckedCreateNestedManyWithoutLeadInput
   reportedTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReporterInput
@@ -1158,8 +1459,11 @@ export type UserUpdateWithoutUserPreferenceInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUpdateManyWithoutReporterNestedInput
@@ -1176,8 +1480,11 @@ export type UserUncheckedUpdateWithoutUserPreferenceInput = {
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isGuest?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  disabledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderRevision?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedLabels?: Prisma.LabelUncheckedUpdateManyWithoutOwnerNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ledProjects?: Prisma.ProjectUncheckedUpdateManyWithoutLeadNestedInput
   reportedTasks?: Prisma.TaskUncheckedUpdateManyWithoutReporterNestedInput
@@ -1192,6 +1499,7 @@ export type UserUncheckedUpdateWithoutUserPreferenceInput = {
  */
 
 export type UserCountOutputType = {
+  ownedLabels: number
   accounts: number
   ledProjects: number
   reportedTasks: number
@@ -1201,6 +1509,7 @@ export type UserCountOutputType = {
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ownedLabels?: boolean | UserCountOutputTypeCountOwnedLabelsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   ledProjects?: boolean | UserCountOutputTypeCountLedProjectsArgs
   reportedTasks?: boolean | UserCountOutputTypeCountReportedTasksArgs
@@ -1217,6 +1526,13 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
    * Select specific fields to fetch from the UserCountOutputType
    */
   select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountOwnedLabelsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LabelWhereInput
 }
 
 /**
@@ -1270,8 +1586,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   title?: boolean
   avatar?: boolean
   isGuest?: boolean
+  disabledAt?: boolean
+  orderRevision?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  ownedLabels?: boolean | Prisma.User$ownedLabelsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   ledProjects?: boolean | Prisma.User$ledProjectsArgs<ExtArgs>
   reportedTasks?: boolean | Prisma.User$reportedTasksArgs<ExtArgs>
@@ -1290,6 +1609,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   title?: boolean
   avatar?: boolean
   isGuest?: boolean
+  disabledAt?: boolean
+  orderRevision?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1302,6 +1623,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   title?: boolean
   avatar?: boolean
   isGuest?: boolean
+  disabledAt?: boolean
+  orderRevision?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1314,12 +1637,15 @@ export type UserSelectScalar = {
   title?: boolean
   avatar?: boolean
   isGuest?: boolean
+  disabledAt?: boolean
+  orderRevision?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "username" | "title" | "avatar" | "isGuest" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "username" | "title" | "avatar" | "isGuest" | "disabledAt" | "orderRevision" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ownedLabels?: boolean | Prisma.User$ownedLabelsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   ledProjects?: boolean | Prisma.User$ledProjectsArgs<ExtArgs>
   reportedTasks?: boolean | Prisma.User$reportedTasksArgs<ExtArgs>
@@ -1335,6 +1661,7 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
+    ownedLabels: Prisma.$LabelPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     ledProjects: Prisma.$ProjectPayload<ExtArgs>[]
     reportedTasks: Prisma.$TaskPayload<ExtArgs>[]
@@ -1351,6 +1678,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     title: string | null
     avatar: string | null
     isGuest: boolean
+    disabledAt: Date | null
+    orderRevision: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1747,6 +2076,7 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  ownedLabels<T extends Prisma.User$ownedLabelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownedLabelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ledProjects<T extends Prisma.User$ledProjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ledProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reportedTasks<T extends Prisma.User$reportedTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reportedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1790,6 +2120,8 @@ export interface UserFieldRefs {
   readonly title: Prisma.FieldRef<"User", 'String'>
   readonly avatar: Prisma.FieldRef<"User", 'String'>
   readonly isGuest: Prisma.FieldRef<"User", 'Boolean'>
+  readonly disabledAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly orderRevision: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -2182,6 +2514,30 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Users to delete.
    */
   limit?: number
+}
+
+/**
+ * User.ownedLabels
+ */
+export type User$ownedLabelsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Label
+   */
+  select?: Prisma.LabelSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Label
+   */
+  omit?: Prisma.LabelOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LabelInclude<ExtArgs> | null
+  where?: Prisma.LabelWhereInput
+  orderBy?: Prisma.LabelOrderByWithRelationInput | Prisma.LabelOrderByWithRelationInput[]
+  cursor?: Prisma.LabelWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LabelScalarFieldEnum | Prisma.LabelScalarFieldEnum[]
 }
 
 /**

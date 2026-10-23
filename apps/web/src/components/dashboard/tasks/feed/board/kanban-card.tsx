@@ -1,111 +1,34 @@
+"use client";
+
 import { useDraggable } from "@dnd-kit/react";
+
 import { useSortable } from "@dnd-kit/react/sortable";
+
 import type { Status, Task } from "@repo/types";
-import { formatDate } from "date-fns";
+import { format } from "date-fns";
+import { CalendarDays, GripVertical, ListChecks } from "lucide-react";
 import Link from "next/link";
-import { Ref } from "react";
-import { LuCalendar, LuTag } from "react-icons/lu";
-import TaskActions from "@/components/dashboard/tasks/feed/shared/task-actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePathname } from "next/navigation";
+
+import type { Ref } from "react";
+import { Button } from "@/components/ui/button";
+import { PRIORITY_OPTIONS } from "@/lib/tasks/filter-config";
 import { cn } from "@/lib/utils";
+import TaskActions from "../shared/task-actions";
+import { useTaskFeedPreferences } from "../task-feed-preferences-context";
 
-type KanbanCardProps = {
-  index: number;
-  group: Status;
-  task: Task;
-  reorder: boolean;
-};
+type Props = { task: Task; index: number; group: Status; reorder: boolean };
 
-const KanbanCard = (props: KanbanCardProps) => {
-  if (props.reorder) {
-    return <SortableCard {...props} />;
-  }
-
-  return <DraggableCard {...props} />;
-};
-
-export default KanbanCard;
-
-type CardContentProps = {
-  task: Task;
-  isDragging?: boolean;
-  ref?: Ref<HTMLDivElement>;
-};
-
-export const CardContentView = ({
-  task,
-  isDragging = false,
-  ref,
-}: CardContentProps) => {
-  const { id, title, labels, endDate, reporter } = task;
-  const { name, avatar } = reporter ?? {};
-
-  return (
-    <Card
-      ref={ref}
-      data-size={"xs"}
-      className={cn(
-        "w-full overflow-hidden rounded-lg border bg-card shadow-sm ring-0 hover:border-primary/40",
-        {
-          "opacity-50": isDragging,
-        }
-      )}
-      size={"sm"}
-    >
-      <CardHeader className={"flex justify-between items-center"}>
-        <CardTitle className="min-w-0 text-sm">
-          <Link
-            href={`/dashboard/tasks/${id}`}
-            className="line-clamp-2 whitespace-normal leading-relaxed hover:text-primary"
-            onPointerDown={(event) => event.stopPropagation()}
-          >
-            {title}
-          </Link>
-        </CardTitle>
-        <TaskActions taskId={id} />
-      </CardHeader>
-      <CardContent className={"space-y-3"}>
-        <div className={"flex justify-between items-center"}>
-          <Badge variant={"ghost"} className={"h-fit p-0"}>
-            <Avatar size={"sm"}>
-              <AvatarImage src={avatar ?? undefined} alt={name ?? "Guest"} />
-              <AvatarFallback>
-                {name?.slice(0, 2).toUpperCase() ?? "U"}
-              </AvatarFallback>
-            </Avatar>
-            &nbsp;{name ?? "Guest"}
-          </Badge>
-          {endDate && (
-            <Badge
-              variant={
-                task.status !== "DONE" &&
-                new Date(endDate).getTime() < new Date().setHours(0, 0, 0, 0)
-                  ? "destructive"
-                  : "outline"
-              }
-              className="px-2 py-1 text-xs"
-            >
-              <LuCalendar />
-              {formatDate(endDate, "dd MMM")}
-            </Badge>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {labels.slice(0, 3).map((label) => (
-            <Badge key={label.labelId} variant={"secondary"}>
-              <LuTag /> {label.label.name}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+export default function KanbanCard(props: Props) {
+  return props.reorder ? (
+    <SortableCard {...props} />
+  ) : (
+    <DraggableCard {...props} />
   );
-};
+}
 
-const SortableCard = ({ task, index, group }: KanbanCardProps) => {
-  const { ref, isDragging } = useSortable({
+function SortableCard({ task, index, group }: Props) {
+  const { ref, handleRef, isDragging } = useSortable({
     id: task.id,
     index,
     group,
@@ -113,14 +36,136 @@ const SortableCard = ({ task, index, group }: KanbanCardProps) => {
     accept: "task",
   });
 
-  return <CardContentView task={task} ref={ref} isDragging={isDragging} />;
-};
+  return (
+    <CardContentView
+      task={task}
+      ref={ref}
+      handleRef={handleRef}
+      isDragging={isDragging}
+    />
+  );
+}
 
-const DraggableCard = ({ task }: KanbanCardProps) => {
-  const { ref, isDragging } = useDraggable({
+function DraggableCard({ task }: Props) {
+  const { ref, handleRef, isDragging } = useDraggable({
     id: task.id,
     type: "task",
   });
 
-  return <CardContentView task={task} ref={ref} isDragging={isDragging} />;
-};
+  return (
+    <CardContentView
+      task={task}
+      ref={ref}
+      handleRef={handleRef}
+      isDragging={isDragging}
+    />
+  );
+}
+
+export function CardContentView({
+  task,
+  ref,
+  handleRef,
+  isDragging,
+}: {
+  task: Task;
+  ref?: Ref<HTMLDivElement>;
+  handleRef?: (node: Element | null) => void;
+  isDragging?: boolean;
+}) {
+  const path = usePathname();
+
+  const { visibleFields } = useTaskFeedPreferences();
+
+  const priority = PRIORITY_OPTIONS.find((p) => p.value === task.priority);
+
+  const Icon = priority?.icon;
+
+  const overdue =
+    task.status !== "DONE" &&
+    task.endDate &&
+    Date.parse(task.endDate) < new Date().setHours(0, 0, 0, 0);
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "group rounded-lg border bg-card p-3.5 shadow-xs transition-[border-color,box-shadow] hover:border-primary/30 hover:shadow-sm",
+        isDragging && "opacity-40 ring-2 ring-primary"
+      )}
+    >
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="text-[11px] text-muted-foreground truncate">
+          {!path.includes("/projects/")
+            ? (task.project?.title ?? "Project")
+            : `Task · ${task.id.slice(0, 6).toUpperCase()}`}
+        </span>
+        <div className="flex items-center gap-0.5">
+          <Button
+            ref={handleRef}
+            aria-label={`Move ${task.title}`}
+            className="size-6 cursor-grab touch-none text-muted-foreground active:cursor-grabbing"
+            size="icon-sm"
+            variant="ghost"
+          >
+            <GripVertical className="size-3.5" />
+          </Button>
+          {visibleFields.includes("actions") && (
+            <TaskActions taskId={task.id} />
+          )}
+        </div>
+      </div>
+      <Link
+        href={`/dashboard/tasks/${task.id}`}
+        className="block text-[13px] leading-5 font-medium line-clamp-3 hover:text-primary"
+      >
+        {task.title}
+      </Link>
+      {!!task.labels.length && (
+        <div className="mt-3 flex flex-wrap gap-1">
+          {task.labels.slice(0, 2).map(({ label }) => (
+            <span
+              className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground"
+              key={label.id}
+            >
+              {label.name}
+            </span>
+          ))}
+          {task.labels.length > 2 && (
+            <span className="text-[10px] text-muted-foreground">
+              +{task.labels.length - 2}
+            </span>
+          )}
+        </div>
+      )}
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] text-muted-foreground">
+        {visibleFields.includes("priority") && task.priority !== "NONE" && (
+          <span
+            className={cn("inline-flex items-center gap-1", priority?.color)}
+          >
+            {Icon && <Icon className="size-3" />}
+            {priority?.label}
+          </span>
+        )}
+        {visibleFields.includes("dueDate") && task.endDate && (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1",
+              overdue && "text-destructive"
+            )}
+          >
+            <CalendarDays className="size-3" />
+            {format(new Date(task.endDate), "d MMM")}
+          </span>
+        )}
+        {!!task.subtasks.length && (
+          <span className="ml-auto inline-flex items-center gap-1 tabular-nums">
+            <ListChecks className="size-3" />
+            {task.subtasks.filter((s) => s.status === "DONE").length}/
+            {task.subtasks.length}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}

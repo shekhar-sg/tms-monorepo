@@ -1,69 +1,36 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
-
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class LabelsService {
   constructor(private readonly prisma: PrismaService) {}
-
-  async findAll() {
+  findAll(userId: string) {
     return this.prisma.label.findMany({
-      orderBy: {
-        name: "asc",
-      },
+      where: { ownerId: userId },
+      orderBy: { name: "asc" },
     });
   }
-
-  async findById(id: string) {
-    const label = await this.prisma.label.findUnique({
-      where: { id },
+  async findById(id: string, userId: string) {
+    const label = await this.prisma.label.findFirst({
+      where: { id, ownerId: userId },
     });
-
-    if (!label) {
-      throw new NotFoundException("Label not found");
-    }
-
+    if (!label) throw new NotFoundException("Label not found");
     return label;
   }
-
-  async create(name: string, color?: string) {
-    const existingLabel = await this.prisma.label.findUnique({
-      where: { name },
-    });
-
-    if (existingLabel) {
-      throw new ConflictException("Label already exists");
-    }
-
-    return this.prisma.label.create({
-      data: {
-        name,
-        color,
-      },
-    });
+  create(userId: string, name: string, color?: string) {
+    return this.prisma.label.create({ data: { ownerId: userId, name, color } });
   }
-
-  async update(id: string, name?: string, color?: string | null) {
-    await this.findById(id);
-
-    return this.prisma.label.update({
-      where: { id },
-      data: {
-        name,
-        color,
-      },
-    });
+  async update(
+    id: string,
+    userId: string,
+    name?: string,
+    color?: string | null
+  ) {
+    await this.findById(id, userId);
+    return this.prisma.label.update({ where: { id }, data: { name, color } });
   }
-
-  async remove(id: string) {
-    await this.findById(id);
-
-    return this.prisma.label.delete({
-      where: { id },
-    });
+  async remove(id: string, userId: string) {
+    await this.findById(id, userId);
+    return this.prisma.label.delete({ where: { id } });
   }
 }

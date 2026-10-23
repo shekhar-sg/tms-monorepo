@@ -8,11 +8,34 @@ import {
   ListTodo,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useGuestLogin } from "@/hooks/auth/use-auth";
+import { api } from "@/lib/api/client-api";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [googlePending, setGooglePending] = useState(false);
+  const [googleError, setGoogleError] = useState("");
+  const loginWithGoogle = async () => {
+    if (googlePending) return;
+    setGooglePending(true);
+    setGoogleError("");
+    try {
+      const response = await api.get("/auth/providers", { timeout: 10000 });
+      if (!response.data.data.google) {
+        setGoogleError(
+          "Google sign-in is temporarily unavailable. Please try again or continue as a guest."
+        );
+        setGooglePending(false);
+        return;
+      }
+      window.location.assign("/api/auth/google");
+    } catch {
+      setGoogleError("Could not reach the sign-in service. Please try again.");
+      setGooglePending(false);
+    }
+  };
   const { mutate: loginAsGuest, isPending } = useGuestLogin();
   return (
     <main className="grid min-h-svh lg:grid-cols-2">
@@ -78,6 +101,22 @@ export default function LoginPage() {
           </p>
           <Button
             className="mt-8 h-11 w-full"
+            disabled={googlePending || isPending}
+            onClick={() => void loginWithGoogle()}
+          >
+            <span aria-hidden="true" className="font-bold">
+              G
+            </span>
+            {googlePending ? "Connecting to Google…" : "Continue with Google"}
+          </Button>
+          {googleError && (
+            <p role="alert" className="mt-3 text-sm text-destructive">
+              {googleError}
+            </p>
+          )}
+          <Button
+            variant="outline"
+            className="mt-3 h-11 w-full"
             disabled={isPending}
             onClick={() => {
               if (!isPending)
@@ -90,7 +129,7 @@ export default function LoginPage() {
             <ArrowRight />
           </Button>
           <p className="mt-4 text-center text-xs leading-relaxed text-muted-foreground">
-            Start with a guest workspace. No account setup required.
+            Try a guest workspace. Sign in with Google later to keep your work.
           </p>
         </div>
       </section>
