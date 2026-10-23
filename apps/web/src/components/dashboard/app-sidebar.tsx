@@ -1,21 +1,20 @@
+"use client";
+
 import {
-  ChevronRight,
-  GalleryVerticalEnd,
+  CheckCheck,
+  FolderKanban,
+  Layers3,
   LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";
-import type * as React from "react";
+import { usePathname } from "next/navigation";
+import type { ComponentProps } from "react";
 import UserMenu from "@/components/preferences/user-menu";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -23,82 +22,67 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const navMain = [
-  {
-    title: "Workspace",
-    items: [
-      {
-        title: "Tasks",
-        url: "/dashboard/tasks",
-        icon: LayoutDashboard,
-      },
-      {
-        title: "Projects",
-        url: "/dashboard/projects",
-        icon: GalleryVerticalEnd,
-      },
-    ],
-  },
+const links = [
+  { title: "Overview", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Tasks", url: "/dashboard/tasks", icon: CheckCheck },
+  { title: "Projects", url: "/dashboard/projects", icon: FolderKanban },
 ];
 
-const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
+export default function AppSidebar(props: ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
   return (
     <Sidebar {...props}>
-      <SidebarHeader>
-        <UserMenu />
+      <SidebarHeader className="border-b px-5 py-5">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 font-semibold tracking-tight"
+        >
+          <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Layers3 className="size-5" />
+          </span>
+          <span>
+            Task Manager
+            <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+              Personal workspace
+            </span>
+          </span>
+        </Link>
       </SidebarHeader>
-      <SidebarContent>
-        {navMain.map((item) => (
-          <Collapsible
-            key={item.title}
-            title={item.title}
-            defaultOpen
-            className={"group/collapsible"}
-          >
-            <SidebarGroup>
-              <SidebarGroupLabel
-                className={
-                  "group/label text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                }
-                render={
-                  <CollapsibleTrigger>
-                    {item.title}
-                    <ChevronRight
-                      className={
-                        "ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90"
-                      }
-                    />
-                  </CollapsibleTrigger>
-                }
-              ></SidebarGroupLabel>
-              <CollapsibleContent>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {item.items.map((subItem) => {
-                      const { title, url, icon: Icon } = subItem;
-                      return (
-                        <SidebarMenuItem key={title}>
-                          <SidebarMenuButton
-                            isActive={false}
-                            render={
-                              <Link href={url}>
-                                <Icon />
-                                {title}
-                              </Link>
-                            }
-                          ></SidebarMenuButton>
-                        </SidebarMenuItem>
-                      );
-                    })}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </CollapsibleContent>
-            </SidebarGroup>
-          </Collapsible>
-        ))}
+      <SidebarContent className="px-2 py-4">
+        <SidebarGroup>
+          <SidebarGroupLabel className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Workspace
+          </SidebarGroupLabel>
+          <SidebarMenu className="gap-1">
+            {links.map(({ title, url, icon: Icon }) => {
+              const active =
+                url === "/dashboard"
+                  ? pathname === url
+                  : pathname.startsWith(url);
+              return (
+                <SidebarMenuItem key={url}>
+                  <SidebarMenuButton
+                    isActive={active}
+                    className="h-10 px-3"
+                    render={
+                      <Link
+                        href={url}
+                        aria-current={active ? "page" : undefined}
+                      >
+                        <Icon />
+                        <span>{title}</span>
+                      </Link>
+                    }
+                  />
+                </SidebarMenuItem>
+              );
+            })}
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="border-t p-3">
+        <UserMenu />
+      </SidebarFooter>
     </Sidebar>
   );
-};
-
-export default AppSidebar;
+}

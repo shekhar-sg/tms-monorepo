@@ -23,6 +23,7 @@ coverage
 
 # Build Outputs
 .next/
+.next-verify/
 out/
 build
 dist
@@ -38,3 +39,7 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Local package store and TypeScript cache
+.pnpm-store/
+*.tsbuildinfo

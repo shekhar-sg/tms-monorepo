@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { LuSendHorizontal, LuSmilePlus } from "react-icons/lu";
-import { RiAttachmentLine, RiMoreLine } from "react-icons/ri";
+
+import { LuSendHorizontal } from "react-icons/lu";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -19,6 +19,8 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { QueryState } from "@/components/ui/query-state";
+
 import {
   useCreateTaskComment,
   useTaskComments,
@@ -29,10 +31,17 @@ interface TaskCommentsProps {
 }
 
 const TaskComments = ({ taskId }: TaskCommentsProps) => {
-  const { data: comments = [] } = useTaskComments(taskId);
+  const {
+    data: comments = [],
+    isPending: loading,
+    error,
+    refetch,
+  } = useTaskComments(taskId);
+
   const { mutate: createComment, isPending } = useCreateTaskComment();
 
   const [content, setContent] = useState("");
+
   const [replyContent, setReplyContent] = useState<Record<string, string>>({});
 
   const topLevelComments = comments.filter(
@@ -52,11 +61,14 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
     createComment(
       {
         taskId,
+
         data: {
           content: trimmedContent,
+
           parentId: null,
         },
       },
+
       {
         onSuccess: () => {
           setContent("");
@@ -67,22 +79,29 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
 
   const handleCreateReply = (commentId: string) => {
     const trimmedContent = (replyContent[commentId] ?? "").trim();
+
     if (!trimmedContent || isPending) {
       return;
     }
+
     createComment(
       {
         taskId,
+
         data: {
           content: trimmedContent,
+
           parentId: commentId,
         },
       },
+
       {
         onSuccess: () => {
           setReplyContent((prev) => {
             const next = { ...prev };
+
             delete next[commentId];
+
             return next;
           });
         },
@@ -93,7 +112,24 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
   return (
     <div className={"flex border-border gap-5"}>
       <div className={"flex flex-col flex-1 gap-5 pt-2"}>
-        <div>Comments</div>
+        <h2 className="text-sm font-semibold">Comments</h2>
+
+        {loading && <QueryState loading title="Loading comments…" />}
+
+        {error && (
+          <QueryState
+            error
+            title="Comments unavailable"
+            onRetry={() => void refetch()}
+          />
+        )}
+
+        {!loading && !error && comments.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            Start the conversation. Add the first comment below.
+          </p>
+        )}
+
         {topLevelComments.map((comment) => {
           const replies = getReplies(comment.id);
 
@@ -103,6 +139,7 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
                 <CardTitle className={"text-xs flex gap-2 items-center"}>
                   <Avatar size={"sm"}>
                     <AvatarImage src={comment.author.avatar ?? undefined} />
+
                     <AvatarFallback>
                       {comment.author.name?.charAt(0).toUpperCase() ?? "U"}
                     </AvatarFallback>
@@ -116,22 +153,14 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
                 </CardTitle>
 
                 <CardDescription>{comment.content}</CardDescription>
-
-                <CardAction>
-                  <Button variant={"ghost"}>
-                    <LuSmilePlus />
-                  </Button>
-
-                  <Button variant={"ghost"}>
-                    <RiMoreLine />
-                  </Button>
-                </CardAction>
               </CardHeader>
+
               {replies.map((reply) => (
                 <div key={reply.id} className={"ml-6 border-l pl-4"}>
                   <div className={"flex gap-2 items-start"}>
                     <Avatar size={"sm"}>
                       <AvatarImage src={reply.author.avatar ?? undefined} />
+
                       <AvatarFallback>
                         {reply.author.name?.charAt(0).toUpperCase() ?? "U"}
                       </AvatarFallback>
@@ -149,6 +178,7 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
                   </div>
                 </div>
               ))}
+
               <CardFooter className={"p-0 rounded-none bg-transparent"}>
                 <InputGroup
                   className={"w-full h-full px-4 py-1.5 rounded-none border-0"}
@@ -164,12 +194,19 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
                     onChange={(event) => {
                       setReplyContent((prev) => ({
                         ...prev,
+
                         [comment.id]: event.target.value,
                       }));
                     }}
+                    aria-label="Reply"
                     placeholder={"Leave a reply…"}
                     onKeyDown={(event) => {
-                      if (event.key === "Enter") {
+                      if (
+                        event.key === "Enter" &&
+                        !event.nativeEvent.isComposing
+                      ) {
+                        event.preventDefault();
+
                         handleCreateReply(comment.id);
                       }
                     }}
@@ -179,14 +216,13 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
                     align={"inline-end"}
                     className={"pr-0 text-primary"}
                   >
-                    <Button type={"button"} variant={"ghost"}>
-                      <RiAttachmentLine />
-                    </Button>
-
                     <Button
                       type={"button"}
                       variant={"ghost"}
-                      disabled={isPending}
+                      aria-label="Send reply"
+                      disabled={
+                        isPending || !(replyContent[comment.id] ?? "").trim()
+                      }
                       onClick={() => {
                         handleCreateReply(comment.id);
                       }}
@@ -210,29 +246,32 @@ const TaskComments = ({ taskId }: TaskCommentsProps) => {
                   <AvatarFallback>{"U"}</AvatarFallback>
                 </Avatar>
               </InputGroupAddon>
+
               <InputGroupInput
                 value={content}
                 onChange={(event) => {
                   setContent(event.target.value);
                 }}
+                aria-label="Comment"
                 placeholder={"Leave a comment…"}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") {
+                  if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+                    event.preventDefault();
+
                     handleCreateComment();
                   }
                 }}
               />
+
               <InputGroupAddon
                 align={"inline-end"}
                 className={"pr-0 text-primary"}
               >
-                <Button type={"button"} variant={"ghost"}>
-                  <RiAttachmentLine />
-                </Button>
                 <Button
                   type={"button"}
                   variant={"ghost"}
-                  disabled={isPending}
+                  aria-label="Send comment"
+                  disabled={isPending || !content.trim()}
                   onClick={handleCreateComment}
                 >
                   <LuSendHorizontal />

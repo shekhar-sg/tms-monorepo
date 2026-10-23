@@ -4,11 +4,19 @@ import { Users } from "lucide-react";
 import { type Control, Controller } from "react-hook-form";
 import SelectOptions from "@/components/dashboard/tasks/detail/select-options";
 import type { TaskFormValues } from "@/components/dashboard/tasks/detail/task-page";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Field, FieldError } from "@/components/ui/field";
@@ -40,13 +48,24 @@ const MembersSelect = (props: MembersSelectProps) => {
                   <Button variant={"ghost"}>
                     <Users />
                     {selectedMembers.length > 0 ? (
-                      <span className={"truncate"}>
-                        {selectedMembers
-                          .map(
-                            (member) => member.name ?? member.email ?? "Unknown"
-                          )
-                          .join(", ")}
-                      </span>
+                      <AvatarGroup>
+                        {selectedMembers.slice(0, 3).map((member) => (
+                          <Avatar key={member.id} size={"sm"}>
+                            <AvatarImage src={member.avatar!} />
+                            <AvatarFallback>
+                              {(member?.name ?? member?.email ?? "U")
+                                .charAt(0)
+                                .toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        ))}
+
+                        {selectedMembers.length > 3 && (
+                          <AvatarGroupCount>
+                            +{selectedMembers.length - 3}
+                          </AvatarGroupCount>
+                        )}
+                      </AvatarGroup>
                     ) : (
                       <span className={"text-muted-foreground"}>
                         Add members
@@ -56,33 +75,38 @@ const MembersSelect = (props: MembersSelectProps) => {
                 }
               />
 
-              <DropdownMenuContent className={"w-48 p-1.5"}>
-                <SelectOptions
-                  options={users.map((user) => ({
-                    value: user.id,
-                    label: user.name ?? user.email ?? "Unknown",
-                  }))}
-                  type={"multi-select"}
-                  selected={field.value}
-                  onChange={field.onChange}
-                  renderOption={({ option }) => {
-                    const user = users.find((item) => item.id === option.value);
+              <DropdownMenuContent className={"w-48 h-56 p-1.5"}>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Members</DropdownMenuLabel>
+                  <SelectOptions
+                    options={users.map((user) => ({
+                      value: user.id,
+                      label: user.name ?? user.email ?? "Unknown",
+                    }))}
+                    type={"multi-select"}
+                    selected={field.value}
+                    onChange={field.onChange}
+                    renderOption={({ option }) => {
+                      const user = users.find(
+                        (item) => item.id === option.value
+                      );
 
-                    return (
-                      <>
-                        <Avatar size={"sm"}>
-                          <AvatarFallback>
-                            {(user?.name ?? user?.email ?? "U")
-                              .charAt(0)
-                              .toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
+                      return (
+                        <>
+                          <Avatar size={"sm"}>
+                            <AvatarFallback>
+                              {(user?.name ?? user?.email ?? "U")
+                                .charAt(0)
+                                .toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
 
-                        <span>{option.label}</span>
-                      </>
-                    );
-                  }}
-                />
+                          <span>{option.label}</span>
+                        </>
+                      );
+                    }}
+                  />
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
 

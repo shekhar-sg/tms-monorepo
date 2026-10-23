@@ -1,14 +1,15 @@
 "use client";
 
-import type { SubtaskSummary } from "@repo/types";
+import type { SubtaskSummary, Task } from "@repo/types";
 import { useRouter } from "next/navigation";
-
 import DataTable from "@/components/dashboard/tasks/feed/shared/data-table";
 import {
   subtaskColumns,
   subtaskTableFeatures,
 } from "@/components/dashboard/tasks/subtasks/subtask-column";
 import SubtaskListRow from "@/components/dashboard/tasks/subtasks/subtask-row";
+import { taskStatusGroups } from "../feed/task-feed-utils";
+import { TaskOrdering } from "../feed/task-ordering";
 
 interface TaskSubtasksProps {
   taskId: string;
@@ -32,18 +33,43 @@ const TaskSubtasks = ({ taskId, projectId, subtasks }: TaskSubtasksProps) => {
     <section className="space-y-3">
       <h2 className="font-medium">Subtasks</h2>
 
-      <DataTable
-        features={subtaskTableFeatures}
-        columns={subtaskColumns}
-        data={subtasks}
-        getRowId={(subtask) => subtask.id}
-        emptyMessage="No subtasks"
-        renderRow={(row) => <SubtaskListRow key={row.id} row={row.original} />}
-        addButtonProps={{
-          children: "Add Task",
-          onClick: handleAddSubtask,
-        }}
-      />
+      <TaskOrdering
+        tasks={
+          subtasks.map((t) => ({
+            ...t,
+            labels: [],
+            reporter: null,
+            subtasks: [],
+          })) as Task[]
+        }
+        manual={true}
+        columns={taskStatusGroups}
+      >
+        {(items) => (
+          <DataTable
+            features={subtaskTableFeatures}
+            columns={subtaskColumns}
+            data={taskStatusGroups
+              .flatMap((g) => items[g.id])
+              .map(({ subtasks: _subtasks, ...task }) => task)}
+            getRowId={(subtask) => subtask.id}
+            emptyMessage="No subtasks"
+            renderRow={(row) => (
+              <SubtaskListRow
+                key={row.id}
+                row={row.original}
+                index={items[row.original.status].findIndex(
+                  (t) => t.id === row.original.id
+                )}
+              />
+            )}
+            addButtonProps={{
+              children: "Add Task",
+              onClick: handleAddSubtask,
+            }}
+          />
+        )}
+      </TaskOrdering>
     </section>
   );
 };

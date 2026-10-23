@@ -2,10 +2,6 @@
 
 import { useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
-import type {
-  FilterFieldConfig,
-  FilterOption,
-} from "@/lib/tasks/filter-config";
 import DatePicker from "@/components/dashboard/tasks/detail/date-picker";
 import SelectOptions from "@/components/dashboard/tasks/detail/select-options";
 import { Button } from "@/components/ui/button";
@@ -16,25 +12,36 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
+import type {
+  FilterFieldConfig,
+  FilterOption,
+} from "@/lib/tasks/filter-config";
 
 interface FilterSubmenuProps {
   field: FilterFieldConfig;
   selected: string[];
   onChange: (key: string, values: string[]) => void;
+  options?: FilterOption[];
 }
 
 const FilterSubmenu = (props: FilterSubmenuProps) => {
-  const { field, selected, onChange } = props;
+  const { field, selected, onChange, options: providedOptions } = props;
 
-  const [options, setOptions] = useState<FilterOption[]>([]);
+  const [loadedOptions, setOptions] = useState<FilterOption[]>([]);
 
   useEffect(() => {
-    if (field.key === "members" || field.type === "date-range") {
+    if (
+      providedOptions ||
+      field.key === "members" ||
+      field.type === "date-range"
+    ) {
       return;
     }
 
     Promise.resolve(field.getOptions()).then(setOptions);
-  }, [field]);
+  }, [field, providedOptions]);
+
+  const options = providedOptions ?? loadedOptions;
 
   const FieldIcon = field.icon;
 
@@ -66,8 +73,8 @@ const FilterSubmenu = (props: FilterSubmenuProps) => {
           field.label}
       </DropdownMenuSubTrigger>
 
-      <DropdownMenuSubContent sideOffset={12} className="w-48 p-1.5">
-        <DropdownMenuGroup>
+      <DropdownMenuSubContent sideOffset={12} className={"w-48 p-1.5"}>
+        <DropdownMenuGroup className={"max-h-48"}>
           <DropdownMenuLabel>{field.label}</DropdownMenuLabel>
 
           {field.type === "date-range" ? (

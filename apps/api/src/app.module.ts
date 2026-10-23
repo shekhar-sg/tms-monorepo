@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { AiModule } from "./ai/ai.module";
 import { AuthModule } from "./auth/auth.module";
 import { CommentsModule } from "./comments/comments.module";
 import { envValidationSchema } from "./config/env.validation";
@@ -27,6 +28,7 @@ import { UsersModule } from "./users/users.module";
     CommentsModule,
     TaskActivitiesModule,
     PreferencesModule,
+    AiModule,
   ],
 })
 export class AppModule {}

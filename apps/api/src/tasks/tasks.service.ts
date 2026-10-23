@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -10,13 +11,16 @@ import type {
   UpdateTaskInput,
 } from "@repo/types";
 import { Prisma } from "../../generated/prisma/client";
+import { appendPosition, lockOwner } from "../common/owner-lock";
 import { PrismaService } from "../prisma/prisma.service";
 
+const actorSelect = { id: true, name: true, avatar: true } as const;
 const taskInclude = {
-  reporter: true,
+  project: { select: { id: true, title: true } },
+  reporter: { select: actorSelect },
   members: {
     include: {
-      user: true,
+      user: { select: actorSelect },
     },
   },
   labels: {
@@ -43,6 +47,7 @@ export class TasksService {
     return this.prisma.task.findMany({
       where: {
         projectId,
+        parentId: null,
         project: {
           leadId: userId,
         },
@@ -101,7 +106,7 @@ export class TasksService {
       },
 
       include: taskInclude,
-      orderBy: [{ status: "asc" }, { position: "asc" }],
+      orderBy: [{ status: "asc" }, { position: "asc" }, { id: "asc" }],
     });
   }
 
@@ -114,9 +119,10 @@ export class TasksService {
         ...taskInclude,
         project: true,
         subtasks: {
+          orderBy: [{ position: "asc" }, { id: "asc" }],
           include: {
             members: {
-              include: { user: true },
+              include: { user: { select: actorSelect } },
             },
           },
         },
@@ -131,36 +137,39 @@ export class TasksService {
   }
 
   async create(data: CreateTaskInput, userId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      await lockOwner(tx, userId);
+      return new TasksService(tx as PrismaService).createInTransaction(
+        data,
+        userId
+      );
+    });
+  }
+
+  private async createInTransaction(data: CreateTaskInput, userId: string) {
     await this.validateProjectAccess(data.projectId, userId);
     await this.validateParentTask(data.parentId, data.projectId, userId);
 
     if (data.members?.length) {
-      await this.validateIds("user", data.members);
+      await this.validateIds("user", data.members, userId);
     }
 
     if (data.labels?.length) {
-      await this.validateIds("label", data.labels);
+      await this.validateIds("label", data.labels, userId);
     }
 
     const status = data.status ?? "TODO";
 
-    const lastTask = await this.prisma.task.findFirst({
-      where: {
-        projectId: data.projectId,
-        status,
-        parentId: data.parentId ?? null,
-      },
-      orderBy: {
-        position: "desc",
-      },
-      select: {
-        position: true,
-      },
-    });
+    if (data.reporterId !== userId)
+      throw new BadRequestException("Reporter must be the current user");
+    const position = await appendPosition(
+      this.prisma,
+      userId,
+      status,
+      data.parentId ?? null
+    );
 
-    const position = (lastTask?.position ?? 0) + 100;
-
-    return this.prisma.$transaction(async (tx) => {
+    return (async (tx: Prisma.TransactionClient) => {
       const task = await tx.task.create({
         data: {
           title: data.title,
@@ -204,10 +213,25 @@ export class TasksService {
       });
 
       return task;
-    });
+    })(this.prisma);
   }
 
   async update(id: string, data: UpdateTaskInput, userId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      await lockOwner(tx, userId);
+      return new TasksService(tx as PrismaService).updateInTransaction(
+        id,
+        data,
+        userId
+      );
+    });
+  }
+
+  private async updateInTransaction(
+    id: string,
+    data: UpdateTaskInput,
+    userId: string
+  ) {
     const existingTask = await this.findAccessibleTask(id, userId);
 
     if (data.projectId) {
@@ -226,9 +250,55 @@ export class TasksService {
       }
     }
 
+    if (
+      data.parentId &&
+      data.parentId !== existingTask.parentId &&
+      (await this.prisma.task.count({ where: { parentId: id } }))
+    ) {
+      throw new BadRequestException(
+        "A task with subtasks cannot become a subtask"
+      );
+    }
+    const position =
+      (data.status && data.status !== existingTask.status) ||
+      (data.parentId !== undefined && data.parentId !== existingTask.parentId)
+        ? await appendPosition(
+            this.prisma,
+            userId,
+            data.status ?? existingTask.status,
+            data.parentId === undefined ? existingTask.parentId : data.parentId,
+            id
+          )
+        : undefined;
     const activities = this.buildTaskActivities(existingTask, data);
 
-    const task = await this.prisma.$transaction(async (tx) => {
+    const newMembers =
+      data.members?.filter(
+        (id) => !existingTask.members.some((member) => member.userId === id)
+      ) ?? [];
+    if (newMembers.length) await this.validateIds("user", newMembers, userId);
+    if (data.labels?.length)
+      await this.validateIds("label", data.labels, userId);
+    if (data.reporterId && data.reporterId !== existingTask.reporterId)
+      await this.validateIds("user", [data.reporterId], userId);
+
+    if (data.projectId && data.projectId !== existingTask.projectId) {
+      await this.validateParentTask(
+        data.parentId === undefined ? existingTask.parentId : data.parentId,
+        data.projectId,
+        userId
+      );
+      const children = await this.prisma.task.count({
+        where: { parentId: id },
+      });
+      if (children > 0) {
+        throw new BadRequestException(
+          "Move or remove subtasks before changing this task's project"
+        );
+      }
+    }
+
+    const task = await (async (tx: Prisma.TransactionClient) => {
       const updatedTask = await tx.task.update({
         where: {
           id,
@@ -257,7 +327,8 @@ export class TasksService {
                 ? new Date(data.endDate)
                 : undefined,
 
-          position: data.position,
+          position,
+          revision: { increment: 1 },
 
           ...(data.members !== undefined && {
             members: {
@@ -293,111 +364,114 @@ export class TasksService {
       }
 
       return updatedTask;
-    });
+    })(this.prisma);
 
     return task;
   }
 
   async remove(id: string, userId: string) {
-    await this.findAccessibleTask(id, userId);
-
-    return this.prisma.task.delete({
-      where: { id },
+    return this.prisma.$transaction(async (tx) => {
+      await lockOwner(tx, userId);
+      await new TasksService(tx as PrismaService).findAccessibleTask(
+        id,
+        userId
+      );
+      return tx.task.delete({ where: { id } });
     });
   }
 
   async move(id: string, data: MoveTaskInput, userId: string) {
-    const task = await this.findAccessibleTask(id, userId);
-
-    if (data.beforeTaskId === id || data.afterTaskId === id) {
-      throw new BadRequestException(
-        "A task cannot be positioned relative to itself"
-      );
-    }
-
-    const neighborIds = [data.beforeTaskId, data.afterTaskId].filter(
-      (taskId): taskId is string => Boolean(taskId)
-    );
-
-    const neighbors = await this.prisma.task.findMany({
-      where: {
-        id: {
-          in: neighborIds,
-        },
-        project: {
-          leadId: userId,
-        },
-      },
-      select: {
-        id: true,
-        projectId: true,
-        status: true,
-        position: true,
-      },
-    });
-
-    if (neighbors.length !== neighborIds.length) {
-      throw new NotFoundException("One or more adjacent tasks not found");
-    }
-
-    for (const neighbor of neighbors) {
-      if (neighbor.projectId !== task.projectId) {
-        throw new BadRequestException(
-          "Adjacent tasks must belong to the same project"
+    return this.prisma.$transaction(
+      async (tx) => {
+        await lockOwner(tx, userId);
+        const task = await new TasksService(
+          tx as PrismaService
+        ).findAccessibleTask(id, userId);
+        if (data.revision !== undefined && data.revision !== task.revision) {
+          throw new ConflictException(
+            "This task changed. Refresh and try again."
+          );
+        }
+        const ids = [data.beforeTaskId, data.afterTaskId].filter(
+          (v): v is string => Boolean(v)
         );
-      }
-
-      if (neighbor.status !== data.status) {
-        throw new BadRequestException(
-          "Adjacent tasks must belong to the destination status"
-        );
-      }
-    }
-
-    const beforeTask = neighbors.find(
-      (neighbor) => neighbor.id === data.beforeTaskId
-    );
-
-    const afterTask = neighbors.find(
-      (neighbor) => neighbor.id === data.afterTaskId
-    );
-
-    let position: number;
-
-    if (beforeTask && afterTask) {
-      position = (beforeTask.position + afterTask.position) / 2;
-    } else if (beforeTask) {
-      position = beforeTask.position + 100;
-    } else if (afterTask) {
-      position = afterTask.position / 2;
-    } else {
-      const lastTask = await this.prisma.task.findFirst({
-        where: {
-          projectId: task.projectId,
-          status: data.status,
-          id: {
-            not: task.id,
-          },
-        },
-        orderBy: {
-          position: "desc",
-        },
-        select: {
-          position: true,
-        },
-      });
-
-      position = (lastTask?.position ?? 0) + 100;
-    }
-
-    return this.prisma.task.update({
-      where: { id },
-      data: {
-        status: data.status,
-        position,
+        if (ids.includes(id) || new Set(ids).size !== ids.length)
+          throw new BadRequestException("Invalid task neighbors");
+        const neighbors = await tx.task.findMany({
+          where: { id: { in: ids }, project: { leadId: userId } },
+        });
+        if (neighbors.length !== ids.length)
+          throw new NotFoundException("Adjacent task not found");
+        if (
+          neighbors.some(
+            (n) => n.parentId !== task.parentId || n.status !== data.status
+          )
+        )
+          throw new BadRequestException(
+            "Adjacent tasks must be in the destination group"
+          );
+        let before = neighbors.find((n) => n.id === data.beforeTaskId);
+        let after = neighbors.find((n) => n.id === data.afterTaskId);
+        if (before && after && before.position >= after.position)
+          throw new ConflictException(
+            "Task order changed. Refresh and try again."
+          );
+        const rank = () =>
+          before && after
+            ? (before.position + after.position) / 2
+            : before
+              ? before.position + 1024
+              : after
+                ? after.position - 1024
+                : 0;
+        let position = ids.length
+          ? rank()
+          : await appendPosition(tx, userId, data.status, task.parentId, id);
+        if (
+          (before && after && after.position - before.position < 0.0001) ||
+          !Number.isFinite(position) ||
+          Math.abs(position) > 1e12
+        ) {
+          const siblings = await tx.task.findMany({
+            where: {
+              project: { leadId: userId },
+              parentId: task.parentId,
+              status: data.status,
+            },
+            orderBy: [{ position: "asc" }, { id: "asc" }],
+          });
+          for (const [i, sibling] of siblings.entries()) {
+            const next = (i + 1) * 1024;
+            await tx.task.update({
+              where: { id: sibling.id },
+              data: { position: next },
+            });
+            if (before?.id === sibling.id)
+              before = { ...before, position: next };
+            if (after?.id === sibling.id) after = { ...after, position: next };
+          }
+          position = ids.length
+            ? rank()
+            : await appendPosition(tx, userId, data.status, task.parentId, id);
+        }
+        const updated = await tx.task.update({
+          where: { id },
+          data: { status: data.status, position, revision: { increment: 1 } },
+          include: taskInclude,
+        });
+        if (task.status !== data.status)
+          await tx.taskActivity.create({
+            data: {
+              taskId: id,
+              userId,
+              type: "STATUS_CHANGED",
+              metadata: { from: task.status, to: data.status },
+            },
+          });
+        return updated;
       },
-      include: taskInclude,
-    });
+      { timeout: 15_000 }
+    );
   }
 
   private buildTaskActivities(
@@ -541,6 +615,7 @@ export class TasksService {
       },
       select: {
         id: true,
+        revision: true,
         projectId: true,
         parentId: true,
         status: true,
@@ -617,9 +692,15 @@ export class TasksService {
     }
   }
 
-  private async validateIds(model: "user" | "label", ids: string[]) {
+  private async validateIds(
+    model: "user" | "label",
+    ids: string[],
+    userId: string
+  ) {
     const uniqueIds = [...new Set(ids)];
 
+    if (model === "user" && uniqueIds.some((id) => id !== userId))
+      throw new NotFoundException("User not found");
     const count =
       model === "user"
         ? await this.prisma.user.count({
@@ -631,6 +712,7 @@ export class TasksService {
           })
         : await this.prisma.label.count({
             where: {
+              ownerId: userId,
               id: {
                 in: uniqueIds,
               },

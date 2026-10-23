@@ -32,7 +32,7 @@ const TaskListGroup = (props: TaskListGroupProps) => {
           {tasks.length === 0 ? (
             <EmptyState />
           ) : (
-            <TaskTable columnId={id} tasks={tasks} />
+            <TaskTable columnId={id} tasks={tasks} reorder={true} />
           )}
         </CollapsibleContent>
       </section>

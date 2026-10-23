@@ -67,3 +67,18 @@ export type TaskActivity = Prisma.TaskActivityModel
  * 
  */
 export type UserPreference = Prisma.UserPreferenceModel
+/**
+ * Model OAuthAttempt
+ * 
+ */
+export type OAuthAttempt = Prisma.OAuthAttemptModel
+/**
+ * Model AiReceipt
+ * 
+ */
+export type AiReceipt = Prisma.AiReceiptModel
+/**
+ * Model AiQuota
+ * 
+ */
+export type AiQuota = Prisma.AiQuotaModel

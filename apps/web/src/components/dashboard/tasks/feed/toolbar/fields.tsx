@@ -41,9 +41,9 @@ const Fields = (props: FieldsProps) => {
   return (
     <Popover>
       <PopoverTrigger
-        render={<Button variant={"outline"} className={"rounded-[4px] "} />}
+        render={<Button variant={"outline"} className="rounded-md" />}
       >
-        <LuColumns3 /> Fields
+        <LuColumns3 /> Display
       </PopoverTrigger>
       <PopoverContent className={"p-4 gap-6"} align={"center"}>
         <PopoverHeader>
@@ -51,9 +51,10 @@ const Fields = (props: FieldsProps) => {
             value={[currentView]}
             variant={"outline"}
             className={"w-full gap-0"}
-            onValueChange={(value) =>
-              onViewChange(value[0] as "board" | "list")
-            }
+            onValueChange={(value) => {
+              if (value[0] === "board" || value[0] === "list")
+                onViewChange(value[0]);
+            }}
           >
             <ToggleGroupItem className={"flex-1 rounded-r-none"} value={"list"}>
               <PiListBold /> List

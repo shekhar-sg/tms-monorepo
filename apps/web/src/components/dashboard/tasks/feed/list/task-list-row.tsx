@@ -7,6 +7,7 @@ import {
   type Row,
   type TableFeatures,
 } from "@tanstack/react-table";
+import Link from "next/link";
 import { LuGripVertical } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -18,15 +19,16 @@ type TaskListRowProps = {
   row: TaskRow;
   index: number;
   columnId: string;
+  reorder: boolean;
 };
 
-const TaskListRow = ({ row, index, columnId }: TaskListRowProps) => {
+const TaskListRow = ({ row, index, columnId, reorder }: TaskListRowProps) => {
   const { ref, handleRef, isDragging } = useSortable({
     id: row.original.id,
     index,
     group: columnId,
     type: "task",
-    accept: "task",
+    accept: reorder ? "task" : [],
   });
 
   return (
@@ -50,7 +52,21 @@ const TaskListRow = ({ row, index, columnId }: TaskListRowProps) => {
                 <LuGripVertical className="size-4" />
               </Button>
 
-              {row.original.title}
+              <Link
+                className="min-w-0 truncate font-medium hover:text-primary"
+                href={`/dashboard/tasks/${row.original.id}`}
+              >
+                {row.original.title}
+              </Link>
+              {!!row.original.subtasks?.length && (
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {
+                    row.original.subtasks.filter((t) => t.status === "DONE")
+                      .length
+                  }
+                  /{row.original.subtasks.length}
+                </span>
+              )}
             </div>
           ) : (
             <FlexRender cell={cell} />

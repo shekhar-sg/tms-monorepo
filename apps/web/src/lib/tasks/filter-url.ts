@@ -35,7 +35,6 @@ export const filtersToSearchParams = (
 ): URLSearchParams => {
   const params = new URLSearchParams(currentParams);
 
-  console.log("filters in method",filters);
   params.delete("status");
   params.delete("priority");
   params.delete("labels");

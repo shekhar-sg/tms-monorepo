@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { LuPlus } from "react-icons/lu";
 import { MdDragIndicator } from "react-icons/md";
-import { RiMoreLine } from "react-icons/ri";
 import EmptyState from "@/components/dashboard/tasks/feed/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useCreateTaskHref } from "@/hooks/tasks/use-create-task-href";
 import { cn } from "@/lib/utils";
 import { useNavigationTransition } from "@/providers/navigation-transition-context";
 
@@ -26,14 +26,20 @@ type KanbanColumnProps = {
   index: number;
   children: ReactNode;
   isEmpty: boolean;
+  count: number;
 };
 
 const KanbanColumn = (props: KanbanColumnProps) => {
-  const { id, index, children, title, isEmpty } = props;
+  const { id, index, children, title, isEmpty, count } = props;
   const { navigate } = useNavigationTransition();
+  const createHref = useCreateTaskHref();
   const router = useRouter();
   const handleCreateNew = () => {
-    navigate(() => router.push("/dashboard/tasks/new"));
+    navigate(() =>
+      router.push(
+        `${createHref}${createHref.includes("?") ? "&" : "?"}status=${id}`
+      )
+    );
   };
 
   const {
@@ -65,11 +71,10 @@ const KanbanColumn = (props: KanbanColumnProps) => {
       ref={setRefs}
       data-size={"xs"}
       className={cn(
-        "bg-accent rounded-md h-full min-w-fit min-h-48 max-h-[calc(100vh-180px)]",
+        "w-[290px] shrink-0 rounded-lg border border-transparent bg-muted/35 shadow-none ring-0 min-h-64 max-h-[calc(100svh-240px)]",
         {
           "opacity-50": isDragging,
           "ring-2 ring-primary": isDropTarget,
-          "min-w-72.25": isEmpty,
         }
       )}
     >
@@ -78,6 +83,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
           className={"flex items-center justify-start text-xs font-semibold"}
         >
           <Button
+            aria-label={`Reorder ${title} column`}
             ref={handleRef}
             className={"cursor-grab touch-none"}
             variant={"ghost"}
@@ -85,14 +91,20 @@ const KanbanColumn = (props: KanbanColumnProps) => {
           >
             <MdDragIndicator size={16} />
           </Button>
+          <span className={`status-dot status-${id}`} />
           {title}
+          <span className="ml-2 text-muted-foreground font-normal tabular-nums">
+            {count}
+          </span>
         </CardTitle>
         <CardAction>
-          <Button variant={"ghost"} size={"icon-sm"} onClick={handleCreateNew}>
+          <Button
+            aria-label={`Add task to ${title}`}
+            variant={"ghost"}
+            size={"icon-sm"}
+            onClick={handleCreateNew}
+          >
             <LuPlus />
-          </Button>
-          <Button variant={"ghost"} size={"icon-sm"}>
-            <RiMoreLine />
           </Button>
         </CardAction>
       </CardHeader>

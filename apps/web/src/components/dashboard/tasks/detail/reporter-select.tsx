@@ -57,7 +57,7 @@ const ReporterSelect = (props: ReporterSelectProps) => {
                 }
               />
 
-              <DropdownMenuContent className={"w-48 p-1.5"}>
+              <DropdownMenuContent className={"w-48 h-56 p-1.5"}>
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>Reporter</DropdownMenuLabel>
                   <SelectOptions
@@ -90,7 +90,12 @@ const ReporterSelect = (props: ReporterSelectProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && (
+              <FieldError
+                errors={[fieldState.error]}
+                className={"text-nowrap"}
+              />
+            )}
           </Field>
         );
       }}

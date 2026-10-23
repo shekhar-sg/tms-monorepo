@@ -47,6 +47,7 @@ export type UserPreferenceCountAggregateOutputType = {
   userId: number
   theme: number
   accentColor: number
+  taskViews: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -76,6 +77,7 @@ export type UserPreferenceCountAggregateInputType = {
   userId?: true
   theme?: true
   accentColor?: true
+  taskViews?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -158,6 +160,7 @@ export type UserPreferenceGroupByOutputType = {
   userId: string
   theme: $Enums.Theme
   accentColor: $Enums.AccentColor
+  taskViews: runtime.JsonValue
   createdAt: Date
   updatedAt: Date
   _count: UserPreferenceCountAggregateOutputType | null
@@ -188,6 +191,7 @@ export type UserPreferenceWhereInput = {
   userId?: Prisma.StringFilter<"UserPreference"> | string
   theme?: Prisma.EnumThemeFilter<"UserPreference"> | $Enums.Theme
   accentColor?: Prisma.EnumAccentColorFilter<"UserPreference"> | $Enums.AccentColor
+  taskViews?: Prisma.JsonFilter<"UserPreference">
   createdAt?: Prisma.DateTimeFilter<"UserPreference"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserPreference"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -198,6 +202,7 @@ export type UserPreferenceOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   theme?: Prisma.SortOrder
   accentColor?: Prisma.SortOrder
+  taskViews?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -211,6 +216,7 @@ export type UserPreferenceWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserPreferenceWhereInput | Prisma.UserPreferenceWhereInput[]
   theme?: Prisma.EnumThemeFilter<"UserPreference"> | $Enums.Theme
   accentColor?: Prisma.EnumAccentColorFilter<"UserPreference"> | $Enums.AccentColor
+  taskViews?: Prisma.JsonFilter<"UserPreference">
   createdAt?: Prisma.DateTimeFilter<"UserPreference"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserPreference"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -221,6 +227,7 @@ export type UserPreferenceOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   theme?: Prisma.SortOrder
   accentColor?: Prisma.SortOrder
+  taskViews?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserPreferenceCountOrderByAggregateInput
@@ -236,6 +243,7 @@ export type UserPreferenceScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"UserPreference"> | string
   theme?: Prisma.EnumThemeWithAggregatesFilter<"UserPreference"> | $Enums.Theme
   accentColor?: Prisma.EnumAccentColorWithAggregatesFilter<"UserPreference"> | $Enums.AccentColor
+  taskViews?: Prisma.JsonWithAggregatesFilter<"UserPreference">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"UserPreference"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"UserPreference"> | Date | string
 }
@@ -244,6 +252,7 @@ export type UserPreferenceCreateInput = {
   id?: string
   theme?: $Enums.Theme
   accentColor?: $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutUserPreferenceInput
@@ -254,6 +263,7 @@ export type UserPreferenceUncheckedCreateInput = {
   userId: string
   theme?: $Enums.Theme
   accentColor?: $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -262,6 +272,7 @@ export type UserPreferenceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.EnumThemeFieldUpdateOperationsInput | $Enums.Theme
   accentColor?: Prisma.EnumAccentColorFieldUpdateOperationsInput | $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutUserPreferenceNestedInput
@@ -272,6 +283,7 @@ export type UserPreferenceUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.EnumThemeFieldUpdateOperationsInput | $Enums.Theme
   accentColor?: Prisma.EnumAccentColorFieldUpdateOperationsInput | $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -281,6 +293,7 @@ export type UserPreferenceCreateManyInput = {
   userId: string
   theme?: $Enums.Theme
   accentColor?: $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -289,6 +302,7 @@ export type UserPreferenceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.EnumThemeFieldUpdateOperationsInput | $Enums.Theme
   accentColor?: Prisma.EnumAccentColorFieldUpdateOperationsInput | $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -298,6 +312,7 @@ export type UserPreferenceUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.EnumThemeFieldUpdateOperationsInput | $Enums.Theme
   accentColor?: Prisma.EnumAccentColorFieldUpdateOperationsInput | $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -312,6 +327,7 @@ export type UserPreferenceCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   theme?: Prisma.SortOrder
   accentColor?: Prisma.SortOrder
+  taskViews?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -378,6 +394,7 @@ export type UserPreferenceCreateWithoutUserInput = {
   id?: string
   theme?: $Enums.Theme
   accentColor?: $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -386,6 +403,7 @@ export type UserPreferenceUncheckedCreateWithoutUserInput = {
   id?: string
   theme?: $Enums.Theme
   accentColor?: $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -410,6 +428,7 @@ export type UserPreferenceUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.EnumThemeFieldUpdateOperationsInput | $Enums.Theme
   accentColor?: Prisma.EnumAccentColorFieldUpdateOperationsInput | $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -418,6 +437,7 @@ export type UserPreferenceUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   theme?: Prisma.EnumThemeFieldUpdateOperationsInput | $Enums.Theme
   accentColor?: Prisma.EnumAccentColorFieldUpdateOperationsInput | $Enums.AccentColor
+  taskViews?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -429,6 +449,7 @@ export type UserPreferenceSelect<ExtArgs extends runtime.Types.Extensions.Intern
   userId?: boolean
   theme?: boolean
   accentColor?: boolean
+  taskViews?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -439,6 +460,7 @@ export type UserPreferenceSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   userId?: boolean
   theme?: boolean
   accentColor?: boolean
+  taskViews?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -449,6 +471,7 @@ export type UserPreferenceSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   userId?: boolean
   theme?: boolean
   accentColor?: boolean
+  taskViews?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -459,11 +482,12 @@ export type UserPreferenceSelectScalar = {
   userId?: boolean
   theme?: boolean
   accentColor?: boolean
+  taskViews?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserPreferenceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "theme" | "accentColor" | "createdAt" | "updatedAt", ExtArgs["result"]["userPreference"]>
+export type UserPreferenceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "theme" | "accentColor" | "taskViews" | "createdAt" | "updatedAt", ExtArgs["result"]["userPreference"]>
 export type UserPreferenceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -484,6 +508,7 @@ export type $UserPreferencePayload<ExtArgs extends runtime.Types.Extensions.Inte
     userId: string
     theme: $Enums.Theme
     accentColor: $Enums.AccentColor
+    taskViews: runtime.JsonValue
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["userPreference"]>
@@ -914,6 +939,7 @@ export interface UserPreferenceFieldRefs {
   readonly userId: Prisma.FieldRef<"UserPreference", 'String'>
   readonly theme: Prisma.FieldRef<"UserPreference", 'Theme'>
   readonly accentColor: Prisma.FieldRef<"UserPreference", 'AccentColor'>
+  readonly taskViews: Prisma.FieldRef<"UserPreference", 'Json'>
   readonly createdAt: Prisma.FieldRef<"UserPreference", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"UserPreference", 'DateTime'>
 }

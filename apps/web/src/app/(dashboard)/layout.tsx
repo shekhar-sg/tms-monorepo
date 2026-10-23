@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AskAiButton, AssistantProvider } from "@/components/ai/assistant";
 import AppSidebar from "@/components/dashboard/app-sidebar";
 import DashboardBreadcrumb from "@/components/dashboard/dashboard-breadcrumb";
 import { Separator } from "@/components/ui/separator";
@@ -16,24 +17,33 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
     <PreferencesProvider>
       <NavigationTransitionProvider>
         <BreadcrumbProvider>
-          <SidebarProvider className={"min-h-screen"}>
-            <AppSidebar />
-            <SidebarInset className={"flex flex-col h-screen overflow-scroll"}>
-              <header
-                className={
-                  "sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4"
-                }
+          <AssistantProvider>
+            <SidebarProvider className={"min-h-screen"}>
+              <AppSidebar />
+              <SidebarInset
+                className={"flex min-w-0 flex-col h-svh overflow-hidden"}
               >
-                <SidebarTrigger className={"-ml-1"} />
-                <Separator
-                  orientation="vertical"
-                  className={"mr-2 h-4 self-center!"}
-                />
-                <DashboardBreadcrumb />
-              </header>
-              <main>{children}</main>
-            </SidebarInset>
-          </SidebarProvider>
+                <header
+                  className={
+                    "relative z-30 flex h-14 shrink-0 items-center gap-2 border-b bg-card/95 px-4 backdrop-blur-sm sm:px-6"
+                  }
+                >
+                  <SidebarTrigger className={"-ml-1"} />
+                  <Separator
+                    orientation="vertical"
+                    className={"mr-2 h-4 self-center!"}
+                  />
+                  <DashboardBreadcrumb />
+                  <div className="ml-auto">
+                    <AskAiButton />
+                  </div>
+                </header>
+                <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+                  {children}
+                </div>
+              </SidebarInset>
+            </SidebarProvider>
+          </AssistantProvider>
         </BreadcrumbProvider>
       </NavigationTransitionProvider>
     </PreferencesProvider>

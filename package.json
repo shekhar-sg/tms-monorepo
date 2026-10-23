@@ -6,8 +6,9 @@
     "dev": "turbo run dev",
     "format": "biome format . --write",
     "lint": "biome lint .",
-    "check": "biome check . --write",
-    "check-types": "turbo run check-types"
+    "check": "biome check .",
+    "check-types": "turbo run check-types",
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.7",
@@ -16,6 +17,6 @@
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=22.12.0"
   }
 }

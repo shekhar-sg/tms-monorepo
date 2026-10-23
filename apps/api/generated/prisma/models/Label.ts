@@ -28,6 +28,7 @@ export type LabelMinAggregateOutputType = {
   id: string | null
   name: string | null
   color: string | null
+  ownerId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type LabelMaxAggregateOutputType = {
   id: string | null
   name: string | null
   color: string | null
+  ownerId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type LabelCountAggregateOutputType = {
   id: number
   name: number
   color: number
+  ownerId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type LabelMinAggregateInputType = {
   id?: true
   name?: true
   color?: true
+  ownerId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type LabelMaxAggregateInputType = {
   id?: true
   name?: true
   color?: true
+  ownerId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type LabelCountAggregateInputType = {
   id?: true
   name?: true
   color?: true
+  ownerId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type LabelGroupByOutputType = {
   id: string
   name: string
   color: string | null
+  ownerId: string | null
   createdAt: Date
   updatedAt: Date
   _count: LabelCountAggregateOutputType | null
@@ -180,8 +187,10 @@ export type LabelWhereInput = {
   id?: Prisma.StringFilter<"Label"> | string
   name?: Prisma.StringFilter<"Label"> | string
   color?: Prisma.StringNullableFilter<"Label"> | string | null
+  ownerId?: Prisma.StringNullableFilter<"Label"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Label"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Label"> | Date | string
+  owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   tasks?: Prisma.TaskLabelListRelationFilter
 }
 
@@ -189,27 +198,33 @@ export type LabelOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   color?: Prisma.SortOrderInput | Prisma.SortOrder
+  ownerId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  owner?: Prisma.UserOrderByWithRelationInput
   tasks?: Prisma.TaskLabelOrderByRelationAggregateInput
 }
 
 export type LabelWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  name?: string
+  ownerId_name?: Prisma.LabelOwnerIdNameCompoundUniqueInput
   AND?: Prisma.LabelWhereInput | Prisma.LabelWhereInput[]
   OR?: Prisma.LabelWhereInput[]
   NOT?: Prisma.LabelWhereInput | Prisma.LabelWhereInput[]
+  name?: Prisma.StringFilter<"Label"> | string
   color?: Prisma.StringNullableFilter<"Label"> | string | null
+  ownerId?: Prisma.StringNullableFilter<"Label"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Label"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Label"> | Date | string
+  owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   tasks?: Prisma.TaskLabelListRelationFilter
-}, "id" | "name">
+}, "id" | "ownerId_name">
 
 export type LabelOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   color?: Prisma.SortOrderInput | Prisma.SortOrder
+  ownerId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.LabelCountOrderByAggregateInput
@@ -224,6 +239,7 @@ export type LabelScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Label"> | string
   name?: Prisma.StringWithAggregatesFilter<"Label"> | string
   color?: Prisma.StringNullableWithAggregatesFilter<"Label"> | string | null
+  ownerId?: Prisma.StringNullableWithAggregatesFilter<"Label"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Label"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Label"> | Date | string
 }
@@ -234,6 +250,7 @@ export type LabelCreateInput = {
   color?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedLabelsInput
   tasks?: Prisma.TaskLabelCreateNestedManyWithoutLabelInput
 }
 
@@ -241,6 +258,7 @@ export type LabelUncheckedCreateInput = {
   id?: string
   name: string
   color?: string | null
+  ownerId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TaskLabelUncheckedCreateNestedManyWithoutLabelInput
@@ -252,6 +270,7 @@ export type LabelUpdateInput = {
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneWithoutOwnedLabelsNestedInput
   tasks?: Prisma.TaskLabelUpdateManyWithoutLabelNestedInput
 }
 
@@ -259,6 +278,7 @@ export type LabelUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TaskLabelUncheckedUpdateManyWithoutLabelNestedInput
@@ -268,6 +288,7 @@ export type LabelCreateManyInput = {
   id?: string
   name: string
   color?: string | null
+  ownerId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -284,14 +305,31 @@ export type LabelUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LabelListRelationFilter = {
+  every?: Prisma.LabelWhereInput
+  some?: Prisma.LabelWhereInput
+  none?: Prisma.LabelWhereInput
+}
+
+export type LabelOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type LabelOwnerIdNameCompoundUniqueInput = {
+  ownerId: string
+  name: string
 }
 
 export type LabelCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   color?: Prisma.SortOrder
+  ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -300,6 +338,7 @@ export type LabelMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   color?: Prisma.SortOrder
+  ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -308,6 +347,7 @@ export type LabelMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   color?: Prisma.SortOrder
+  ownerId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -315,6 +355,48 @@ export type LabelMinOrderByAggregateInput = {
 export type LabelScalarRelationFilter = {
   is?: Prisma.LabelWhereInput
   isNot?: Prisma.LabelWhereInput
+}
+
+export type LabelCreateNestedManyWithoutOwnerInput = {
+  create?: Prisma.XOR<Prisma.LabelCreateWithoutOwnerInput, Prisma.LabelUncheckedCreateWithoutOwnerInput> | Prisma.LabelCreateWithoutOwnerInput[] | Prisma.LabelUncheckedCreateWithoutOwnerInput[]
+  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutOwnerInput | Prisma.LabelCreateOrConnectWithoutOwnerInput[]
+  createMany?: Prisma.LabelCreateManyOwnerInputEnvelope
+  connect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+}
+
+export type LabelUncheckedCreateNestedManyWithoutOwnerInput = {
+  create?: Prisma.XOR<Prisma.LabelCreateWithoutOwnerInput, Prisma.LabelUncheckedCreateWithoutOwnerInput> | Prisma.LabelCreateWithoutOwnerInput[] | Prisma.LabelUncheckedCreateWithoutOwnerInput[]
+  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutOwnerInput | Prisma.LabelCreateOrConnectWithoutOwnerInput[]
+  createMany?: Prisma.LabelCreateManyOwnerInputEnvelope
+  connect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+}
+
+export type LabelUpdateManyWithoutOwnerNestedInput = {
+  create?: Prisma.XOR<Prisma.LabelCreateWithoutOwnerInput, Prisma.LabelUncheckedCreateWithoutOwnerInput> | Prisma.LabelCreateWithoutOwnerInput[] | Prisma.LabelUncheckedCreateWithoutOwnerInput[]
+  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutOwnerInput | Prisma.LabelCreateOrConnectWithoutOwnerInput[]
+  upsert?: Prisma.LabelUpsertWithWhereUniqueWithoutOwnerInput | Prisma.LabelUpsertWithWhereUniqueWithoutOwnerInput[]
+  createMany?: Prisma.LabelCreateManyOwnerInputEnvelope
+  set?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+  disconnect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+  delete?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+  connect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+  update?: Prisma.LabelUpdateWithWhereUniqueWithoutOwnerInput | Prisma.LabelUpdateWithWhereUniqueWithoutOwnerInput[]
+  updateMany?: Prisma.LabelUpdateManyWithWhereWithoutOwnerInput | Prisma.LabelUpdateManyWithWhereWithoutOwnerInput[]
+  deleteMany?: Prisma.LabelScalarWhereInput | Prisma.LabelScalarWhereInput[]
+}
+
+export type LabelUncheckedUpdateManyWithoutOwnerNestedInput = {
+  create?: Prisma.XOR<Prisma.LabelCreateWithoutOwnerInput, Prisma.LabelUncheckedCreateWithoutOwnerInput> | Prisma.LabelCreateWithoutOwnerInput[] | Prisma.LabelUncheckedCreateWithoutOwnerInput[]
+  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutOwnerInput | Prisma.LabelCreateOrConnectWithoutOwnerInput[]
+  upsert?: Prisma.LabelUpsertWithWhereUniqueWithoutOwnerInput | Prisma.LabelUpsertWithWhereUniqueWithoutOwnerInput[]
+  createMany?: Prisma.LabelCreateManyOwnerInputEnvelope
+  set?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+  disconnect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+  delete?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+  connect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
+  update?: Prisma.LabelUpdateWithWhereUniqueWithoutOwnerInput | Prisma.LabelUpdateWithWhereUniqueWithoutOwnerInput[]
+  updateMany?: Prisma.LabelUpdateManyWithWhereWithoutOwnerInput | Prisma.LabelUpdateManyWithWhereWithoutOwnerInput[]
+  deleteMany?: Prisma.LabelScalarWhereInput | Prisma.LabelScalarWhereInput[]
 }
 
 export type LabelCreateNestedOneWithoutTasksInput = {
@@ -331,18 +413,76 @@ export type LabelUpdateOneRequiredWithoutTasksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LabelUpdateToOneWithWhereWithoutTasksInput, Prisma.LabelUpdateWithoutTasksInput>, Prisma.LabelUncheckedUpdateWithoutTasksInput>
 }
 
+export type LabelCreateWithoutOwnerInput = {
+  id?: string
+  name: string
+  color?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TaskLabelCreateNestedManyWithoutLabelInput
+}
+
+export type LabelUncheckedCreateWithoutOwnerInput = {
+  id?: string
+  name: string
+  color?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TaskLabelUncheckedCreateNestedManyWithoutLabelInput
+}
+
+export type LabelCreateOrConnectWithoutOwnerInput = {
+  where: Prisma.LabelWhereUniqueInput
+  create: Prisma.XOR<Prisma.LabelCreateWithoutOwnerInput, Prisma.LabelUncheckedCreateWithoutOwnerInput>
+}
+
+export type LabelCreateManyOwnerInputEnvelope = {
+  data: Prisma.LabelCreateManyOwnerInput | Prisma.LabelCreateManyOwnerInput[]
+  skipDuplicates?: boolean
+}
+
+export type LabelUpsertWithWhereUniqueWithoutOwnerInput = {
+  where: Prisma.LabelWhereUniqueInput
+  update: Prisma.XOR<Prisma.LabelUpdateWithoutOwnerInput, Prisma.LabelUncheckedUpdateWithoutOwnerInput>
+  create: Prisma.XOR<Prisma.LabelCreateWithoutOwnerInput, Prisma.LabelUncheckedCreateWithoutOwnerInput>
+}
+
+export type LabelUpdateWithWhereUniqueWithoutOwnerInput = {
+  where: Prisma.LabelWhereUniqueInput
+  data: Prisma.XOR<Prisma.LabelUpdateWithoutOwnerInput, Prisma.LabelUncheckedUpdateWithoutOwnerInput>
+}
+
+export type LabelUpdateManyWithWhereWithoutOwnerInput = {
+  where: Prisma.LabelScalarWhereInput
+  data: Prisma.XOR<Prisma.LabelUpdateManyMutationInput, Prisma.LabelUncheckedUpdateManyWithoutOwnerInput>
+}
+
+export type LabelScalarWhereInput = {
+  AND?: Prisma.LabelScalarWhereInput | Prisma.LabelScalarWhereInput[]
+  OR?: Prisma.LabelScalarWhereInput[]
+  NOT?: Prisma.LabelScalarWhereInput | Prisma.LabelScalarWhereInput[]
+  id?: Prisma.StringFilter<"Label"> | string
+  name?: Prisma.StringFilter<"Label"> | string
+  color?: Prisma.StringNullableFilter<"Label"> | string | null
+  ownerId?: Prisma.StringNullableFilter<"Label"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Label"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Label"> | Date | string
+}
+
 export type LabelCreateWithoutTasksInput = {
   id?: string
   name: string
   color?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedLabelsInput
 }
 
 export type LabelUncheckedCreateWithoutTasksInput = {
   id?: string
   name: string
   color?: string | null
+  ownerId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -369,9 +509,45 @@ export type LabelUpdateWithoutTasksInput = {
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneWithoutOwnedLabelsNestedInput
 }
 
 export type LabelUncheckedUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LabelCreateManyOwnerInput = {
+  id?: string
+  name: string
+  color?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LabelUpdateWithoutOwnerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskLabelUpdateManyWithoutLabelNestedInput
+}
+
+export type LabelUncheckedUpdateWithoutOwnerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskLabelUncheckedUpdateManyWithoutLabelNestedInput
+}
+
+export type LabelUncheckedUpdateManyWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -414,8 +590,10 @@ export type LabelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   id?: boolean
   name?: boolean
   color?: boolean
+  ownerId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  owner?: boolean | Prisma.Label$ownerArgs<ExtArgs>
   tasks?: boolean | Prisma.Label$tasksArgs<ExtArgs>
   _count?: boolean | Prisma.LabelCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["label"]>
@@ -424,43 +602,55 @@ export type LabelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   name?: boolean
   color?: boolean
+  ownerId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  owner?: boolean | Prisma.Label$ownerArgs<ExtArgs>
 }, ExtArgs["result"]["label"]>
 
 export type LabelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   color?: boolean
+  ownerId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  owner?: boolean | Prisma.Label$ownerArgs<ExtArgs>
 }, ExtArgs["result"]["label"]>
 
 export type LabelSelectScalar = {
   id?: boolean
   name?: boolean
   color?: boolean
+  ownerId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LabelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "color" | "createdAt" | "updatedAt", ExtArgs["result"]["label"]>
+export type LabelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "color" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["label"]>
 export type LabelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  owner?: boolean | Prisma.Label$ownerArgs<ExtArgs>
   tasks?: boolean | Prisma.Label$tasksArgs<ExtArgs>
   _count?: boolean | Prisma.LabelCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type LabelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type LabelIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type LabelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  owner?: boolean | Prisma.Label$ownerArgs<ExtArgs>
+}
+export type LabelIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  owner?: boolean | Prisma.Label$ownerArgs<ExtArgs>
+}
 
 export type $LabelPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Label"
   objects: {
+    owner: Prisma.$UserPayload<ExtArgs> | null
     tasks: Prisma.$TaskLabelPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
     color: string | null
+    ownerId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["label"]>
@@ -857,6 +1047,7 @@ readonly fields: LabelFieldRefs;
  */
 export interface Prisma__LabelClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  owner<T extends Prisma.Label$ownerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Label$ownerArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tasks<T extends Prisma.Label$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Label$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskLabelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -890,6 +1081,7 @@ export interface LabelFieldRefs {
   readonly id: Prisma.FieldRef<"Label", 'String'>
   readonly name: Prisma.FieldRef<"Label", 'String'>
   readonly color: Prisma.FieldRef<"Label", 'String'>
+  readonly ownerId: Prisma.FieldRef<"Label", 'String'>
   readonly createdAt: Prisma.FieldRef<"Label", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Label", 'DateTime'>
 }
@@ -1146,6 +1338,10 @@ export type LabelCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    */
   data: Prisma.LabelCreateManyInput | Prisma.LabelCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LabelIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1216,6 +1412,10 @@ export type LabelUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many Labels to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LabelIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1282,6 +1482,25 @@ export type LabelDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Labels to delete.
    */
   limit?: number
+}
+
+/**
+ * Label.owner
+ */
+export type Label$ownerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

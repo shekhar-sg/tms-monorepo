@@ -7,10 +7,16 @@ import {
   tableFeatures,
 } from "@tanstack/react-table";
 import { format, parseISO } from "date-fns";
+import Link from "next/link";
+
 import TaskActions from "@/components/dashboard/tasks/feed/shared/task-actions";
+
 import { taskStatusGroups } from "@/components/dashboard/tasks/feed/task-feed-utils";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Badge } from "@/components/ui/badge";
+
 import { PRIORITY_OPTIONS } from "@/lib/tasks/filter-config";
 
 export const taskTableFeatures = tableFeatures({
@@ -23,16 +29,39 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
   columnHelper.columns([
     columnHelper.accessor("title", {
       header: "Task",
+
+      cell: ({ row }) => (
+        <Link
+          href={`/dashboard/tasks/${row.original.id}`}
+          className="font-medium hover:text-primary"
+        >
+          {row.original.title}
+        </Link>
+      ),
+    }),
+
+    columnHelper.display({
+      id: "project",
+      header: "Project",
+      cell: ({ row }) => (
+        <span className="text-xs text-muted-foreground">
+          {row.original.project?.title ?? "—"}
+        </span>
+      ),
     }),
 
     columnHelper.accessor("priority", {
       id: "priority",
+
       header: "Priority",
+
       cell: ({ row }) => {
         const currentPriority = row.original.priority;
+
         const priority = PRIORITY_OPTIONS.find(
           (priority) => priority.value === currentPriority
         );
+
         const Icon = priority?.icon;
 
         return (
@@ -46,12 +75,16 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
 
     columnHelper.accessor("members", {
       id: "members",
+
       header: "Members",
+
       cell: ({ row }) => {
         const members = row.original.members;
+
         if (!members || members.length === 0) {
           return <span className={"text-muted-foreground"}>—</span>;
         }
+
         return members.map(({ user, userId }) => (
           <Avatar size={"sm"} key={userId}>
             {user.avatar && (
@@ -59,9 +92,13 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
             )}
             <AvatarFallback>
               {user.name
+
                 ?.split(" ")
+
                 .map((part: string) => part[0])
+
                 .join("")
+
                 .slice(0, 2)}
             </AvatarFallback>
           </Avatar>
@@ -71,19 +108,25 @@ export const taskColumns: ColumnDef<TableFeatures, Task>[] =
 
     columnHelper.accessor("endDate", {
       id: "dueDate",
+
       header: "Due Date",
+
       cell: ({ row }) => {
         if (!row.original.endDate) {
           return <span className={"text-muted-foreground"}>—</span>;
         }
+
         const dueDate = parseISO(row.original.endDate);
+
         return <span>{format(dueDate, "dd MMM yyyy") ?? "—"}</span>;
       },
     }),
 
     columnHelper.display({
       id: "actions",
+
       header: "Actions",
+
       enableHiding: false,
 
       cell: ({ row }) => {

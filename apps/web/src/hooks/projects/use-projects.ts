@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
+import { taskKeys } from "@/hooks/tasks/task-keys";
 import {
   createProject,
   deleteProject,
@@ -7,7 +7,6 @@ import {
   getProjects,
   updateProject,
 } from "@/lib/api/projects-api";
-
 import { projectKeys } from "./project-keys";
 
 export function useProjects() {
@@ -62,6 +61,7 @@ export function useDeleteProject() {
     mutationFn: deleteProject,
 
     onSuccess: (_, projectId) => {
+      queryClient.invalidateQueries({ queryKey: taskKeys.all });
       queryClient.removeQueries({
         queryKey: projectKeys.detail(projectId),
       });

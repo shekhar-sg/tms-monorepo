@@ -8,29 +8,36 @@ import {
 } from "./enums";
 
 const taskRelationsSchema = {
-  title: z.string().trim().min(1).max(200),
+  title: z
+    .string()
+    .trim()
+    .min(1, { error: "Task title is required" })
+    .max(200, { error: "Task title must be 200 characters or less" }),
   description: z.string().trim().max(5000).nullable().optional(),
   resource: z.string().trim().max(2000).nullable().optional(),
   priority: prioritySchema.optional(),
   status: statusSchema.optional(),
-  projectId: z.uuid().optional(),
-  reporterId: z.uuid().nullable().optional(),
+  projectId: z.uuid({ error: "Please select a project" }),
+  reporterId: z.uuid({ error: "Please select a reporter" }),
   members: z.array(z.uuid()).default([]),
   parentId: z.uuid().nullable().optional(),
   startDate: z.iso.datetime().nullable().optional(),
   endDate: z.iso.datetime().nullable().optional(),
   labels: z.array(z.uuid()).default([]),
-  position: z.number().optional(),
 };
 
-export const createTaskSchema = z.object({
-  ...taskRelationsSchema,
-  projectId: z.uuid(),
-});
-
-export const updateTaskSchema = z.object(taskRelationsSchema);
+export const createTaskSchema = z.object(taskRelationsSchema);
+export const updateTaskSchema = z
+  .object({
+    ...taskRelationsSchema,
+    reporterId: z.uuid().nullable().optional(),
+    members: z.array(z.uuid()).optional(),
+    labels: z.array(z.uuid()).optional(),
+  })
+  .partial();
 
 export const moveTaskSchema = z.object({
+  revision: z.number().int().nonnegative().optional(),
   status: statusSchema,
   beforeTaskId: z.uuid().nullable().optional(),
   afterTaskId: z.uuid().nullable().optional(),
@@ -59,6 +66,7 @@ export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 export type MoveTaskInput = z.infer<typeof moveTaskSchema>;
 export type GetTasksQuery = z.infer<typeof getTasksQuerySchema>;
 
+export type TaskActor = Pick<User, "id" | "name" | "avatar">;
 export type Task = {
   id: string;
   title: string;
@@ -68,13 +76,15 @@ export type Task = {
   status: Status;
   projectId: string;
   reporterId: string | null;
-  reporter: User | null;
+  reporter: TaskActor | null;
   members: TaskMember[];
   parentId: string | null;
   startDate: string | null;
   endDate: string | null;
   labels: TaskLabel[];
   position: number;
+  revision: number;
+  project?: { id: string; title: string };
   createdAt: string;
   updatedAt: string;
   subtasks: SubtaskSummary[];
@@ -82,7 +92,7 @@ export type Task = {
 
 export type TaskMember = {
   userId: string;
-  user: User;
+  user: TaskActor;
 };
 
 export type Label = {

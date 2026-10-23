@@ -32,6 +32,7 @@ interface DataTableProps<TData extends RowData, TValue> {
   renderRow?: (row: Row<TableFeatures, TData>, index: number) => ReactNode;
   addButtonProps: ButtonProps;
   columnVisibility?: Record<string, boolean>;
+  tableClassName?: string;
 }
 
 const DataTable = <TData extends RowData, TValue>({
@@ -43,6 +44,7 @@ const DataTable = <TData extends RowData, TValue>({
   renderRow,
   addButtonProps,
   columnVisibility,
+  tableClassName,
 }: DataTableProps<TData, TValue>) => {
   const table = useTable({
     features,
@@ -55,12 +57,12 @@ const DataTable = <TData extends RowData, TValue>({
   } as TableOptions<TableFeatures, TData>);
 
   const rows = table.getRowModel().rows;
-  const columnCount = table.getAllLeafColumns().length;
+  const columnCount = table.getVisibleLeafColumns().length;
 
   return (
-    <div className="overflow-hidden rounded-lg border">
-      <Table>
-        <TableHeader className={"bg-accent"}>
+    <div className="min-w-0 overflow-hidden rounded-lg border bg-card shadow-none">
+      <Table className={tableClassName}>
+        <TableHeader className="sticky top-0 z-10 bg-muted/70">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (

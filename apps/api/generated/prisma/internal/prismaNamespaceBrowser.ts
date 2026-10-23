@@ -60,7 +60,10 @@ export const ModelName = {
   TaskLabel: 'TaskLabel',
   Comment: 'Comment',
   TaskActivity: 'TaskActivity',
-  UserPreference: 'UserPreference'
+  UserPreference: 'UserPreference',
+  OAuthAttempt: 'OAuthAttempt',
+  AiReceipt: 'AiReceipt',
+  AiQuota: 'AiQuota'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -87,6 +90,8 @@ export const UserScalarFieldEnum = {
   title: 'title',
   avatar: 'avatar',
   isGuest: 'isGuest',
+  disabledAt: 'disabledAt',
+  orderRevision: 'orderRevision',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -127,6 +132,7 @@ export const TaskScalarFieldEnum = {
   priority: 'priority',
   status: 'status',
   position: 'position',
+  revision: 'revision',
   projectId: 'projectId',
   reporterId: 'reporterId',
   parentId: 'parentId',
@@ -152,6 +158,7 @@ export const LabelScalarFieldEnum = {
   id: 'id',
   name: 'name',
   color: 'color',
+  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -197,11 +204,44 @@ export const UserPreferenceScalarFieldEnum = {
   userId: 'userId',
   theme: 'theme',
   accentColor: 'accentColor',
+  taskViews: 'taskViews',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserPreferenceScalarFieldEnum = (typeof UserPreferenceScalarFieldEnum)[keyof typeof UserPreferenceScalarFieldEnum]
+
+
+export const OAuthAttemptScalarFieldEnum = {
+  id: 'id',
+  browserHash: 'browserHash',
+  guestId: 'guestId',
+  returnTo: 'returnTo',
+  expiresAt: 'expiresAt'
+} as const
+
+export type OAuthAttemptScalarFieldEnum = (typeof OAuthAttemptScalarFieldEnum)[keyof typeof OAuthAttemptScalarFieldEnum]
+
+
+export const AiReceiptScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  key: 'key',
+  hash: 'hash',
+  result: 'result',
+  createdAt: 'createdAt'
+} as const
+
+export type AiReceiptScalarFieldEnum = (typeof AiReceiptScalarFieldEnum)[keyof typeof AiReceiptScalarFieldEnum]
+
+
+export const AiQuotaScalarFieldEnum = {
+  key: 'key',
+  count: 'count',
+  expiresAt: 'expiresAt'
+} as const
+
+export type AiQuotaScalarFieldEnum = (typeof AiQuotaScalarFieldEnum)[keyof typeof AiQuotaScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -218,6 +258,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

@@ -11,6 +11,6 @@ export function useTaskActivities(taskId: string) {
   return useQuery({
     queryKey: taskActivityKeys.task(taskId),
     queryFn: () => getTaskActivities(taskId),
-    enabled: Boolean(taskId),
+    enabled: Boolean(taskId) && taskId !== "new",
   });
 }

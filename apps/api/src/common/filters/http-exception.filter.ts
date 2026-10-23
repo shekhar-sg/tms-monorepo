@@ -23,7 +23,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     let code: ApiErrorCode = "INTERNAL_ERROR";
     let message = "Internal server error";
-    let retryable = status >= 500;
+    let retryable = status >= 500 || status === 429;
+    let retryAfter: number | undefined;
     let errors: Record<string, string[]> | undefined;
 
     if (exception instanceof HttpException) {
@@ -40,6 +41,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
           message?: string | string[];
           retryable?: boolean;
           errors?: Record<string, string[]>;
+          retryAfter?: number;
         };
 
         if (body.code) {
@@ -57,6 +59,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         }
 
         errors = body.errors;
+        if (body.retryAfter && Number.isFinite(body.retryAfter))
+          retryAfter = Math.ceil(body.retryAfter);
       }
 
       if (code === "INTERNAL_ERROR") {
@@ -69,6 +73,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       );
     }
 
+    if (retryAfter) response.setHeader("Retry-After", retryAfter);
     response.status(status).json({
       success: false,
       error: {
@@ -76,6 +81,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message,
         retryable,
         ...(errors ? { errors } : {}),
+        ...(retryAfter ? { retryAfter } : {}),
       },
     });
   }
@@ -98,7 +104,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
         return "CONFLICT";
 
       case HttpStatus.SERVICE_UNAVAILABLE:
-        return "DATABASE_UNAVAILABLE";
+        return "SERVICE_UNAVAILABLE";
+      case HttpStatus.TOO_MANY_REQUESTS:
+        return "RATE_LIMITED";
 
       default:
         return "INTERNAL_ERROR";
