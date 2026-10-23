@@ -30,6 +30,8 @@ API_URL=http://localhost:4000
 
 Browser requests use the web application's `/api` proxy, and server requests use `API_URL`. Set it consistently to the intended API for each environment; rewrites are evaluated at build time. Cookies are HttpOnly and same-site. Production requires HTTPS.
 
+For the Vercel frontend project, set `API_URL=https://tms-monorepo-api.vercel.app` in the Production environment. For the API project, set `FRONTEND_URL=https://tms-monorepo-web.vercel.app` and `GOOGLE_CALLBACK_URL=https://tms-monorepo-web.vercel.app/api/auth/google/callback`. Register that same callback in the Google OAuth client. Redeploy the frontend without reusing its previous build cache after changing `API_URL`. Turbo includes this variable in the build environment and cache key. A `DNS_HOSTNAME_RESOLVED_PRIVATE` error from the frontend's `/api/auth/providers` indicates the proxy destination resolves to a private address; verify `API_URL` and rebuild.
+
 Initialize a local database (use a separate database for testing):
 
 ```sh
