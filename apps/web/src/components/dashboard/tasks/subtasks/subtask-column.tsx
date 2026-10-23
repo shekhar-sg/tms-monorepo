@@ -1,7 +1,12 @@
 import type { SubtaskSummary } from "@repo/types";
-import type { ColumnDef, TableFeatures } from "@tanstack/react-table";
+import {
+  type ColumnDef,
+  columnVisibilityFeature,
+  type TableFeatures,
+  tableFeatures,
+} from "@tanstack/react-table";
 
-export const subtaskTableFeatures = {} as TableFeatures;
+export const subtaskTableFeatures = tableFeatures({ columnVisibilityFeature });
 
 export const subtaskColumns: ColumnDef<TableFeatures, SubtaskSummary>[] = [
   {

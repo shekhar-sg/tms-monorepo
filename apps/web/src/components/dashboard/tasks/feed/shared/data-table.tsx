@@ -3,6 +3,7 @@
 import { ButtonProps } from "@base-ui/react";
 import {
   type ColumnDef,
+  columnVisibilityFeature,
   FlexRender,
   type Row,
   type RowData,
@@ -47,7 +48,7 @@ const DataTable = <TData extends RowData, TValue>({
   tableClassName,
 }: DataTableProps<TData, TValue>) => {
   const table = useTable({
-    features,
+    features: { ...features, columnVisibilityFeature },
     columns,
     data,
     state: {
