@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  getStatus() {
+    return {
+      message: "Task Manager API is running",
+      data: { service: "Task Manager API", status: "ok" },
+    };
   }
 }
